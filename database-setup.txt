@@ -7,7 +7,7 @@ Courses - table
 	hr/w
 	related certifications
 	description
-	category
+	categoryID (FK)
 	
 	
 course providers - table
@@ -29,3 +29,7 @@ keywords - table
 level - lookup table
 	difficulty level(PK)
 	difficulty name
+
+Category - lookup table
+    categoryID (PK)
+    category name
