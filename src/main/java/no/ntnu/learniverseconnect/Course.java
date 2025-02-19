@@ -14,8 +14,8 @@ import java.sql.Date;
 @Entity
 public class Course {
   @Id
-  @GeneratedValue(strategy= GenerationType.AUTO)
-  private int courseId;
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private int id;
   private String levelTitle;
   private int diffLevel;
   private Date closestCourse;
@@ -23,8 +23,9 @@ public class Course {
   private int hoursWeek;
   private String relatedCert;
   private String description;
+
+  //@JoinColumn(name="categoryId",foreignKey = @ForeignKey(name="FK_CATEGORY"))
   @ManyToOne
-  @JoinColumn(name="categoryId",foreignKey = @ForeignKey(name="FK_CATEGORY"))
   Category category;
 
 

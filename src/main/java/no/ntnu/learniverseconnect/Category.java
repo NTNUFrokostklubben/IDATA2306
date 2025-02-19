@@ -12,6 +12,6 @@ import jakarta.persistence.Id;
 public class Category {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  int categoryId;
-  String categoryName;
+  private int id;
+  private String categoryName;
 }

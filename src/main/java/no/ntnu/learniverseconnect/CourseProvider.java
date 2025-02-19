@@ -7,8 +7,8 @@ import jakarta.persistence.Id;
 
 @Entity
 public class CourseProvider {
-@Id
-@GeneratedValue(strategy = GenerationType.AUTO)
-private int providerId;
-private String providerName;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private int id;
+  private String providerName;
 }
