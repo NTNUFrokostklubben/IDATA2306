@@ -16,13 +16,14 @@ public class Ratings {
   private Long id;
   private int rating;
   private String comment;
-    @ManyToOne
-    private Course course;
-    @ManyToOne
-    private User user;
+  @ManyToOne
+  private Course course;
+  @ManyToOne
+  private User user;
 
   /**
    * Gets the unique ID of the rating.
+   *
    * @return the rating ID
    */
   public Long getId() {
@@ -31,6 +32,7 @@ public class Ratings {
 
   /**
    * Gets the rating value.
+   *
    * @return the rating value
    */
   public int getRating() {
@@ -39,6 +41,7 @@ public class Ratings {
 
   /**
    * Sets the rating value.
+   *
    * @param rating the rating value to set
    */
   public void setRating(int rating) {
@@ -47,6 +50,7 @@ public class Ratings {
 
   /**
    * Gets the comment for the rating.
+   *
    * @return the comment
    */
   public String getComment() {
@@ -55,6 +59,7 @@ public class Ratings {
 
   /**
    * Sets the comment for the rating.
+   *
    * @param comment the comment to set
    */
   public void setComment(String comment) {
@@ -63,6 +68,7 @@ public class Ratings {
 
   /**
    * Gets the course associated with the rating.
+   *
    * @return the course
    */
   public Course getCourse() {
@@ -71,10 +77,11 @@ public class Ratings {
 
   /**
    * Sets the course associated with the rating.
+   *
    * @param course the course to set
    */
   public void setCourse(Course course) {
-    if (course == null){
+    if (course == null) {
       throw new IllegalArgumentException("Course cannot be null");
     }
     this.course = course;
@@ -82,6 +89,7 @@ public class Ratings {
 
   /**
    * Gets the user who made the rating.
+   *
    * @return the user
    */
   public User getUser() {
@@ -90,10 +98,11 @@ public class Ratings {
 
   /**
    * Sets the user who made the rating.
+   *
    * @param user the user to set
    */
   public void setUser(User user) {
-    if (user == null){
+    if (user == null) {
       throw new IllegalArgumentException("Course cannot be null");
     }
     this.user = user;

@@ -34,7 +34,7 @@ public class Keywords {
    */
 
   public void setCourse(Course course) {
-    if (course == null){
+    if (course == null) {
       throw new IllegalArgumentException("Course cannot be null");
     }
     this.course = course;

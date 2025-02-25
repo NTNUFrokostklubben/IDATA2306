@@ -182,6 +182,7 @@ public class Course implements Serializable {
 
   /**
    * Get the category this course belongs to.
+   *
    * @return the category this course belongs to.
    */
   public String getCatergory() {
@@ -190,6 +191,7 @@ public class Course implements Serializable {
 
   /**
    * Set the category this course belongs to.
+   *
    * @param catergory the category to set.
    */
 

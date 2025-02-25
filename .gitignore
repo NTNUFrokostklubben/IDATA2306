@@ -33,5 +33,5 @@ build/
 .vscode/
 
 ### DB config ###
-compose.yaml
+.env
 

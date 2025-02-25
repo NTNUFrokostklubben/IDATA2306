@@ -75,7 +75,7 @@ public class User {
    * @param passwordHash the password hash to set
    */
   public void setPasswordHash(String passwordHash) {
-    if (passwordHash == null || passwordHash.isEmpty()){
+    if (passwordHash == null || passwordHash.isEmpty()) {
       throw new IllegalArgumentException("password hash cannot be null or empty");
     }
     this.passwordHash = passwordHash;

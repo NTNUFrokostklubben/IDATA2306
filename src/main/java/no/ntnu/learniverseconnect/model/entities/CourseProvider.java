@@ -16,6 +16,7 @@ public class CourseProvider implements Serializable {
 
   /**
    * Gets the unique ID of the course provider.
+   *
    * @return the course provider ID
    */
   public long getId() {
@@ -24,6 +25,7 @@ public class CourseProvider implements Serializable {
 
   /**
    * Gets the name of the course provider.
+   *
    * @return the name
    */
   public String getName() {
@@ -32,6 +34,7 @@ public class CourseProvider implements Serializable {
 
   /**
    * Sets the name of the course provider.
+   *
    * @param name the name to set
    */
   public void setName(String name) {
@@ -40,6 +43,7 @@ public class CourseProvider implements Serializable {
 
   /**
    * Gets the hashed password of the course provider.
+   *
    * @return the password hash
    */
   public String getPasswordHash() {
@@ -48,10 +52,11 @@ public class CourseProvider implements Serializable {
 
   /**
    * Sets the hashed password of the course provider.
+   *
    * @param passwordHash the password hash to set
    */
   public void setPasswordHash(String passwordHash) {
-    if (passwordHash == null || passwordHash.isEmpty()){
+    if (passwordHash == null || passwordHash.isEmpty()) {
       throw new IllegalArgumentException("password cannot be null or empty");
     }
     this.passwordHash = passwordHash;

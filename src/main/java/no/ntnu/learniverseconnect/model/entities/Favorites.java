@@ -12,13 +12,14 @@ public class Favorites {
   private Long id;
 
   @ManyToOne
-    private Course course;
+  private Course course;
   @ManyToOne
-    private User user;
+  private User user;
 
 
   /**
    * Gets the unique ID of the favorite.
+   *
    * @return the favorite ID
    */
   public Long getId() {
@@ -27,6 +28,7 @@ public class Favorites {
 
   /**
    * Gets the course associated with the favorite.
+   *
    * @return the course
    */
   public Course getCourse() {
@@ -35,10 +37,11 @@ public class Favorites {
 
   /**
    * Sets the course associated with the favorite.
+   *
    * @param course the course to set
    */
   public void setCourse(Course course) {
-    if (course == null){
+    if (course == null) {
       throw new IllegalArgumentException("Course cannot be null");
     }
     this.course = course;
@@ -46,6 +49,7 @@ public class Favorites {
 
   /**
    * Gets the user who made the favorite.
+   *
    * @return the user
    */
   public User getUser() {
@@ -54,10 +58,11 @@ public class Favorites {
 
   /**
    * Sets the user who made the favorite.
+   *
    * @param user the user to set
    */
   public void setUser(User user) {
-    if (user == null){
+    if (user == null) {
       throw new IllegalArgumentException("user cannot be null");
     }
     this.user = user;

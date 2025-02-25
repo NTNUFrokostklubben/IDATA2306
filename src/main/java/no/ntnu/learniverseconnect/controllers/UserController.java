@@ -1,8 +1,7 @@
-package no.ntnu.learniverseconnect.model;
+package no.ntnu.learniverseconnect.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class businessLogic {
-
+public class UserController {
 }
