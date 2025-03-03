@@ -11,6 +11,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * The CourseProviderController class is a REST controller that handles HTTP requests related to
+ * course providers.
+ * It provides endpoints for retrieving, adding, and managing course providers in the system.
+ *
+ * <p>This controller interacts with the CourseProviderRepo to perform CRUD operations on course
+ *  providers.</p>
+ *
+ * <p>Endpoints:
+ * <ul>
+ *   <li>GET /providers - Retrieves a list of all course providers.</li>
+ *   <li>GET /provider/{id} - Retrieves a specific course provider by its ID.</li>
+ *   <li>POST /provider - Adds a new course provider to the database.</li>
+ * </ul>
+ * </p>
+ */
+
 @RestController
 public class CourseProviderController {
 

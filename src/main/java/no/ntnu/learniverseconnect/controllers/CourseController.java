@@ -1,9 +1,11 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,8 +47,9 @@ public class CourseController {
    * @param course the course to add.
    */
   @PostMapping("/course")
-  public void addCourse(@RequestBody Course course) {
+  public ResponseEntity<Void> addCourse(@RequestBody Course course) {
     repo.save(course);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   /**
@@ -58,6 +61,7 @@ public class CourseController {
 
   @GetMapping("/course/{id}")
   public ResponseEntity<Course> getCourse(@PathVariable int id) {
-    return ResponseEntity.status(200).body(repo.findById(id).orElse(null));
+    return ResponseEntity.status(200).body(repo.findById(id).orElseThrow(() ->
+        new EntityNotFoundException("Course not found with id: " + id)));
   }
 }
