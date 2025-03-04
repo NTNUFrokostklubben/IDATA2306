@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.CourseProvider;
 import no.ntnu.learniverseconnect.model.repos.CourseProviderRepo;
@@ -53,7 +54,8 @@ public class CourseProviderController {
    */
   @GetMapping("/provider/{id}")
     public ResponseEntity<CourseProvider> getProvider(@PathVariable int id) {
-        return ResponseEntity.status(200).body(repo.findById(id).orElse(null));
+        return ResponseEntity.status(200).body(repo.findById(id).orElseThrow(() ->
+    new EntityNotFoundException("Course not found with id: " + id)));
     };
 
     /**

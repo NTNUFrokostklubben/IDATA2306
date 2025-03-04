@@ -14,7 +14,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Represents a Rest api endpoint for courses.
+ * The CourseController class is a REST controller that handles HTTP requests related to courses.
+ * It provides endpoints for retrieving, adding, and managing courses in the system.
+ *
+ * <p>This controller interacts with the CourseRepo to perform CRUD operations on courses.</p>
+ *
+ * <p>Endpoints:
+ * <ul>
+ *   <li>GET /courses - Retrieves a list of all courses.</li>
+ *   <li>POST /course - Adds a new course to the database.</li>
+ *   <li>GET /course/{id} - Retrieves a specific course by its ID.</li>
+ * </ul>
+ * </p>
+ *
  */
 @RestController
 public class CourseController {

@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Favorites {
+public class Favorite {
   @Id
   @GeneratedValue
   private Long id;
@@ -16,6 +16,10 @@ public class Favorites {
   @ManyToOne
   private User user;
 
+  public Favorite(User user, Course course){
+    this.user = user;
+    this.course = course;
+  }
 
   /**
    * Gets the unique ID of the favorite.
