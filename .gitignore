@@ -35,3 +35,6 @@ build/
 ### DB config ###
 .env
 
+### Image saving ###
+saved/*
+
