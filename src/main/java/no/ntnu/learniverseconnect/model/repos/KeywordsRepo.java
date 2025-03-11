@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface KeywordsRepo extends JpaRepository<Keywords, Integer> {
+
+  Keywords getKeywordsById(long id);
 }
