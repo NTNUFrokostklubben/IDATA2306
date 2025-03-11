@@ -2,6 +2,7 @@ package no.ntnu.learniverseconnect.model.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import java.io.Serializable;
@@ -14,7 +15,7 @@ import java.sql.Date;
 @Entity
 public class OfferableCourses implements Serializable {
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
   @ManyToOne
   private Course course;

@@ -7,6 +7,8 @@ import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.FavoritesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +31,7 @@ public class FavoritesController {
   private final UserRepo userRepo;
   private final CourseRepo courseRepo;
   private FavoritesRepo repo;
+  private static final Logger logger = LoggerFactory.getLogger(FavoritesController.class);
 
   @Autowired
   public FavoritesController(FavoritesRepo repo, UserRepo userRepo, CourseRepo courseRepo){
@@ -45,6 +48,7 @@ public class FavoritesController {
    */
   @GetMapping("/userFavorites/{id}")
   public ResponseEntity<List<Favorite>> getFavoritesForUser(@PathVariable long id) {
+    logger.info("Fetching favorites for user with id: {}", id);
     int status = 0;
     List<Favorite> list = repo.getAllByUser_Id(id);
     if(!list.isEmpty()){
@@ -53,6 +57,7 @@ public class FavoritesController {
       status = 404;
       list = null;
     }
+
     return ResponseEntity.status(status).body(list);
   }
   /**
@@ -63,6 +68,7 @@ public class FavoritesController {
    */
   @GetMapping("/favoriteCount/{id}")
   public ResponseEntity<Integer> getCountOfFavorites(@PathVariable long id){
+    logger.info("Fetching favorite count for course with id: {}", id);
     return  ResponseEntity.status(200).body(repo.getByCourse_Id(id).size());
   }
 
@@ -75,7 +81,8 @@ public class FavoritesController {
    */
   @PostMapping("/addFavorite/{uid}/{cid}")
   public ResponseEntity<Void> addFavorite(@PathVariable long uid, @PathVariable long cid){
-   User user = userRepo.getUsersById(uid);
+    logger.info("Adding favorite for user with id: {} and course with id: {}", uid, cid);
+    User user = userRepo.getUsersById(uid);
     Course course = courseRepo.getCoursesById(cid);
     Favorite favorite = new Favorite(user, course);
     repo.save(favorite);
