@@ -71,5 +71,5 @@ public class CourseProviderController {
     public void addProvider(@RequestBody CourseProvider provider) {
         logger.info("Adding new course provider");
         repo.save(provider);
-    };
+    }
 }

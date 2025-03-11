@@ -4,6 +4,8 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CourseController {
 
+  private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
   CourseRepo repo;
 
 
@@ -51,6 +54,7 @@ public class CourseController {
    */
   @GetMapping("/courses")
   public ResponseEntity<List<Course>> getCourses() {
+    logger.info("Fetching all courses");
     return ResponseEntity.status(200).body(repo.findAll());
   }
 
@@ -61,6 +65,7 @@ public class CourseController {
    */
   @PostMapping("/course")
   public ResponseEntity<Void> addCourse(@RequestBody Course course) {
+    logger.info("Adding course: {}", course.getId());
     repo.save(course);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
@@ -74,6 +79,7 @@ public class CourseController {
 
   @GetMapping("/course/{id}")
   public ResponseEntity<Course> getCourse(@PathVariable int id) {
+    logger.info("Fetching course with id: {}", id);
     return ResponseEntity.status(200).body(repo.findById(id).orElseThrow(() ->
         new EntityNotFoundException("Course not found with id: " + id)));
   }

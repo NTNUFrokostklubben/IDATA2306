@@ -36,7 +36,14 @@ public class Course implements Serializable {
   private String catergory;
   private String imgLink;
 
-
+  /**
+   * Gets the unique ID of the course.
+   *
+   * @return the course ID
+   */
+  public long getId() {
+    return id;
+  }
   /**
    * Gets the level title of the course.
    *
