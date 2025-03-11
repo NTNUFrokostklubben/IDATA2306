@@ -1,12 +1,10 @@
 package no.ntnu.learniverseconnect.controllers;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
-import org.apache.tomcat.util.json.JSONParser;
-import org.apache.tomcat.util.json.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +16,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Represents a Rest api endpoint for courses.
+ * The CourseController class is a REST controller that handles HTTP requests related to courses.
+ * It provides endpoints for retrieving, adding, and managing courses in the system.
+ *
+ * <p>This controller interacts with the CourseRepo to perform CRUD operations on courses.</p>
+ *
+ * <p>Endpoints:
+ * <ul>
+ *   <li>GET /courses - Retrieves a list of all courses.</li>
+ *   <li>POST /course - Adds a new course to the database.</li>
+ *   <li>GET /course/{id} - Retrieves a specific course by its ID.</li>
+ * </ul>
+ * </p>
+ *
  */
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 public class CourseController {
 
+  private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
   CourseRepo repo;
+
 
   /**
    * Creates a new instance of the CourseController using JPA black magic.
@@ -43,6 +55,7 @@ public class CourseController {
    */
   @GetMapping("/courses")
   public ResponseEntity<List<Course>> getCourses() {
+    logger.info("Fetching all courses");
     return ResponseEntity.status(200).body(repo.findAll());
   }
 
@@ -53,7 +66,7 @@ public class CourseController {
    */
   @PostMapping("/course")
   public ResponseEntity<Course> addCourse(@RequestBody Course course) {
-
+    logger.info("Adding course: {}", course.getId());
     repo.save(course);
     return ResponseEntity.status(HttpStatus.CREATED).body(course);
   }
@@ -67,6 +80,8 @@ public class CourseController {
 
   @GetMapping("/course/{id}")
   public ResponseEntity<Course> getCourse(@PathVariable int id) {
-    return ResponseEntity.status(200).body(repo.findById(id).orElse(null));
+    logger.info("Fetching course with id: {}", id);
+    return ResponseEntity.status(200).body(repo.findById(id).orElseThrow(() ->
+        new EntityNotFoundException("Course not found with id: " + id)));
   }
 }

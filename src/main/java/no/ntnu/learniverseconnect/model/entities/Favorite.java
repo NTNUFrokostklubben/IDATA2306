@@ -2,13 +2,14 @@ package no.ntnu.learniverseconnect.model.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Favorites {
+public class Favorite {
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne
@@ -16,6 +17,10 @@ public class Favorites {
   @ManyToOne
   private User user;
 
+  public Favorite(User user, Course course){
+    this.user = user;
+    this.course = course;
+  }
 
   /**
    * Gets the unique ID of the favorite.

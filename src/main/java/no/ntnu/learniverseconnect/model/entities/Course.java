@@ -24,7 +24,7 @@ public class Course implements Serializable {
    * * imgLink - a link to a picture in the server directory representing the course.  <br>
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
   private String title;
   private int diffLevel;
@@ -36,6 +36,14 @@ public class Course implements Serializable {
   private String catergory;
   private String imgLink;
 
+  /**
+   * Gets the unique ID of the course.
+   *
+   * @return the course ID
+   */
+  public long getId() {
+    return id;
+  }
   /**
    * Gets the level title of the course.
    *
