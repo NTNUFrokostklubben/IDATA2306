@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.model.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,6 +33,7 @@ public class Course implements Serializable {
   private float credits;
   private int hoursWeek;
   private String relatedCert;
+  @Column(length = 10000)
   private String description;
   private String catergory;
   private String imgLink;
