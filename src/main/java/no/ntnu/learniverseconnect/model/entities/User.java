@@ -18,6 +18,7 @@ public class User {
   private String email;
   private String passwordHash;
   private String role;
+  private String profilePicture;
   //TODO: Change to enum
 
 
@@ -100,4 +101,21 @@ public class User {
     this.role = role;
   }
 
+  /**
+   * Gets the profilePicture URL of the user.
+   *
+   * @return the URL to the profile picture
+   */
+  public String getProfilePicture() {
+    return profilePicture;
+  }
+
+  /**
+   * Sets the profilePicture URL  of the user.
+   *
+   * @param profilePicture the URL to set
+   */
+  public void setProfilePicture(String profilePicture) {
+    this.profilePicture = profilePicture;
+  }
 }
