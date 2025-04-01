@@ -7,6 +7,7 @@ import no.ntnu.learniverseconnect.model.repos.CourseProviderRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,11 +66,14 @@ public class CourseProviderController {
 
     /**
      * Adds a course provider to the database.
+     *
      * @param provider the course provider to add.
+     * @return
      */
   @PostMapping("/provider")
-    public void addProvider(@RequestBody CourseProvider provider) {
-        logger.info("Adding new course provider");
+    public ResponseEntity<CourseProvider> addProvider(@RequestBody CourseProvider provider) {
+        logger.info("Adding new course provider with id: {}", provider.getId());
         repo.save(provider);
+    return ResponseEntity.status(HttpStatus.CREATED).body(provider);
     }
 }
