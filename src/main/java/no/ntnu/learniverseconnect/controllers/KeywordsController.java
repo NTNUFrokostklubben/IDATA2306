@@ -25,10 +25,13 @@ public class KeywordsController {
     this.courseRepo = courseRepo;
   }
 
-  @GetMapping("/keyword/{id}")
-  public ResponseEntity<Keywords> getKeyword(@PathVariable long id) {
-    logger.info("Fetching keyword with CourseId: {}", id);
-    Keywords keyword = keywordsRepo.getKeywordsById(id);
+  /**
+   * Retrieves all keywords for a specific course by its course ID.
+   */
+  @GetMapping("/keyword/{cid}")
+  public ResponseEntity<List<Keywords>> getKeyword(@PathVariable long cid) {
+    logger.info("Fetching keywords with CourseId: {}", cid);
+    List<Keywords> keyword = keywordsRepo.getAllByCourse_Id(cid);
     return ResponseEntity.status(200).body(keyword);
   }
 }

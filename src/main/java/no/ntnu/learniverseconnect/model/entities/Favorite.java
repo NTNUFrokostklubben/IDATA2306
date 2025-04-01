@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 public class Favorite {
@@ -20,6 +21,10 @@ public class Favorite {
   public Favorite(User user, Course course){
     this.user = user;
     this.course = course;
+  }
+
+  public Favorite() {
+
   }
 
   /**

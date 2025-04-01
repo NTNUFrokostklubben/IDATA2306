@@ -13,6 +13,8 @@ public class CourseProvider implements Serializable {
   private long id;
   private String name;
   private String passwordHash;
+  private String logoLink;
+  private String altLogoLink;
 
   /**
    * Gets the unique ID of the course provider.
@@ -62,4 +64,35 @@ public class CourseProvider implements Serializable {
     this.passwordHash = passwordHash;
   }
 
+  /**
+   * Gets the link to the provider's logo.
+   * @return the provider logo link
+   */
+  public String getLogoLink() {
+    return logoLink;
+  }
+
+    /**
+     * Sets the link to the provider's logo.
+     * @param providerLogoLink the provider logo link to set
+     */
+  public void setLogoLink(String providerLogoLink) {
+    this.logoLink = providerLogoLink;
+  }
+
+    /**
+     * Gets the link to the provider's alternative logo.
+     * @return the provider alt logo link
+     */
+  public String getAltLogoLink() {
+    return altLogoLink;
+  }
+
+    /**
+     * Sets the link to the provider's alternative logo.
+     * @param providerAltLogoLink the provider alt logo link to set
+     */
+  public void setAltLogoLink(String providerAltLogoLink) {
+    this.altLogoLink = providerAltLogoLink;
+  }
 }
