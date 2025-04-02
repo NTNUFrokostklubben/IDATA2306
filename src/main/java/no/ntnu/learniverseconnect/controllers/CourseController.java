@@ -1,8 +1,12 @@
 package no.ntnu.learniverseconnect.controllers;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
+import no.ntnu.learniverseconnect.model.repos.KeywordsRepo;
+import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
+import no.ntnu.learniverseconnect.model.repos.UserCoursesRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +41,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class CourseController {
 
   private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
-  CourseRepo repo;
+  CourseRepo courseRepo;
+  OfferableCoursesRepo offerableCoursesRepo;
+  KeywordsRepo keywordsRepo;
+  UserCoursesRepo userCoursesRepo;
 
 
   /**
@@ -46,8 +53,11 @@ public class CourseController {
    * @param repo the course repo interface.
    */
   @Autowired
-  public CourseController(CourseRepo repo) {
-    this.repo = repo;
+  public CourseController(CourseRepo repo, OfferableCoursesRepo offerableCoursesRepo, KeywordsRepo keywordsRepo, UserCoursesRepo userCoursesRepo) {
+    this.courseRepo = repo;
+    this.offerableCoursesRepo = offerableCoursesRepo;
+    this.keywordsRepo = keywordsRepo;
+    this.userCoursesRepo = userCoursesRepo;
   }
 
   /**
@@ -58,7 +68,7 @@ public class CourseController {
   @GetMapping("/courses")
   public ResponseEntity<List<Course>> getCourses() {
     logger.info("Fetching all courses");
-    return ResponseEntity.status(200).body(repo.findAll());
+    return ResponseEntity.status(200).body(courseRepo.findAll());
   }
 
   /**
@@ -69,7 +79,7 @@ public class CourseController {
   @PostMapping("/course")
   public ResponseEntity<Course> addCourse(@RequestBody Course course) {
     logger.info("Adding course: {}", course.getId());
-    repo.save(course);
+    courseRepo.save(course);
     return ResponseEntity.status(HttpStatus.CREATED).body(course);
   }
 
@@ -82,7 +92,7 @@ public class CourseController {
   @GetMapping("/course/{id}")
   public ResponseEntity<Course> getCourse(@PathVariable int id) {
     logger.info("Fetching course with id: {}", id);
-    return ResponseEntity.status(200).body(repo.findById(id).orElseThrow(() ->
+    return ResponseEntity.status(200).body(courseRepo.findById(id).orElseThrow(() ->
         new EntityNotFoundException("Course not found with id: " + id)));
   }
 
@@ -95,7 +105,7 @@ public class CourseController {
   public ResponseEntity<Course> updateCourse(@RequestBody Course course) {
     logger.info("Updating course with id: {}", course.getId());
 
-    return ResponseEntity.status(200).body(repo.save(course));
+    return ResponseEntity.status(200).body(courseRepo.save(course));
   }
 
   /**
@@ -103,12 +113,16 @@ public class CourseController {
    *
    * @param id the id of the course to delete.
    */
+  @Transactional
   @DeleteMapping("/course/{id}")
   public ResponseEntity<String> deleteCourse(@PathVariable int id) {
     logger.info("Deleting course with id: {}", id);
-    Course course = repo.findById(id).orElseThrow(() ->
+    Course course = courseRepo.findById(id).orElseThrow(() ->
         new EntityNotFoundException("Course not found with id: " + id));
-    repo.delete(course);
+    offerableCoursesRepo.deleteAllByCourse_Id(course.getId());
+    keywordsRepo.deleteAllByCourse_Id(id);
+    userCoursesRepo.deleteAllByCourse_Id(id);
+    courseRepo.delete(course);
     return ResponseEntity.status(204).body("Course deleted successfully");
   }
 }

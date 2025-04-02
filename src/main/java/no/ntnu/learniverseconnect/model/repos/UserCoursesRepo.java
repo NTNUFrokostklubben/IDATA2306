@@ -10,4 +10,6 @@ public interface UserCoursesRepo extends JpaRepository<UserCourse, Integer> {
   List<UserCourse> getAllByUser_Id(Long userId);
 
   List<UserCourse> getAllByCourse_Id(long courseId);
+
+  void deleteAllByCourse_Id(long courseId);
 }

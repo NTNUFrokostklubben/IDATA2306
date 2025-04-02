@@ -11,4 +11,6 @@ public interface KeywordsRepo extends JpaRepository<Keywords, Integer> {
   Keywords getKeywordsById(long id);
 
   List<Keywords> getAllByCourse_Id(long courseId);
+
+  void deleteAllByCourse_Id(long courseId);
 }
