@@ -92,8 +92,13 @@ public class CourseController {
   @GetMapping("/course/{id}")
   public ResponseEntity<Course> getCourse(@PathVariable int id) {
     logger.info("Fetching course with id: {}", id);
-    return ResponseEntity.status(200).body(courseRepo.findById(id).orElseThrow(() ->
-        new EntityNotFoundException("Course not found with id: " + id)));
+    Course course = courseRepo.getCoursesById(id);
+    if (course == null) {
+      logger.warn("Course with id {} not found", id);
+      return ResponseEntity.status(404).body(null);
+    } else {
+      return ResponseEntity.status(200).body(course);
+    }
   }
 
   /**
@@ -117,8 +122,11 @@ public class CourseController {
   @DeleteMapping("/course/{id}")
   public ResponseEntity<String> deleteCourse(@PathVariable int id) {
     logger.info("Deleting course with id: {}", id);
-    Course course = courseRepo.findById(id).orElseThrow(() ->
-        new EntityNotFoundException("Course not found with id: " + id));
+    Course course = courseRepo.getCoursesById(id);
+    if (course == null) {
+        logger.warn("Course with id {} not found", id);
+        return ResponseEntity.status(404).body("Course with id " + id + " not found");
+    }
     offerableCoursesRepo.deleteAllByCourse_Id(course.getId());
     keywordsRepo.deleteAllByCourse_Id(id);
     userCoursesRepo.deleteAllByCourse_Id(id);

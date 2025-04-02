@@ -53,7 +53,7 @@ public class UserCoursesController {
    * @param cid the course id for the course to find the average on.
    * @return the average.
    */
-  @GetMapping("/getAvg/{cid}")
+  @GetMapping("/user-courses/average-rating/{cid}")
   public ResponseEntity<Float> getAverageByCourse(@PathVariable long cid){
      List<UserCourse> courses  = userCoursesRepo.getAllByCourse_Id(cid);
      float average = 0;

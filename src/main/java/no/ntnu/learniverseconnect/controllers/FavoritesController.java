@@ -82,10 +82,17 @@ public class FavoritesController {
   @PostMapping("/addFavorite/{uid}/{cid}")
   public ResponseEntity<Void> addFavorite(@PathVariable long uid, @PathVariable long cid){
     logger.info("Adding favorite for user with id: {} and course with id: {}", uid, cid);
+    int status = 200;
     User user = userRepo.getUsersById(uid);
     Course course = courseRepo.getCoursesById(cid);
     Favorite favorite = new Favorite(user, course);
-    repo.save(favorite);
-    return ResponseEntity.status(200).body(null);
+    if (repo.existsByCourse_IdAndUser_Id(cid, uid)) {
+      status = 400;
+    } else if ( user == null || course == null) {
+        status = 404;
+        } else {
+        repo.save(favorite);
+    }
+    return ResponseEntity.status(status).body(null);
   }
 }
