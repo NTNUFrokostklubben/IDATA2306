@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CourseProviderRepo extends JpaRepository<CourseProvider, Integer> {
+  CourseProvider getCourseProviderById(long id);
 }

@@ -32,6 +32,9 @@ public class KeywordsController {
   public ResponseEntity<List<Keywords>> getKeyword(@PathVariable long cid) {
     logger.info("Fetching keywords with CourseId: {}", cid);
     List<Keywords> keyword = keywordsRepo.getAllByCourse_Id(cid);
+    if (keyword.isEmpty()) {
+      return ResponseEntity.status(404).body(null);
+    }
     return ResponseEntity.status(200).body(keyword);
   }
 }

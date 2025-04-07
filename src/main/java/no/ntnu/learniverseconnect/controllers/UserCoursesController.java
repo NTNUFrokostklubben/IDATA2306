@@ -1,15 +1,13 @@
 package no.ntnu.learniverseconnect.controllers;
 
 import java.util.List;
-import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.entities.UserCourse;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.UserCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
-//@CrossOrigin(origins = "http://localhost:3000")
 public class UserCoursesController {
 
   UserCoursesRepo userCoursesRepo;
@@ -38,7 +35,7 @@ public class UserCoursesController {
    * @param id the user to get by
    * @return the list of courses a user is associated with.
    */
-  @GetMapping("/user-courses/{id}")
+  @GetMapping("/userCourses/{id}")
   public ResponseEntity<List<UserCourse>> getAll(@PathVariable long id){
     List<UserCourse> userCourseList = userCoursesRepo.getAllByUser_Id(id);
     int status = 404;
@@ -53,9 +50,12 @@ public class UserCoursesController {
    * @param cid the course id for the course to find the average on.
    * @return the average.
    */
-  @GetMapping("/user-courses/average-rating/{cid}")
+  @GetMapping("/userCourses/averageRating/{cid}")
   public ResponseEntity<Float> getAverageByCourse(@PathVariable long cid){
      List<UserCourse> courses  = userCoursesRepo.getAllByCourse_Id(cid);
+        if(courses.isEmpty()){
+        return ResponseEntity.status(404).body(null);
+        }
      float average = 0;
      int status = 0;
      for(UserCourse course : courses){

@@ -47,7 +47,10 @@ public class UserController {
 
   @PostMapping("/user")
   public ResponseEntity<String> addUser(@RequestBody User user){
-    //TODO add gard
+    if (user == null) {
+      logger.warn("User object is null");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User object is null");
+    }
 
     this.repo.save(user);
     if (repo.existsById(getUserId(user))){

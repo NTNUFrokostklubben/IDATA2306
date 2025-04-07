@@ -58,20 +58,28 @@ public class CourseProviderController {
    * @return the course provider with the given id.
    */
   @GetMapping("/provider/{id}")
-    public ResponseEntity<CourseProvider> getProvider(@PathVariable int id) {
+    public ResponseEntity<CourseProvider> getProvider(@PathVariable long id) {
         logger.info("Fetching course provider with id: {}", id);
-        return ResponseEntity.status(200).body(repo.findById(id).orElseThrow(() ->
-    new EntityNotFoundException("Course not found with id: " + id)));
+        int status = 200;
+        CourseProvider provider = repo.getCourseProviderById(id);
+        if (provider == null) {
+            logger.error("Course provider with id {} not found", id);
+            status = 404;
+        }
+        return ResponseEntity.status(status).body(provider);
     };
 
     /**
      * Adds a course provider to the database.
      *
      * @param provider the course provider to add.
-     * @return
+     * @return a ResponseEntity with the status of the operation.
      */
   @PostMapping("/provider")
     public ResponseEntity<CourseProvider> addProvider(@RequestBody CourseProvider provider) {
+    if (provider == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
         logger.info("Adding new course provider with id: {}", provider.getId());
         repo.save(provider);
     return ResponseEntity.status(HttpStatus.CREATED).body(provider);
