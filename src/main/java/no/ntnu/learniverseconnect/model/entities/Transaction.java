@@ -1,6 +1,8 @@
 package no.ntnu.learniverseconnect.model.entities;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import java.sql.Date;
@@ -20,13 +22,14 @@ import java.sql.Date;
 @Entity
 public class Transaction {
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
   @ManyToOne
   private User user;
   @ManyToOne
   private OfferableCourses offerableCourses;
   private Date date;
-    private float pricePaid;
+  private float pricePaid;
 
   /**
    * Gets the user associated with this transaction.
