@@ -12,4 +12,6 @@ public interface OfferableCoursesRepo extends JpaRepository<OfferableCourses, In
   List<OfferableCourses> getAllByProvider_Id(long pid);
 
   void deleteAllByCourse_Id(long courseId);
+
+  OfferableCourses getOfferableCoursesById(long id);
 }
