@@ -50,6 +50,33 @@ public class OfferableCoursesController {
     }
   }
 
+
+  /**
+   */
+  @GetMapping("/offerableCourses/coursePrice/{cid}")
+  public ResponseEntity<Float> getOfferablePriceByCourseId(@PathVariable long cid) {
+    List<OfferableCourses> list = repo.getAllByCourse_Id(cid);
+
+    float lowestPrice;
+    if (list.isEmpty()){
+      return ResponseEntity.status(404).body(null);
+    } else {
+      lowestPrice = list.get(0).getPrice();
+    }
+
+    for (OfferableCourses oc : list) {
+      if (lowestPrice > oc.getPrice()){
+        lowestPrice = oc.getPrice();
+      }
+      if (lowestPrice > oc.getDiscount()) {
+        lowestPrice = oc.getDiscount();
+      }
+    }
+    return ResponseEntity.status(200).body(lowestPrice);
+
+
+  }
+
   /**
    * Returns a list of offerable courses for a given provider id.
    *
