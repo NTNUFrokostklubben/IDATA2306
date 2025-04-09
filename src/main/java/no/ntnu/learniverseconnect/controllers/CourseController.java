@@ -72,6 +72,18 @@ public class CourseController {
   }
 
   /**
+   * Returns the amount of courses in the database.
+   *
+   * @return the amount of courses in the database.
+   */
+  @GetMapping("/courses/total")
+  public ResponseEntity<Integer> getCourseTotal() {
+    logger.info("Fetching total number of courses");
+    List<Course> totalCourses = courseRepo.findAll();
+    return ResponseEntity.status(200).body(totalCourses.size());
+  }
+
+  /**
    * Adds a course to the database.
    *
    * @param course the course to add.

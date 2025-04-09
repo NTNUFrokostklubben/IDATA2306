@@ -162,6 +162,39 @@ public class TransactionController {
     } else {
       return ResponseEntity.status(200).body(statsList);
     }
-
   }
+
+  /**
+   * Find the total revenue
+   *
+   * @return the total revenue
+   */
+  @GetMapping("/transaction/totalRevenue")
+  public ResponseEntity<Float> getTotalRevenue(){
+    List<Transaction> transactions = repo.findAll();
+    float revenueSum = 0;
+    for (Transaction transaction : transactions){
+      revenueSum+=transaction.getPricePaid();
+    }
+    return ResponseEntity.status(200).body(revenueSum);
+  }
+
+  /**
+   * Find the average revenue per course
+   *
+   * @Return the average revenue per course
+   */
+  @GetMapping("/transaction/averageRevenuePerCourse")
+  public ResponseEntity<Float> getAvgRevenuePerCourse(){
+    List<Course> courses = courseRepo.findAll();
+    int totalCourses = courses.size();
+    List<Transaction> transactions = repo.findAll();
+    float revenueSum = 0;
+    for (Transaction transaction : transactions){
+      revenueSum+=transaction.getPricePaid();
+    }
+    Float avgRevenue = revenueSum/totalCourses;
+    return ResponseEntity.status(200).body(avgRevenue);
+  }
+
 }
