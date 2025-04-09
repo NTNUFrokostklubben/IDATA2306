@@ -1,16 +1,15 @@
 package no.ntnu.learniverseconnect.model.repos;
 
 import java.util.List;
-import no.ntnu.learniverseconnect.model.entities.Keywords;
+import no.ntnu.learniverseconnect.model.entities.UserCourse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface KeywordsRepo extends JpaRepository<Keywords, Integer> {
+public interface UserCoursesRepo extends JpaRepository<UserCourse, Integer> {
+  List<UserCourse> getAllByUser_Id(Long userId);
 
-  Keywords getKeywordsById(long id);
-
-  List<Keywords> getAllByCourse_Id(long courseId);
+  List<UserCourse> getAllByCourse_Id(long courseId);
 
   void deleteAllByCourse_Id(long courseId);
 }

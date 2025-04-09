@@ -2,6 +2,7 @@ package no.ntnu.learniverseconnect.model.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import java.io.Serializable;
@@ -14,7 +15,7 @@ import java.sql.Date;
 @Entity
 public class OfferableCourses implements Serializable {
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
   @ManyToOne
   private Course course;
@@ -28,6 +29,7 @@ public class OfferableCourses implements Serializable {
 
   /**
    * Gets the unique ID of the offerable course.
+   *
    * @return the offerable course ID
    */
   public long getId() {
@@ -36,6 +38,7 @@ public class OfferableCourses implements Serializable {
 
   /**
    * Gets the course associated with the offerable course.
+   *
    * @return the course
    */
   public Course getCourse() {
@@ -44,10 +47,11 @@ public class OfferableCourses implements Serializable {
 
   /**
    * Sets the course associated with the offerable course.
+   *
    * @param course the course to set
    */
   public void setCourse(Course course) {
-    if (course == null){
+    if (course == null) {
       throw new IllegalArgumentException("Course cannot be null");
     }
     this.course = course;
@@ -55,6 +59,7 @@ public class OfferableCourses implements Serializable {
 
   /**
    * Gets the provider associated with the offerable course.
+   *
    * @return the provider
    */
   public CourseProvider getProvider() {
@@ -64,10 +69,11 @@ public class OfferableCourses implements Serializable {
 
   /**
    * Sets the provider associated with the offerable course.
+   *
    * @param provider the provider to set
    */
   public void setProvider(CourseProvider provider) {
-    if (provider == null){
+    if (provider == null) {
       throw new IllegalArgumentException("Course provider cannot be null");
     }
     this.provider = provider;
@@ -75,6 +81,7 @@ public class OfferableCourses implements Serializable {
 
   /**
    * Gets the date of the offerable course.
+   *
    * @return the date
    */
   public Date getDate() {
@@ -83,10 +90,11 @@ public class OfferableCourses implements Serializable {
 
   /**
    * Sets the date of the offerable course.
+   *
    * @param date the date to set
    */
   public void setDate(Date date) {
-    if (date == null){
+    if (date == null) {
       throw new IllegalArgumentException("date cannot be null");
     }
     this.date = date;
@@ -94,6 +102,7 @@ public class OfferableCourses implements Serializable {
 
   /**
    * Gets the price of the offerable course.
+   *
    * @return the price
    */
   public float getPrice() {
@@ -102,10 +111,11 @@ public class OfferableCourses implements Serializable {
 
   /**
    * Sets the price of the offerable course.
+   *
    * @param price the price to set
    */
   public void setPrice(float price) {
-    if (price < 0){
+    if (price < 0) {
       throw new IllegalArgumentException("Price cannot be negative");
     }
     this.price = price;
@@ -113,6 +123,7 @@ public class OfferableCourses implements Serializable {
 
   /**
    * Gets the discount of the offerable course.
+   *
    * @return the discount
    */
   public float getDiscount() {
@@ -121,10 +132,11 @@ public class OfferableCourses implements Serializable {
 
   /**
    * Sets the discount of the offerable course.
+   *
    * @param discount the discount to set
    */
   public void setDiscount(float discount) {
-    if(discount > 1.00 || discount < 0.00){
+    if (discount > 1.00 || discount < 0.00) {
       throw new IllegalArgumentException("discount must be between 1 and 0");
     }
     this.discount = discount;
@@ -132,6 +144,7 @@ public class OfferableCourses implements Serializable {
 
   /**
    * Gets the visibility status of the offerable course.
+   *
    * @return the visibility status
    */
   public boolean isVisible() {
@@ -140,6 +153,7 @@ public class OfferableCourses implements Serializable {
 
   /**
    * Sets the visibility status of the offerable course.
+   *
    * @param visibility the visibility status to set
    */
   public void setVisibility(boolean visibility) {

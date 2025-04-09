@@ -2,6 +2,7 @@ package no.ntnu.learniverseconnect.model.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 /**
@@ -11,12 +12,13 @@ import jakarta.persistence.Id;
 public class User {
 
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String name;
   private String email;
   private String passwordHash;
   private String role;
+  private String profilePicture;
   //TODO: Change to enum
 
 
@@ -75,7 +77,7 @@ public class User {
    * @param passwordHash the password hash to set
    */
   public void setPasswordHash(String passwordHash) {
-    if (passwordHash == null || passwordHash.isEmpty()){
+    if (passwordHash == null || passwordHash.isEmpty()) {
       throw new IllegalArgumentException("password hash cannot be null or empty");
     }
     this.passwordHash = passwordHash;
@@ -99,4 +101,21 @@ public class User {
     this.role = role;
   }
 
+  /**
+   * Gets the profilePicture URL of the user.
+   *
+   * @return the URL to the profile picture
+   */
+  public String getProfilePicture() {
+    return profilePicture;
+  }
+
+  /**
+   * Sets the profilePicture URL  of the user.
+   *
+   * @param profilePicture the URL to set
+   */
+  public void setProfilePicture(String profilePicture) {
+    this.profilePicture = profilePicture;
+  }
 }
