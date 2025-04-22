@@ -33,6 +33,22 @@ public class OfferableCoursesController {
     return ResponseEntity.status(200).body(repo.findAll());
   }
 
+  /**
+   * Returns an offerable course with the given id.
+   *
+   * @param id id of the offerable course to return.
+   * @return offerable course with the given id.
+   */
+  @GetMapping("/offerableCourses/{id}")
+  public ResponseEntity<OfferableCourses> getOfferableCourseById(@PathVariable int id) {
+    OfferableCourses offerableCourse = repo.findById(id).orElse(null);
+    if (offerableCourse != null) {
+      return ResponseEntity.status(200).body(offerableCourse);
+    } else {
+      return ResponseEntity.status(404).body(null);
+    }
+  }
+
 
   /**
    * Returns a list of offerable courses for a given course id.
@@ -76,5 +92,7 @@ public class OfferableCoursesController {
     repo.save(offerableCourse);
     return ResponseEntity.status(201).body(offerableCourse);
   }
+
+
 
 }
