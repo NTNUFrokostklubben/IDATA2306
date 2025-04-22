@@ -4,6 +4,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import java.sql.Timestamp;
 
 /**
  * Represents a user in the system with a unique id.
@@ -20,10 +24,32 @@ public class User {
   private String role;
   private String profilePicture;
   //TODO: Change to enum
+  @Temporal(TemporalType.TIMESTAMP)
+  private Timestamp userCreated;
 
 
+  /**
+   * Sets the current timestamp before persisting the entity.
+   */
+  @PrePersist
+  protected void onCreate() {
+    this.userCreated = new Timestamp(System.currentTimeMillis());
+  }
+
+  /**
+   * Gets the id of the user
+   *
+   * @return the id of the user
+   */
   public Long getId() {
     return id;
+  }
+
+  /**
+   * Gets the timestamp of when the user was created
+   */
+  public Timestamp getUserCreated(){
+    return this.userCreated;
   }
 
   /**
