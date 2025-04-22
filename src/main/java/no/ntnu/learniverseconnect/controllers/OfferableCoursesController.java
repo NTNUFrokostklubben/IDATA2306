@@ -94,22 +94,6 @@ public class OfferableCoursesController {
   }
 
   /**
-   * Returns a offerable course for a given id.
-   *
-   * @param cid Course id.
-   * @return Offerable course for the given course id.
-   */
-  @GetMapping("/offerableCourses/{cid}")
-  public ResponseEntity<OfferableCourses> getOfferableCoursesById(@PathVariable long cid) {
-    OfferableCourses offerable = repo.getOfferableCoursesById(cid);
-    if (offerable != null) {
-      return ResponseEntity.status(200).body(offerable);
-    } else {
-      return ResponseEntity.status(404).body(null);
-    }
-  }
-
-  /**
    * Returns a list of offerable courses for a given provider id.
    *
    * @param pid Provider id.
