@@ -137,8 +137,16 @@ public class TransactionController {
         return ResponseEntity.status(201).body(transaction);
     }
 
+    /**
+     * Adds a new transaction based on offerable course ID and user ID.
+     *
+     * @param oId the ID of the offerable course.
+     * @param uId the ID of the user.
+     * @return the added transaction.
+     */
+
     @PostMapping("/transaction/offerId/{oId}/userid/{uId}")
-  public ResponseEntity<Transaction> addTransaction(@PathVariable long oId, @PathVariable long uId){
+  public ResponseEntity<String> addTransaction(@PathVariable long oId, @PathVariable long uId){
     Transaction transaction = new Transaction();
       OfferableCourses offerableCourse = offerableCoursesRepo.getOfferableCoursesById(oId);
       User user =  userRepo.getUsersById((uId));
@@ -150,6 +158,6 @@ public class TransactionController {
     transaction.setDate(new Date(System.currentTimeMillis()));
     transaction.setPricePaid(offerableCourse.getPrice()* (1- offerableCourse.getDiscount()));
     repo.save(transaction);
-    return ResponseEntity.status(201).body(transaction);
+    return ResponseEntity.status(201).body("ok");
   }
 }
