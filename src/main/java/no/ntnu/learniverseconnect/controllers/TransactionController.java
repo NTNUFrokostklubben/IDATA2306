@@ -1,10 +1,16 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import java.sql.Date;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Course;
+import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
 import no.ntnu.learniverseconnect.model.entities.Transaction;
+import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
+import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.TransactionRepo;
+import no.ntnu.learniverseconnect.model.repos.UserCoursesRepo;
+import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,12 +25,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class TransactionController {
 
   private final TransactionRepo repo;
-  private CourseRepo courseRepo;
+  private final CourseRepo courseRepo;
+  private final OfferableCoursesRepo offerableCoursesRepo;
+  private final UserRepo userRepo;
 
   @Autowired
-  public TransactionController(TransactionRepo transactionRepo, CourseRepo courseRepo) {
+  public TransactionController(TransactionRepo transactionRepo, CourseRepo courseRepo,
+      OfferableCoursesRepo offerableCoursesRepo, UserRepo userRepo) {
     this.repo = transactionRepo;
     this.courseRepo = courseRepo;
+    this.offerableCoursesRepo = offerableCoursesRepo;
+    this.userRepo = userRepo;
   }
 
   /**
@@ -125,4 +136,20 @@ public class TransactionController {
         repo.save(transaction);
         return ResponseEntity.status(201).body(transaction);
     }
+
+    @PostMapping("/transaction/offerId/{oId}/userid/{uId}")
+  public ResponseEntity<Transaction> addTransaction(@PathVariable long oId, @PathVariable long uId){
+    Transaction transaction = new Transaction();
+      OfferableCourses offerableCourse = offerableCoursesRepo.getOfferableCoursesById(oId);
+      User user =  userRepo.getUsersById((uId));
+      if (offerableCourse == null || user == null) {
+        return ResponseEntity.status(404).body(null);
+      }
+    transaction.setOfferableCourses(offerableCourse);
+    transaction.setUser(user);
+    transaction.setDate(new Date(System.currentTimeMillis()));
+    transaction.setPricePaid(offerableCourse.getPrice()* (1- offerableCourse.getDiscount()));
+    repo.save(transaction);
+    return ResponseEntity.status(201).body(transaction);
+  }
 }
