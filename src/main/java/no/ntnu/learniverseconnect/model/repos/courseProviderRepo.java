@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CourseProviderRepo extends JpaRepository<CourseProvider, Integer> {
+public interface courseProviderRepo extends JpaRepository<CourseProvider, Integer> {
   CourseProvider getCourseProviderById(long id);
 }

@@ -2,8 +2,6 @@ package no.ntnu.learniverseconnect.controllers;
 
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
-import no.ntnu.learniverseconnect.model.repos.CourseProviderRepo;
-import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

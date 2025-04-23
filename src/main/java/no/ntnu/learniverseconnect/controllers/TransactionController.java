@@ -6,7 +6,6 @@ import no.ntnu.learniverseconnect.model.dto.CourseProviderStatsDto;
 import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.entities.Transaction;
 import no.ntnu.learniverseconnect.model.entities.CourseProvider;
-import no.ntnu.learniverseconnect.model.repos.CourseProviderRepo;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.TransactionRepo;
@@ -27,12 +26,12 @@ public class TransactionController {
   private final TransactionRepo repo;
   private CourseRepo courseRepo;
   private OfferableCoursesRepo offerableCoursesRepo;
-  private CourseProviderRepo courseProviderRepo;
+  private no.ntnu.learniverseconnect.model.repos.courseProviderRepo courseProviderRepo;
 
   @Autowired
   public TransactionController(TransactionRepo transactionRepo, CourseRepo courseRepo,
                                OfferableCoursesRepo offerableCoursesRepo,
-                               CourseProviderRepo courseProviderRepo) {
+                               no.ntnu.learniverseconnect.model.repos.courseProviderRepo courseProviderRepo) {
     this.repo = transactionRepo;
     this.courseRepo = courseRepo;
     this.offerableCoursesRepo = offerableCoursesRepo;
