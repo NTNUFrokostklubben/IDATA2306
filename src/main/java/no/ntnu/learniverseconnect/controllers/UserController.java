@@ -1,6 +1,9 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
+import no.ntnu.learniverseconnect.model.entities.Transaction;
 import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import org.slf4j.Logger;
@@ -55,6 +58,24 @@ public class UserController {
   public ResponseEntity<Iterable<User>> getAllUsers(){
     logger.info("Fetching all users");
     return ResponseEntity.status(200).body(repo.findAll());
+  }
+
+  /**
+   * Get the total users that signed up the last 30 days
+   *
+   * @return the amount of users for the last 30 days
+   */
+  @GetMapping("/users/newUsers")
+  public ResponseEntity<Float> getNewUsers(){
+    List<User> users = repo.findAll();
+    float userSum = 0;
+    for (User user : users){
+      if (user.getUserCreated().after(
+          Timestamp.valueOf(LocalDateTime.now().minusDays(30)))){
+        userSum++;
+      }
+    }
+    return ResponseEntity.status(200).body(userSum);
   }
 
   /**
