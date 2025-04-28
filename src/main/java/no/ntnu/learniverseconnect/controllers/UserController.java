@@ -31,8 +31,14 @@ public class UserController {
     this.repo = repo;
   }
 
+  /**
+   * Get a user by id
+   *
+   * @param id the id of the user
+   * @return the user with the given id
+   */
   @GetMapping("/user/{id}")
-  public ResponseEntity<User> getUser(@PathVariable long id){
+  public ResponseEntity<User> getUserById(@PathVariable long id){
     User user = repo.getUsersById(id);
     if(user == null){
       logger.warn("User with id {} not found", id);
@@ -42,6 +48,24 @@ public class UserController {
       return ResponseEntity.status(200).body(user);
     }
   }
+
+//  /**
+//   * Get the user that matches the username.
+//   *
+//   * @param name the username of the user to fetch
+//   * @return the user with that username
+//   */
+//  @GetMapping("/user/{name}")
+//  public ResponseEntity<User> getUserByUsername(@PathVariable String name){
+//    User user = repo.getUsersByName(name);
+//    if(user == null){
+//      logger.warn("User with username {} not found", name);
+//      return ResponseEntity.status(404).body(null);
+//    }else{
+//      logger.info("Fetching user with name: {}", name);
+//      return ResponseEntity.status(200).body(user);
+//    }
+//  }
 
   /**
    * Get the total count of users

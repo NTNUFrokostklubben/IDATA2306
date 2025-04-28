@@ -77,12 +77,22 @@ public class UserCoursesController {
      return ResponseEntity.status(status).body(average/courses.size());
   }
 
+  /**
+   * Get all reviews from the database.
+   *
+   * @return all reviews
+   */
   @GetMapping("/userCourses")
   public ResponseEntity<Iterable<UserCourse>> getAllReviews(){
     logger.info("Fetching all reviews");
     return ResponseEntity.status(200).body(repo.findAll());
   }
 
+  /**
+   * Get the last ten reviews from the database.
+   *
+   * @return the last ten reviews
+   */
   @GetMapping("/userCourses/lastReviews")
   public ResponseEntity<Iterable<UserCourse>> getLastReviews(){
     logger.info("Fetching the ten last reviews");
@@ -92,7 +102,6 @@ public class UserCoursesController {
     lastReviews.addAll(userCourseList.subList(0, Math.min(10, userCourseList.size())));
     return ResponseEntity.status(200).body(lastReviews);
   }
-
 
 
 
