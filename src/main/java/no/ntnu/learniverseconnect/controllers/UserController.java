@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import org.slf4j.Logger;
@@ -39,12 +40,29 @@ public class UserController {
     }
   }
 
+  /**
+   * Get the total count of users
+   *
+   * @return the total count of users
+   */
+  @GetMapping("/users/total")
+  public ResponseEntity<Integer> getUserTotal(){
+    List<User> totalUsers = repo.findAll();
+    return ResponseEntity.status(200).body(totalUsers.size());
+  }
+
   @GetMapping("/users")
   public ResponseEntity<Iterable<User>> getAllUsers(){
     logger.info("Fetching all users");
     return ResponseEntity.status(200).body(repo.findAll());
   }
 
+  /**
+   * Adds a new user to the database.
+   *
+   * @param user the user to add
+   * @return a response entity with the status of the operation
+   */
   @PostMapping("/user")
   public ResponseEntity<String> addUser(@RequestBody User user){
     if (user == null) {
@@ -53,13 +71,19 @@ public class UserController {
     }
 
     this.repo.save(user);
-    if (repo.existsById(getUserId(user))){
+    if (repo.existsById(Math.toIntExact(user.getId()))){
       return ResponseEntity.status(HttpStatus.CREATED).body("User with id " + user.getId() + " saved");
     } else {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
 
+  /**
+   * Deletes a user from the database.
+   *
+   * @param id the id of the user to delete
+   * @return a response entity with the status of the operation
+   */
   @DeleteMapping("/user/{id}")
   public ResponseEntity<String> deleteUser(@PathVariable int id){
     if(repo.existsById(id)){
@@ -70,9 +94,5 @@ public class UserController {
       logger.warn("User with id {} not found", id);
       return ResponseEntity.status(404).body("User with id " + id + " not found");
     }
-  }
-
-  private int getUserId(User user){
-    return Math.toIntExact(user.getId());
   }
 }

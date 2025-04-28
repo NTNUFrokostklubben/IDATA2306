@@ -1,11 +1,15 @@
 package no.ntnu.learniverseconnect.controllers;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
+import no.ntnu.learniverseconnect.model.dto.CourseProviderStatsDto;
 import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
 import no.ntnu.learniverseconnect.model.entities.Transaction;
 import no.ntnu.learniverseconnect.model.entities.User;
+import no.ntnu.learniverseconnect.model.entities.CourseProvider;
+import no.ntnu.learniverseconnect.model.repos.CourseProviderRepo;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.TransactionRepo;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 /**
  * Controller for handling transaction-related requests.
  */
@@ -28,14 +33,17 @@ public class TransactionController {
   private final CourseRepo courseRepo;
   private final OfferableCoursesRepo offerableCoursesRepo;
   private final UserRepo userRepo;
+  private final CourseProviderRepo courseProviderRepo;
 
   @Autowired
   public TransactionController(TransactionRepo transactionRepo, CourseRepo courseRepo,
-      OfferableCoursesRepo offerableCoursesRepo, UserRepo userRepo) {
+      OfferableCoursesRepo offerableCoursesRepo, UserRepo userRepo, CourseProviderRepo courseProviderRepo ) {
     this.repo = transactionRepo;
     this.courseRepo = courseRepo;
     this.offerableCoursesRepo = offerableCoursesRepo;
     this.userRepo = userRepo;
+    this.courseProviderRepo = courseProviderRepo;
+
   }
 
   /**
@@ -160,4 +168,63 @@ public class TransactionController {
     repo.save(transaction);
     return ResponseEntity.status(201).body("ok");
   }
+
+  /**
+   * Finds the revenue for each provider
+   *
+   * @return the revenue for each provider
+   */
+  @GetMapping("/transaction/providersStats")
+  public ResponseEntity<List<CourseProviderStatsDto>> getProviderStats(){
+    List<CourseProviderStatsDto> statsList = new ArrayList<>();
+    List<CourseProvider> providers = courseProviderRepo.findAll();
+    for (CourseProvider provider : providers ){
+      List<Transaction> transactions = repo.findAllByOfferableCourses_Provider(provider);
+      float revenueSum = 0;
+      for (Transaction transaction : transactions){
+        revenueSum+=transaction.getPricePaid();
+      }
+      CourseProviderStatsDto providerStats = new CourseProviderStatsDto(provider.getId(), provider.getName(), revenueSum);
+      statsList.add(providerStats);
+    }
+    if (statsList.isEmpty()){
+      return ResponseEntity.status(404).body(null);
+    } else {
+      return ResponseEntity.status(200).body(statsList);
+    }
+  }
+
+  /**
+   * Find the total revenue
+   *
+   * @return the total revenue
+   */
+  @GetMapping("/transaction/totalRevenue")
+  public ResponseEntity<Float> getTotalRevenue(){
+    List<Transaction> transactions = repo.findAll();
+    float revenueSum = 0;
+    for (Transaction transaction : transactions){
+      revenueSum+=transaction.getPricePaid();
+    }
+    return ResponseEntity.status(200).body(revenueSum);
+  }
+
+  /**
+   * Find the average revenue per course
+   *
+   * @Return the average revenue per course
+   */
+  @GetMapping("/transaction/averageRevenuePerCourse")
+  public ResponseEntity<Float> getAvgRevenuePerCourse(){
+    List<Course> courses = courseRepo.findAll();
+    int totalCourses = courses.size();
+    List<Transaction> transactions = repo.findAll();
+    float revenueSum = 0;
+    for (Transaction transaction : transactions){
+      revenueSum+=transaction.getPricePaid();
+    }
+    Float avgRevenue = revenueSum/totalCourses;
+    return ResponseEntity.status(200).body(avgRevenue);
+  }
+
 }
