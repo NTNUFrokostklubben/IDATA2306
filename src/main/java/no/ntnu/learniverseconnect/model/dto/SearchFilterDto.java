@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import java.util.List;
 
@@ -71,29 +72,33 @@ public class SearchFilterDto {
 
   // Inner classes for nested JSON objects
   public static class CourseSizeRange {
-    private Float minCredits;
-    private Float maxCredits;
+    @JsonProperty("min-credits")
+    private float minCredits;
+    @JsonProperty("max-credits")
+    private float maxCredits;
 
     // Getters and Setters
-    public Float getMinCredits() {
+    public float getMinCredits() {
       return minCredits;
     }
 
-    public void setMinCredits(Float minCredits) {
+    public void setMinCredits(float minCredits) {
       this.minCredits = minCredits;
     }
 
-    public Float getMaxCredits() {
+    public float getMaxCredits() {
       return maxCredits;
     }
 
-    public void setMaxCredits(Float maxCredits) {
+    public void setMaxCredits(float maxCredits) {
       this.maxCredits = maxCredits;
     }
   }
 
   public static class RatingRange {
+    @JsonProperty("min-rating")
     private Float minRating;
+    @JsonProperty("max-rating")
     private Float maxRating;
 
     // Getters and Setters
@@ -115,7 +120,9 @@ public class SearchFilterDto {
   }
 
   public static class PriceRange {
+    @JsonProperty("min-price")
     private Float minPrice;
+    @JsonProperty("max-price")
     private Float maxPrice;
 
     // Getters and Setters

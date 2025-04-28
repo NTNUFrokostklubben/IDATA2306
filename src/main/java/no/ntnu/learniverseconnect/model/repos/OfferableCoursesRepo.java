@@ -5,13 +5,16 @@ import java.util.List;
 import no.ntnu.learniverseconnect.model.dto.CourseWithMinPriceDto;
 import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface OfferableCoursesRepo extends JpaRepository<OfferableCourses, Integer> {
+public interface OfferableCoursesRepo extends JpaRepository<OfferableCourses, Integer>,
+    JpaSpecificationExecutor<OfferableCourses> {
   List<OfferableCourses> getAllByCourse_Id(long cid);
 
   List<OfferableCourses> getAllByProvider_Id(long pid);
@@ -19,6 +22,7 @@ public interface OfferableCoursesRepo extends JpaRepository<OfferableCourses, In
   void deleteAllByCourse_Id(long courseId);
 
   OfferableCourses getOfferableCoursesById(long id);
+
 
   @Query("""
       SELECT NEW no.ntnu.learniverseconnect.model.dto.CourseWithMinPriceDto(
