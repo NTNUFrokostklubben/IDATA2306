@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.sql.Date;
 
 /**
  * Represents the ratings made by a user, associated with a course
@@ -19,6 +20,7 @@ public class UserCourse {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private int rating;
+  private Date date;
   @Column(length = 2048)
   private String comment;
   @ManyToOne
@@ -28,6 +30,9 @@ public class UserCourse {
   @JoinColumn(nullable = false)
   private User user;
 
+  public UserCourse() {
+    this.date = new Date(System.currentTimeMillis());
+  }
   /**
    * Gets the unique ID of the rating.
    *
@@ -72,6 +77,16 @@ public class UserCourse {
   public void setComment(String comment) {
     this.comment = comment;
   }
+
+
+    /**
+     * Gets the date when the rating was made.
+     *
+     * @return the date
+     */
+    public Date getDate() {
+        return date;
+    }
 
   /**
    * Gets the course associated with the rating.
