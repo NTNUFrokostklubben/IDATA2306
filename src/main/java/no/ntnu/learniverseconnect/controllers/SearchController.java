@@ -65,15 +65,29 @@ public class SearchController {
 
 
 
-    courses = offerableCoursesController.findVisibleCoursesWithMinPriceWhereClosestDateBetweenContainingCategoryContainingDifficultyLevelWithinCreditsWithinPriceRange(
+//    courses = offerableCoursesController.findVisibleCoursesWithMinPriceWhereClosestDateBetweenContainingCategoryContainingDifficultyLevelWithinCreditsWithinPriceRange(
+//        searchFilterDto.getSearchValue(),
+//        searchFilterDto.getDateRange().getStartDate(),
+//        searchFilterDto.getDateRange().getEndDate(),
+//        searchFilterDto.getCategories(),
+//        searchFilterDto.getDiffLevels(),
+//        searchFilterDto.getCourseSizeRange().getMinCredits(),
+//        searchFilterDto.getCourseSizeRange().getMaxCredits()
+//        );
+
+    courses = offerableCoursesController.superFilter(
         searchFilterDto.getSearchValue(),
         searchFilterDto.getDateRange().getStartDate(),
         searchFilterDto.getDateRange().getEndDate(),
         searchFilterDto.getCategories(),
         searchFilterDto.getDiffLevels(),
+        searchFilterDto.getRatingRange().getMinRating(),
+        searchFilterDto.getRatingRange().getMaxRating(),
         searchFilterDto.getCourseSizeRange().getMinCredits(),
-        searchFilterDto.getCourseSizeRange().getMaxCredits()
-        );
+        searchFilterDto.getCourseSizeRange().getMaxCredits(),
+        searchFilterDto.getPriceRange().getMinPrice(),
+        searchFilterDto.getPriceRange().getMaxPrice()
+    );
 
 
     return ResponseEntity.status(200).body(courses);

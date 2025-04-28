@@ -21,11 +21,13 @@ public class CourseWithMinPriceDto {
     return course;
   }
 
-  public float getMinDiscounredtPrice() {
+  public Float getMinDiscounredtPrice() {
     return minDiscounredtPrice;
   }
 
   public Date getClosestDate() {
     return closestDate;
   }
+
+
 }

@@ -93,45 +93,45 @@ public class SearchFilterDto {
   }
 
   public static class RatingRange {
-    private String minRating;
-    private String maxRating;
+    private Float minRating;
+    private Float maxRating;
 
     // Getters and Setters
-    public String getMinRating() {
+    public Float getMinRating() {
       return minRating;
     }
 
-    public void setMinRating(String minRating) {
+    public void setMinRating(Float minRating) {
       this.minRating = minRating;
     }
 
-    public String getMaxRating() {
+    public Float getMaxRating() {
       return maxRating;
     }
 
-    public void setMaxRating(String maxRating) {
+    public void setMaxRating(Float maxRating) {
       this.maxRating = maxRating;
     }
   }
 
   public static class PriceRange {
-    private String minPrice;
-    private String maxPrice;
+    private Float minPrice;
+    private Float maxPrice;
 
     // Getters and Setters
-    public String getMinPrice() {
+    public Float getMinPrice() {
       return minPrice;
     }
 
-    public void setMinPrice(String minPrice) {
+    public void setMinPrice(Float minPrice) {
       this.minPrice = minPrice;
     }
 
-    public String getMaxPrice() {
+    public Float getMaxPrice() {
       return maxPrice;
     }
 
-    public void setMaxPrice(String maxPrice) {
+    public void setMaxPrice(Float maxPrice) {
       this.maxPrice = maxPrice;
     }
   }
