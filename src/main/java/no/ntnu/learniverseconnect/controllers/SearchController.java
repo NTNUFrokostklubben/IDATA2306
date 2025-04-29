@@ -34,8 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SearchController {
 
-  private final CourseRepo courseRepo;
-  private final courseProviderRepo courseProviderRepo;
   private final OfferableCoursesRepo offerableCoursesRepo;
   private final UserCoursesRepo userCoursesRepo;
   private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
@@ -44,17 +42,13 @@ public class SearchController {
   /**
    * Constructor for SearchController.
    *
-   * @param courseController           Course repository
-   * @param courseProviderController   Course provider repository
    * @param offerableCoursesController Offerable courses repository
-   * @param userCoursesRepo         UserCourses repository, for Ratings
+   * @param userCoursesRepo            UserCourses repository, for Ratings
    */
-  public SearchController(CourseRepo courseController,
-                          courseProviderRepo courseProviderController,
-                          OfferableCoursesRepo offerableCoursesController,
-                          UserCoursesRepo userCoursesRepo) {
-    this.courseRepo = courseController;
-    this.courseProviderRepo = courseProviderController;
+  public SearchController(
+      OfferableCoursesRepo offerableCoursesController,
+      UserCoursesRepo userCoursesRepo) {
+
     this.offerableCoursesRepo = offerableCoursesController;
     this.userCoursesRepo = userCoursesRepo;
   }
@@ -96,24 +90,33 @@ public class SearchController {
             ))
     );
 
-    List<CourseWithMinPriceAndRatingDto> results = courses.stream()
+    List<CourseWithMinPriceAndRatingDto> filteredResult = courses.stream()
         .collect(Collectors.groupingBy(
             OfferableCourses::getCourse,
-            Collectors.minBy(
-                Comparator.comparingDouble(
-                        (OfferableCourses o) -> o.getPrice() * (1 - o.getDiscount()))
-                    .thenComparing(OfferableCourses::getDate)
+            Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> {
+                  // Find offer with min discounted price and closest date
+                  OfferableCourses bestOffer = list.stream()
+                      .min(Comparator.comparingDouble(
+                              (OfferableCourses o) -> o.getPrice() * (1 - o.getDiscount()))
+                          .thenComparing(OfferableCourses::getDate))
+                      .orElseThrow();
+
+                  // Calculate average rating (assuming UserCourseRepo is available)
+                  Float avgRating =
+                      userCoursesRepo.getAverageRatingByCourseId(bestOffer.getCourse().getId());
+                  return new CourseWithMinPriceAndRatingDto(
+                      bestOffer.getCourse(),
+                      bestOffer.getPrice() * (1 - bestOffer.getDiscount()),
+                      bestOffer.getDate(),
+                      avgRating != null ? avgRating.floatValue() : 0f
+                  );
+                }
             )
-        ))
-        .values().stream().filter(Optional::isPresent).map(Optional::get).map(o -> new CourseWithMinPriceAndRatingDto(
-            o.getCourse(),
-            o.getPrice() * (1 - o.getDiscount()),
-            o.getDate(),
-            1f
-        )).collect(Collectors.toList());
+        )).values().stream().collect(Collectors.toList());
 
-
-    return ResponseEntity.status(200).body(results);
+    return ResponseEntity.status(200).body(filteredResult);
   }
 
 

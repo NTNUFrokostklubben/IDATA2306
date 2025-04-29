@@ -12,8 +12,18 @@ import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
 import no.ntnu.learniverseconnect.model.entities.UserCourse;
 import org.springframework.data.jpa.domain.Specification;
 
+/**
+ * FilterSpecification class provides methods to create JPA specifications
+ * (filtering based on criteria, primarily used by OfferableCoursesRepo and SearchController)
+ */
 public class FilterSpecification {
 
+  /**
+   * Filter courses by title containing a specific string
+   *
+   * @param title course title
+   * @return specification for filtering courses by title
+   */
   public static Specification<OfferableCourses> hasTitle(String title) {
     if (title == null || title.isEmpty()) {
       return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
@@ -22,6 +32,12 @@ public class FilterSpecification {
         "%" + title + "%");
   }
 
+  /**
+   * Filter courses by description containing a specific string
+   *
+   * @param description course description
+   * @return specification for filtering courses by description
+   */
   public static Specification<OfferableCourses> hasDescription(String description) {
     if (description == null || description.isEmpty()) {
       return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
@@ -30,6 +46,12 @@ public class FilterSpecification {
         root.get("course").get("description"), "%" + description + "%");
   }
 
+  /**
+   * Filter courses by category
+   *
+   * @param category course category
+   * @return specification for filtering courses by category
+   */
   public static Specification<OfferableCourses> hasCategory(List<String> category) {
     return (root, query, criteriaBuilder) -> {
       if (category.isEmpty()) {
@@ -39,6 +61,12 @@ public class FilterSpecification {
     };
   }
 
+  /**
+   * Filter courses by difficulty level
+   *
+   * @param diffLevel course difficulty level
+   * @return specification for filtering courses by difficulty level
+   */
   public static Specification<OfferableCourses> hasDiffLevel(List<Integer> diffLevel) {
     return (root, query, criteriaBuilder) -> {
       if (diffLevel.isEmpty()) {
@@ -76,7 +104,16 @@ public class FilterSpecification {
         priceMax);
   }
 
-  public static Specification<OfferableCourses> hasRatingBetween(Double minRating, Double maxRating) {
+  /**
+   * Filter courses by rating
+   * Joins UserCourse to Course to calculate average rating per course
+   *
+   * @param minRating minimum rating
+   * @param maxRating maximum rating
+   * @return specification for filtering courses by rating
+   */
+  public static Specification<OfferableCourses> hasRatingBetween(Double minRating,
+                                                                 Double maxRating) {
     return (root, query, criteriaBuilder) -> {
       if (minRating == null && maxRating == null) {
         return criteriaBuilder.conjunction(); // No filtering if both are null
@@ -112,11 +149,24 @@ public class FilterSpecification {
     };
   }
 
+  /**
+   * Filter courses by date
+   *
+   * @param dateFrom minimum date
+   * @param dateTo   maximum date
+   * @return
+   */
   public static Specification<OfferableCourses> hasDateBetween(Date dateFrom, Date dateTo) {
     return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("date"), dateFrom,
         dateTo);
   }
 
+  /**
+   * Filter courses by visibility
+   *
+   * @param visibility true or false
+   * @return specification for filtering courses by visibility
+   */
   public static Specification<OfferableCourses> hasVisibility(Boolean visibility) {
     return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("visibility"),
         visibility);
