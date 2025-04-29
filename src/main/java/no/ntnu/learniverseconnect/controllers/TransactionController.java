@@ -1,5 +1,7 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.dto.CourseProviderStatsDto;
@@ -194,6 +196,24 @@ public class TransactionController {
     }
     Float avgRevenue = revenueSum/totalCourses;
     return ResponseEntity.status(200).body(avgRevenue);
+  }
+
+  /**
+   * Get the revenue for the last 30 days
+   * 
+   * @return the revenue for the last 30 days
+   */
+  @GetMapping("/transaction/revenueLast30Days")
+  public ResponseEntity<Float> getRevenueLast30Days(){
+    List<Transaction> transactions = repo.findAll();
+    float revenueSum = 0;
+    for (Transaction transaction : transactions){
+      if (transaction.getTimeOfTransaction().after(
+          Timestamp.valueOf(LocalDateTime.now().minusDays(30)))){
+        revenueSum+=transaction.getPricePaid();
+      }
+    }
+    return ResponseEntity.status(200).body(revenueSum);
   }
 
 }
