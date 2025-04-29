@@ -17,4 +17,6 @@ public interface UserCoursesRepo extends JpaRepository<UserCourse, Integer> {
   Float getAverageRatingByCourseId(@Param("courseId") Long courseId);
 
   void deleteAllByCourse_Id(long courseId);
+
+  int countByCourseId(long id);
 }

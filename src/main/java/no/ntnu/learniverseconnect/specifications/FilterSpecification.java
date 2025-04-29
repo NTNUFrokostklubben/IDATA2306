@@ -94,11 +94,31 @@ public class FilterSpecification {
     if (creditsMin == null && creditsMax == null) {
       return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
     }
+    Float[] credits = checkForNull(creditsMin, creditsMax);
     return (root, query, criteriaBuilder) -> {
       Path<Float> creditsPath = root.get("course").get("credits");
       return criteriaBuilder.between(
-          creditsPath, creditsMin, creditsMax);
+          creditsPath, credits[0], credits[1]);
     };
+  }
+
+  /**
+   * Helper method for evaluating null values. Returns 0..Float.MAX_VALUE if v1 or v2 is null.
+   * This ensures filtering works "infinitely" when nothing is specified by the user.
+   *
+   * @param v1 minvalue
+   * @param v2 maxvalue
+   * @return array of Float values (0..v1, v2..Float.MAX_VALUE)
+   */
+  private static Float[] checkForNull(Float v1, Float v2) {
+
+    if ((v1 == null || v1 == 0) && v2 != null) {
+      return new Float[]{0f, v2};
+    } else if (v1 != null && (v2 == null || v2 == 0)) {
+      return new Float[]{v1, Float.MAX_VALUE};
+    } else {
+      return new Float[] {v1, v2};
+    }
   }
 
   /**
@@ -112,8 +132,9 @@ public class FilterSpecification {
     if (priceMin == null && priceMax == null) {
       return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
     }
-    return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("price"), priceMin,
-        priceMax);
+    Float[] price = checkForNull(priceMin, priceMax);
+    return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("price"), price[0],
+        price[1]);
   }
 
   /**
@@ -129,10 +150,8 @@ public class FilterSpecification {
     if (minRating == null && maxRating == null) {
       return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
     }
+    Float[] rating = checkForNull(minRating.floatValue(),maxRating.floatValue());
     return (root, query, criteriaBuilder) -> {
-      if (minRating == null && maxRating == null) {
-        return criteriaBuilder.conjunction(); // No filtering if both are null
-      }
 
       // Subquery to calculate average rating per course
       Subquery<Double> avgRatingSubquery = query.subquery(Double.class);
@@ -147,16 +166,16 @@ public class FilterSpecification {
 
       // Apply filtering based on the calculated average rating
       Predicate predicate = criteriaBuilder.conjunction();
-      if (minRating != null) {
+      if (rating[0] != null) {
         predicate = criteriaBuilder.and(
             predicate,
-            criteriaBuilder.greaterThanOrEqualTo(avgRatingSubquery, minRating)
+            criteriaBuilder.greaterThanOrEqualTo(avgRatingSubquery, rating[0].doubleValue())
         );
       }
-      if (maxRating != null) {
+      if (rating[1] != null) {
         predicate = criteriaBuilder.and(
             predicate,
-            criteriaBuilder.lessThanOrEqualTo(avgRatingSubquery, maxRating)
+            criteriaBuilder.lessThanOrEqualTo(avgRatingSubquery, rating[1].doubleValue())
         );
       }
 
@@ -175,6 +194,7 @@ public class FilterSpecification {
     if (dateFrom == null && dateTo == null) {
       return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
     }
+
     return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("date"), dateFrom,
         dateTo);
   }

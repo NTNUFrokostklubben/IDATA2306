@@ -106,11 +106,14 @@ public class SearchController {
                   // Calculate average rating (assuming UserCourseRepo is available)
                   Float avgRating =
                       userCoursesRepo.getAverageRatingByCourseId(bestOffer.getCourse().getId());
+                  int numberOfRatings =
+                      userCoursesRepo.countByCourseId(bestOffer.getCourse().getId());
                   return new CourseWithMinPriceAndRatingDto(
                       bestOffer.getCourse(),
                       bestOffer.getPrice() * (1 - bestOffer.getDiscount()),
                       bestOffer.getDate(),
-                      avgRating != null ? avgRating.floatValue() : 0f
+                      avgRating != null ? avgRating.floatValue() : 0f,
+                      numberOfRatings
                   );
                 }
             )
