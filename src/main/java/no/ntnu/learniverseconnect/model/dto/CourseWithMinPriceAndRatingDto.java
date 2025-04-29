@@ -6,15 +6,17 @@ import no.ntnu.learniverseconnect.model.entities.Course;
 /**
  * Data Transfer Object for Course with minimum price. Used primarily for searching and filtering
  */
-public class CourseWithMinPriceDto {
+public class CourseWithMinPriceAndRatingDto {
   private Course course;
   private float minDiscounredtPrice;
   private Date closestDate;
+  private float rating;
 
-  public CourseWithMinPriceDto(Course course, float minDiscounredtPrice, Date closestDate) {
+  public CourseWithMinPriceAndRatingDto(Course course, float minDiscounredtPrice, Date closestDate, float rating) {
     this.course = course;
     this.minDiscounredtPrice = minDiscounredtPrice;
     this.closestDate = closestDate;
+    this.rating = rating;
   }
 
   public Course getCourse() {
@@ -27,6 +29,10 @@ public class CourseWithMinPriceDto {
 
   public Date getClosestDate() {
     return closestDate;
+  }
+
+  public float getRating() {
+    return rating;
   }
 
 

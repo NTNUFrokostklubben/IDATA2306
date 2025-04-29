@@ -97,24 +97,24 @@ public class SearchFilterDto {
 
   public static class RatingRange {
     @JsonProperty("min-rating")
-    private Float minRating;
+    private Double minRating;
     @JsonProperty("max-rating")
-    private Float maxRating;
+    private Double maxRating;
 
     // Getters and Setters
-    public Float getMinRating() {
+    public Double getMinRating() {
       return minRating;
     }
 
-    public void setMinRating(Float minRating) {
+    public void setMinRating(Double minRating) {
       this.minRating = minRating;
     }
 
-    public Float getMaxRating() {
+    public Double getMaxRating() {
       return maxRating;
     }
 
-    public void setMaxRating(Float maxRating) {
+    public void setMaxRating(Double maxRating) {
       this.maxRating = maxRating;
     }
   }

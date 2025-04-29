@@ -1,9 +1,15 @@
 package no.ntnu.learniverseconnect.specifications;
 
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import java.util.Date;
 import java.util.List;
+import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
+import no.ntnu.learniverseconnect.model.entities.UserCourse;
 import org.springframework.data.jpa.domain.Specification;
 
 public class FilterSpecification {
@@ -70,9 +76,40 @@ public class FilterSpecification {
         priceMax);
   }
 
-  public static Specification<OfferableCourses> hasRatingBetween(Float ratingMin, Float ratingMax) {
-    return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("rating"), ratingMin,
-        ratingMax);
+  public static Specification<OfferableCourses> hasRatingBetween(Double minRating, Double maxRating) {
+    return (root, query, criteriaBuilder) -> {
+      if (minRating == null && maxRating == null) {
+        return criteriaBuilder.conjunction(); // No filtering if both are null
+      }
+
+      // Subquery to calculate average rating per course
+      Subquery<Double> avgRatingSubquery = query.subquery(Double.class);
+      Root<UserCourse> userCourseRoot = avgRatingSubquery.from(UserCourse.class);
+
+      // Join UserCourse to Course (since Course is not directly mapped in UserCourse)
+      Join<UserCourse, Course> userCourseCourseJoin = userCourseRoot.join("course");
+
+      // Calculate average rating for the course
+      avgRatingSubquery.select(criteriaBuilder.avg(userCourseRoot.get("rating")))
+          .where(criteriaBuilder.equal(userCourseCourseJoin, root.get("course")));
+
+      // Apply filtering based on the calculated average rating
+      Predicate predicate = criteriaBuilder.conjunction();
+      if (minRating != null) {
+        predicate = criteriaBuilder.and(
+            predicate,
+            criteriaBuilder.greaterThanOrEqualTo(avgRatingSubquery, minRating)
+        );
+      }
+      if (maxRating != null) {
+        predicate = criteriaBuilder.and(
+            predicate,
+            criteriaBuilder.lessThanOrEqualTo(avgRatingSubquery, maxRating)
+        );
+      }
+
+      return predicate;
+    };
   }
 
   public static Specification<OfferableCourses> hasDateBetween(Date dateFrom, Date dateTo) {
