@@ -81,7 +81,16 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-    </dependencies>
+        </dependencies>
+
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <!-- To fix the driver class problem, include the AutoloadedDriver property
+            in application.properties -->
+            <version>10.17.1.0</version>
+        </dependency>
+
 
 
     <build>

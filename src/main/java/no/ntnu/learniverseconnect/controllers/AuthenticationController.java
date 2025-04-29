@@ -12,11 +12,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.authentication.AuthenticationManager;
 
 
-
+@RequestMapping("/authenticate")
 @RestController
 public class AuthenticationController {
   @Autowired
@@ -27,6 +28,22 @@ public class AuthenticationController {
 
   @Autowired
   private JwtUtil jwtUtil;
+
+  /**
+   * Creates a new AuthenticationController.
+   *
+   * @param authenticationManager the authentication manager to use
+   * @param userDetailsService    the user details service to use
+   * @param jwtUtil               the JWT utility to use
+   */
+  public AuthenticationController(
+      AuthenticationManager authenticationManager,
+      UserDetailsService userDetailsService,
+      JwtUtil jwtUtil) {
+    this.authenticationManager = authenticationManager;
+    this.userDetailsService = userDetailsService;
+    this.jwtUtil = jwtUtil;
+  }
 
   /**
    * HTTP POST request to /authenticate

@@ -15,14 +15,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+
+/**
+ * A filter that is applied to all HTTP requests and checks for a valid JWT token in
+ * the `Authorization: Bearer ...` header.
+ */
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-
   private static final Logger logger = LoggerFactory.getLogger(
       JwtRequestFilter.class.getSimpleName());
 
@@ -32,50 +35,33 @@ public class JwtRequestFilter extends OncePerRequestFilter {
   @Autowired
   private JwtUtil jwtUtil;
 
-
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                  FilterChain filterChain) throws ServletException, IOException{
+                                  FilterChain filterChain)
+  throws ServletException, IOException {
     String jwtToken = getJwtToken(request);
-    String username = null;
-    if (jwtToken != null){
-      username = getUsernameFrom(jwtToken);
-    }
-    if (username != null && notAuthenticatedYet()){
-      UserDetails userDetails= getUserDetailsFromDatabase(username);
-      if (jwtUtil.validateToken(jwtToken, userDetails)){
+    String username = jwtToken != null ? getUsernameFrom(jwtToken) : null;
+
+    if (username != null && notAuthenticatedYet()) {
+      UserDetails userDetails = getUserDetailsFromDatabase(username);
+      if (jwtUtil.validateToken(jwtToken, userDetails)) {
         registerUserAsAuthenticated(request, userDetails);
       }
     }
+
     filterChain.doFilter(request, response);
   }
 
-
-  /**
-   * Gets the username from the JWT token
-   *
-   * @param jwtToken JWT token
-   * @return the username
-   */
-  private String getUsernameFrom(String jwtToken) {
-    String username = null;
+  private UserDetails getUserDetailsFromDatabase(String username) {
+    UserDetails userDetails = null;
     try {
-      username = jwtUtil.extractUsername(jwtToken);
-    } catch (MalformedJwtException e) {
-      logger.warn("Malformed JWT: " + e.getMessage());
-    } catch (JwtException e) {
-      logger.warn("Error in the JWT token: " + e.getMessage());
+      userDetails = userDetailsService.loadUserByUsername(username);
+    } catch (UsernameNotFoundException e) {
+      logger.warn("User " + username + " not found in the database");
     }
-    return username;
+    return userDetails;
   }
 
-
-  /**
-   * Strips the "Bearer" prefix form the Header "Authorization: Bearer.
-   *
-   * @param request the servlet request
-   * @return the jwt without the bearer
-   */
   private String getJwtToken(HttpServletRequest request) {
     final String authorizationHeader = request.getHeader("Authorization");
     String jwt = null;
@@ -96,44 +82,27 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     return authorizationHeaderValue.substring(numberOfCharsToStrip);
   }
 
-  /**
-   * Checks if the jwt is authenticated yet.
-   *
-   * @return if it is authenticated
-   */
-  private static boolean notAuthenticatedYet(){
+  private String getUsernameFrom(String jwtToken) {
+    String username = null;
+    try {
+      username = jwtUtil.extractUsername(jwtToken);
+    } catch (MalformedJwtException e) {
+      logger.warn("Malformed JWT: " + e.getMessage());
+    } catch (JwtException e) {
+      logger.warn("Error in the JWT token: " + e.getMessage());
+    }
+    return username;
+  }
+
+  private static boolean notAuthenticatedYet() {
     return SecurityContextHolder.getContext().getAuthentication() == null;
   }
 
-  /**
-   * Retrieves the user details from the database.
-   *
-   * @param username the username from the user
-   * @return the user
-   */
-  private UserDetails getUserDetailsFromDatabase(String username) {
-    UserDetails userDetails = null;
-    try {
-      userDetails = userDetailsService.loadUserByUsername(username);
-    } catch (UsernameNotFoundException e) {
-      logger.warn("User " + username + " not found in the database");
-    }
-    return userDetails;
-  }
-
-  /**
-   * Registers a user as authenticated.
-   *
-   * @param request the request
-   * @param userDetails the user details
-   */
   private static void registerUserAsAuthenticated(HttpServletRequest request,
-                                                  UserDetails userDetails){
-    final UsernamePasswordAuthenticationToken upaToken = new UsernamePasswordAuthenticationToken(
+                                                  UserDetails userDetails) {
+    final UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(
         userDetails, null, userDetails.getAuthorities());
-    upaToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-    SecurityContextHolder.getContext().setAuthentication(upaToken);
+    upat.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+    SecurityContextHolder.getContext().setAuthentication(upat);
   }
-
-
 }

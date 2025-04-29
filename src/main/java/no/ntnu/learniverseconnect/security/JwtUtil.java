@@ -13,11 +13,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 /**
- * Utility class for handleing JWT tokens
+ * Utility class for handling JWT tokens
  */
 @Component
 public class JwtUtil {
-  @Value("${jwt_secret_key}")
+
+  @Value("${jwt.secret.key}")
   private String secretKey;
 
   /**
