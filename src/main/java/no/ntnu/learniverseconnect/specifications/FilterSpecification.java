@@ -150,6 +150,12 @@ public class FilterSpecification {
     if (minRating == null && maxRating == null) {
       return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
     }
+    if (minRating == null) {
+      minRating = 0.0;
+    }
+    if (maxRating == null) {
+      maxRating = 5.0;
+    }
     Float[] rating = checkForNull(minRating.floatValue(),maxRating.floatValue());
     return (root, query, criteriaBuilder) -> {
 
