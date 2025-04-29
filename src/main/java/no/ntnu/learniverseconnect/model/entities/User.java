@@ -40,6 +40,7 @@ public class User {
   @Temporal(TemporalType.TIMESTAMP)
   private Timestamp userCreated;
 
+  public User() {}
 
   /**
    * Sets the current timestamp before persisting the entity.
@@ -47,6 +48,11 @@ public class User {
   @PrePersist
   protected void onCreate() {
     this.userCreated = new Timestamp(System.currentTimeMillis());
+  }
+
+  public User(String name, String password){
+    this.name = name;
+    this.passwordHash = password;
   }
 
   /**

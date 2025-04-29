@@ -1,4 +1,4 @@
-package no.ntnu.learniverseconnect.security;
+package no.ntnu.learniverseconnect.model.dto;
 
 
 public class AuthenticationRequest {
