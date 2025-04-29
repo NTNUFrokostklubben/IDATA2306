@@ -53,6 +53,9 @@ public class FilterSpecification {
    * @return specification for filtering courses by category
    */
   public static Specification<OfferableCourses> hasCategory(List<String> category) {
+    if (category == null || category.isEmpty()) {
+      return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+    }
     return (root, query, criteriaBuilder) -> {
       if (category.isEmpty()) {
         return criteriaBuilder.conjunction();
@@ -68,6 +71,9 @@ public class FilterSpecification {
    * @return specification for filtering courses by difficulty level
    */
   public static Specification<OfferableCourses> hasDiffLevel(List<Integer> diffLevel) {
+    if (diffLevel == null || diffLevel.isEmpty()) {
+      return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+    }
     return (root, query, criteriaBuilder) -> {
       if (diffLevel.isEmpty()) {
         return criteriaBuilder.conjunction();
@@ -83,8 +89,11 @@ public class FilterSpecification {
    * @param creditsMax minimum credits
    * @return specification for filtering courses by credits
    */
-  public static Specification<OfferableCourses> hasCreditsBetween(float creditsMin,
-                                                                  float creditsMax) {
+  public static Specification<OfferableCourses> hasCreditsBetween(Float creditsMin,
+                                                                  Float creditsMax) {
+    if (creditsMin == null && creditsMax == null) {
+      return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+    }
     return (root, query, criteriaBuilder) -> {
       Path<Float> creditsPath = root.get("course").get("credits");
       return criteriaBuilder.between(
@@ -100,6 +109,9 @@ public class FilterSpecification {
    * @return specification for filtering courses by price
    */
   public static Specification<OfferableCourses> hasPriceBetween(Float priceMin, Float priceMax) {
+    if (priceMin == null && priceMax == null) {
+      return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+    }
     return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("price"), priceMin,
         priceMax);
   }
@@ -114,6 +126,9 @@ public class FilterSpecification {
    */
   public static Specification<OfferableCourses> hasRatingBetween(Double minRating,
                                                                  Double maxRating) {
+    if (minRating == null && maxRating == null) {
+      return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+    }
     return (root, query, criteriaBuilder) -> {
       if (minRating == null && maxRating == null) {
         return criteriaBuilder.conjunction(); // No filtering if both are null
@@ -157,6 +172,9 @@ public class FilterSpecification {
    * @return
    */
   public static Specification<OfferableCourses> hasDateBetween(Date dateFrom, Date dateTo) {
+    if (dateFrom == null && dateTo == null) {
+      return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+    }
     return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("date"), dateFrom,
         dateTo);
   }

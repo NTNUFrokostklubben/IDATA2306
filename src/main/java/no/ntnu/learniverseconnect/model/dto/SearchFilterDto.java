@@ -73,24 +73,24 @@ public class SearchFilterDto {
   // Inner classes for nested JSON objects
   public static class CourseSizeRange {
     @JsonProperty("min-credits")
-    private float minCredits;
+    private Float minCredits;
     @JsonProperty("max-credits")
-    private float maxCredits;
+    private Float maxCredits;
 
     // Getters and Setters
-    public float getMinCredits() {
+    public Float getMinCredits() {
       return minCredits;
     }
 
-    public void setMinCredits(float minCredits) {
+    public void setMinCredits(Float minCredits) {
       this.minCredits = minCredits;
     }
 
-    public float getMaxCredits() {
+    public Float getMaxCredits() {
       return maxCredits;
     }
 
-    public void setMaxCredits(float maxCredits) {
+    public void setMaxCredits(Float maxCredits) {
       this.maxCredits = maxCredits;
     }
   }
