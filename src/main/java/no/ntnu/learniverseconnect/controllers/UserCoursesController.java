@@ -57,15 +57,40 @@ public class UserCoursesController {
         return ResponseEntity.status(404).body(null);
         }
      float average = 0;
+        int count = 0;
      int status = 0;
      for(UserCourse course : courses){
-       average += course.getRating();
+       if(course.getRating() > 0 && course.getRating() < 6){
+         average += course.getRating();
+         count++;
+       }
      }
-     if(average > -1 && average < 6){
-       status = 200;
+     if(count <= 0){
+       status = 404;
+       average = 0;
      }else {
-       status  = 204;
+       average = average / count;
+       if (average > 0 && average < 6) {
+         status = 200;
+       } else {
+         status = 204;
+       }
      }
-     return ResponseEntity.status(status).body(average/courses.size());
+     return ResponseEntity.status(status).body(average);
   }
+
+    /**
+     * Get all user courses associated with a course.
+     * @param cid the course to get by
+     * @return the list of courses a course is associated with.
+     */
+  @GetMapping("/userCourses/course/{cid}")
+    public ResponseEntity<List<UserCourse>> getAllByCourse(@PathVariable long cid){
+        List<UserCourse> userCourseList = userCoursesRepo.getAllByCourse_Id(cid);
+        int status = 404;
+        if(!userCourseList.isEmpty()){
+         status = 200;
+        }
+        return ResponseEntity.status(status).body(userCourseList);
+    }
 }
