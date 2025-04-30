@@ -51,9 +51,10 @@ public class User {
     this.userCreated = new Timestamp(System.currentTimeMillis());
   }
 
-  public User(String name, String password){
+  public User(String name, String password, String email){
     this.name = name;
     this.passwordHash = password;
+    this.email = email;
   }
 
   /**

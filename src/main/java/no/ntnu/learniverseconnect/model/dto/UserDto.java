@@ -5,17 +5,23 @@ public class UserDto {
 
   private final String name;
   private final String passwordHash;
+  private final String email;
 
-  public UserDto(String name, String passwordHash){
+  public UserDto(String name, String passwordHash, String email){
     this.name = name;
     this.passwordHash = passwordHash;
+    this.email = email;
   }
 
   public String getName(){
-    return name;
+    return this.name;
   }
 
   public String getPasswordHash(){
-    return passwordHash;
+    return this.passwordHash;
+  }
+
+  public String getEmail(){
+    return this.email;
   }
 }

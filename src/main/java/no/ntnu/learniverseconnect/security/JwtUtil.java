@@ -3,6 +3,7 @@ package no.ntnu.learniverseconnect.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.function.Function;
@@ -41,7 +42,7 @@ public class JwtUtil {
         .claim(ROLE_KEY, userDetails.getAuthorities())
         .issuedAt(new Date(timeNow))
         .expiration(new Date(timeAfterOneHour))
-        .signWith(getSigningKey())
+        .signWith(getSigningKey(), SignatureAlgorithm.HS256)
         .compact();
   }
 
@@ -52,7 +53,7 @@ public class JwtUtil {
    */
   private SecretKey getSigningKey(){
     byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
-    return new SecretKeySpec(keyBytes, 0, keyBytes.length, "HmacSHA226");
+    return new SecretKeySpec(keyBytes, 0, keyBytes.length, "HmacSHA256");
   }
 
   /**

@@ -59,9 +59,8 @@ public class AuthenticationController {
   @PostMapping("/signup")
   public ResponseEntity<String> signupProcess(@RequestBody UserDto userDto){
     ResponseEntity<String> response;
-    System.out.println("test");
     try{
-      userService.tryCreateNewUser(userDto.getName(), userDto.getPasswordHash());
+      userService.tryCreateNewUser(userDto.getName(), userDto.getPasswordHash(), userDto.getEmail());
       response = new ResponseEntity<>(HttpStatus.OK);
     } catch (IOException e){
       response = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

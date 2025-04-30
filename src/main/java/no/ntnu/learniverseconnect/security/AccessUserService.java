@@ -54,20 +54,17 @@ public class AccessUserService implements UserDetailsService {
     }
   }
 
-  public void tryCreateNewUser(String username, String password) throws IOException{
-    System.out.println("Im in tryCreateNewUser");
+  public void tryCreateNewUser(String username, String password, String email) throws IOException{
     String errormessage;
     if(username.isEmpty()){
       errormessage = "Username cannot be empty";
-      System.out.println(errormessage);
     } else if (userExists(username)){
       errormessage = "Username is already taken";
-      System.out.println(errormessage);
     } else{
       errormessage = checkPasswordRequirements(password);
-      System.out.println(errormessage);
+      //TODO add gard for emails as well
       if (errormessage == null){
-        createUser(username, password);
+        createUser(username, password, email);
       }
     }
     if (errormessage != null){
@@ -76,7 +73,6 @@ public class AccessUserService implements UserDetailsService {
   }
 
   public String checkPasswordRequirements(String password){
-    System.out.println("Im in check password requirements");
     String errormessage = null;
     if (password == null || password.isEmpty()){
       errormessage = "Password cannot be empty";
@@ -86,10 +82,10 @@ public class AccessUserService implements UserDetailsService {
     return errormessage;
   }
 
-  private void createUser(String username, String password){
+  private void createUser(String username, String password, String email){
     Role role = roleRepo.findOneByName("ROLE_USER");
     if (role != null){
-      User user = new User(username, createHash(password));
+      User user = new User(username, createHash(password), email);
       user.addRole(role);
       userRepo.save(user);
     }
