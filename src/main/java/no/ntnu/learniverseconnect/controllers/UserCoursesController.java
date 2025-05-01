@@ -60,8 +60,8 @@ public class UserCoursesController {
         int count = 0;
      int status = 0;
      for(UserCourse course : courses){
-       if(course.getRating() > 0 && course.getRating() < 6){
-         average += course.getRating();
+       if(course.getReview().getRating() > 0 && course.getReview().getRating() < 6){
+         average += course.getReview().getRating();
          count++;
        }
      }

@@ -1,12 +1,12 @@
 package no.ntnu.learniverseconnect.model.entities;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import java.sql.Date;
 
 /**
@@ -19,10 +19,9 @@ public class UserCourse {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  private int rating;
+  @OneToOne
+  private Review review;
   private Date date;
-  @Column(length = 2048)
-  private String comment;
   @ManyToOne
   @JoinColumn(nullable = false)
   private Course course;
@@ -47,8 +46,8 @@ public class UserCourse {
    *
    * @return the rating value
    */
-  public int getRating() {
-    return rating;
+  public Review getReview() {
+    return review;
   }
 
   /**
@@ -56,26 +55,8 @@ public class UserCourse {
    *
    * @param rating the rating value to set
    */
-  public void setRating(int rating) {
-    this.rating = rating;
-  }
-
-  /**
-   * Gets the comment for the rating.
-   *
-   * @return the comment
-   */
-  public String getComment() {
-    return comment;
-  }
-
-  /**
-   * Sets the comment for the rating.
-   *
-   * @param comment the comment to set
-   */
-  public void setComment(String comment) {
-    this.comment = comment;
+  public void setReview(Review rating) {
+    this.review = rating;
   }
 
 
