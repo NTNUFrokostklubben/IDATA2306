@@ -30,7 +30,6 @@ public class AccessUserService implements UserDetailsService {
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     Optional<User> user = userRepo.findUserByName(username);
-    System.out.println("User is active: "+user.isPresent());
     if (user.isPresent()) {
       return new AccessUserDetails(user.get());
     } else {
@@ -96,7 +95,6 @@ public class AccessUserService implements UserDetailsService {
   }
 
   public boolean updateProfile(User user, UserProfileDto profileDFO){
-    user.setEmail(profileDFO.getEmail());
     user.setProfilePicture(profileDFO.getProfilePicture());
     userRepo.save(user);
     return true;

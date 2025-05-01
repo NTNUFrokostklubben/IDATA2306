@@ -39,8 +39,6 @@ public class AuthenticationController {
   @PostMapping("/authenticate")
   public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest authenticationRequest){
     try{
-      System.out.println("Username "+authenticationRequest.getUsername());
-      System.out.println("Password "+authenticationRequest.getPassword());
       authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
           authenticationRequest.getUsername(),
           authenticationRequest.getPassword()));
@@ -48,7 +46,6 @@ public class AuthenticationController {
       System.out.println(e.getMessage());
       return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
     }
-
     final UserDetails userDetails = userService.loadUserByUsername(
         authenticationRequest.getUsername());
     final String jwt = jwtUtil.generateToken(userDetails);
