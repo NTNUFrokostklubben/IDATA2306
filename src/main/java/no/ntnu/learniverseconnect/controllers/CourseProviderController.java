@@ -55,7 +55,7 @@ public class CourseProviderController {
     return ResponseEntity.status(200).body(repo.findAll());
   }
 
-  ;
+
 
   /**
    * Returns a course provider with the given id.
