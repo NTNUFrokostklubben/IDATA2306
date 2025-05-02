@@ -7,6 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import java.sql.Timestamp;
 
 /**
  * Represents the ratings made by a user, associated with a course
@@ -21,12 +25,22 @@ public class UserCourse {
   private int rating;
   @Column(length = 2048)
   private String comment;
+  @Temporal(TemporalType.TIMESTAMP)
+  private Timestamp timestamp;
   @ManyToOne
   @JoinColumn(nullable = false)
   private Course course;
   @ManyToOne
   @JoinColumn(nullable = false)
   private User user;
+
+  /**
+   * Sets the current timestamp before persisting the entity.
+   */
+  @PrePersist
+  protected void onCreate() {
+    this.timestamp = new Timestamp(System.currentTimeMillis());
+  }
 
   /**
    * Gets the unique ID of the rating.
@@ -113,6 +127,10 @@ public class UserCourse {
       throw new IllegalArgumentException("Course cannot be null");
     }
     this.user = user;
+  }
+
+  public Timestamp getTimestamp(){
+    return this.timestamp;
   }
 
 

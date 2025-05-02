@@ -7,6 +7,7 @@ import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,33 @@ public class OfferableCoursesController {
   @GetMapping("/offerableCourses")
   public ResponseEntity<List<OfferableCourses>> getOfferableCourses() {
     return ResponseEntity.status(200).body(repo.findAll());
+  }
+
+  /**
+   * Returns an offerable course with the given id.
+   *
+   * @param id id of the offerable course to return.
+   * @return offerable course with the given id.
+   */
+  @GetMapping("/offerableCourses/{id}")
+  public ResponseEntity<OfferableCourses> getOfferableCourseById(@PathVariable int id) {
+    OfferableCourses offerableCourse = repo.findById(id).orElse(null);
+    if (offerableCourse != null) {
+      return ResponseEntity.status(200).body(offerableCourse);
+    } else {
+      return ResponseEntity.status(404).body(null);
+    }
+  }
+
+  @DeleteMapping("/offerableCourses/{id}")
+  public ResponseEntity<Void> deleteOfferableCourse(@PathVariable long id) {
+    OfferableCourses offerableCourse = repo.getOfferableCoursesById(id);
+    if (offerableCourse != null) {
+      repo.delete(offerableCourse);
+      return ResponseEntity.status(200).build();
+    } else {
+      return ResponseEntity.status(404).build();
+    }
   }
 
 
@@ -78,22 +106,6 @@ public class OfferableCoursesController {
   }
 
   /**
-   * Returns a offerable course for a given id.
-   *
-   * @param cid Course id.
-   * @return Offerable course for the given course id.
-   */
-  @GetMapping("/offerableCourses/{cid}")
-  public ResponseEntity<OfferableCourses> getOfferableCoursesById(@PathVariable long cid) {
-    OfferableCourses offerable = repo.getOfferableCoursesById(cid);
-    if (offerable != null) {
-      return ResponseEntity.status(200).body(offerable);
-    } else {
-      return ResponseEntity.status(404).body(null);
-    }
-  }
-
-  /**
    * Returns a list of offerable courses for a given provider id.
    *
    * @param pid Provider id.
@@ -119,5 +131,7 @@ public class OfferableCoursesController {
     repo.save(offerableCourse);
     return ResponseEntity.status(201).body(offerableCourse);
   }
+
+
 
 }
