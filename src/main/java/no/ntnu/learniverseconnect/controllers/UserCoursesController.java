@@ -122,6 +122,9 @@ public class UserCoursesController {
     }
     review.setDate();
     UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(cid, uid);
+    if(userCourse.getReview() != null){
+      reviewRepo.delete(userCourse.getReview());
+    }
     userCourse.setReview(review);
     userCoursesRepo.save(userCourse);
     reviewRepo.save(review);
