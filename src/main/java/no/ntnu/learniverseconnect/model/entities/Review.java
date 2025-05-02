@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.sql.Date;
+
 @Entity
 public class Review {
   @Id
@@ -20,6 +21,7 @@ public class Review {
   public Review() {
     this.reviewDate = new Date(System.currentTimeMillis());
   }
+
   /**
    * Gets the unique identifier of the rating.
    *
@@ -27,6 +29,10 @@ public class Review {
    */
   public Long getId() {
     return id;
+  }
+
+  public void setDate() {
+    this.reviewDate = new Date(System.currentTimeMillis());
   }
 
   /**
