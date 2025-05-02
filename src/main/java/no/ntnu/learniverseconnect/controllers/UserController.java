@@ -3,6 +3,7 @@ package no.ntnu.learniverseconnect.controllers;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import no.ntnu.learniverseconnect.model.entities.Transaction;
 import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
@@ -50,23 +51,50 @@ public class UserController {
     }
   }
 
-//  /**
-//   * Get the user that matches the username.
-//   *
-//   * @param name the username of the user to fetch
-//   * @return the user with that username
-//   */
-//  @GetMapping("/user/{name}")
-//  public ResponseEntity<User> getUserByUsername(@PathVariable String name){
-//    User user = repo.getUsersByName(name);
-//    if(user == null){
-//      logger.warn("User with username {} not found", name);
-//      return ResponseEntity.status(404).body(null);
-//    }else{
-//      logger.info("Fetching user with name: {}", name);
-//      return ResponseEntity.status(200).body(user);
-//    }
-//  }
+  /**
+   * Get the user that matches the username.
+   *
+   * @param name the username of the user to fetch
+   * @return the user with that username
+   */
+  @GetMapping("/userProfilePicture/{name}")
+  public ResponseEntity<String> getProfilePicByUsername(@PathVariable String name){
+    Optional<User> userOptional = repo.findUserByName(name);
+    if (userOptional.isEmpty()){
+      logger.warn("User with username {} not found", name);
+      return ResponseEntity.status(404).body(null);
+    } else{
+      User user = userOptional.get();
+      String profilePicture = user.getProfilePicture();
+      if (profilePicture == null || profilePicture.isEmpty()){
+        logger.warn("User with username {} has no profile picture", name);
+        return ResponseEntity.status(204).body(null);
+      } else {
+        logger.info("Fetching profile picture for user with name: {}", name);
+        return ResponseEntity.status(200).body(user.getProfilePicture());
+      }
+    }
+  }
+
+  /**
+   * Get the user that matches the username.
+   *
+   * @param name the username of the user to fetch
+   * @return the user with that username
+   */
+  @GetMapping("/userIdByName/{name}")
+  public ResponseEntity<Long> getIdByUsername(@PathVariable String name){
+    Optional<User> userOptional = repo.findUserByName(name);
+    if (userOptional.isEmpty()){
+      logger.warn("ID of user with username {} not found", name);
+      return ResponseEntity.status(404).body(null);
+    } else{
+      User user = userOptional.get();
+      Long id = user.getId();
+      logger.info("Fetching id for user with name: {}", name);
+      return ResponseEntity.status(200).body(id);
+    }
+  }
 
   /**
    * Get the total count of users
