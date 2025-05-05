@@ -31,7 +31,7 @@ public class User {
   private boolean active = true;
 
   @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name="user_role",
+  @JoinTable(name = "user_role",
       joinColumns = @JoinColumn(name = "user_id"),
       inverseJoinColumns = @JoinColumn(name = "role_id")
   )
@@ -41,7 +41,17 @@ public class User {
   @Temporal(TemporalType.TIMESTAMP)
   private Timestamp userCreated;
 
-  public User() {}
+  public User() {
+  }
+
+  /**
+   * Constructor for creating a new user with the specified name, password, and email.
+   */
+  public User(String name, String password, String email) {
+    this.name = name;
+    this.passwordHash = password;
+    this.email = email;
+  }
 
   /**
    * Sets the current timestamp before persisting the entity.
@@ -51,14 +61,8 @@ public class User {
     this.userCreated = new Timestamp(System.currentTimeMillis());
   }
 
-  public User(String name, String password, String email){
-    this.name = name;
-    this.passwordHash = password;
-    this.email = email;
-  }
-
   /**
-   * Gets the id of the user
+   * Gets the id of the user.
    *
    * @return the id of the user
    */
@@ -67,9 +71,9 @@ public class User {
   }
 
   /**
-   * Gets the timestamp of when the user was created
+   * Gets the timestamp of when the user was created.
    */
-  public Timestamp getUserCreated(){
+  public Timestamp getUserCreated() {
     return this.userCreated;
   }
 
@@ -167,21 +171,21 @@ public class User {
   }
 
   /**
-   * Changes the user status.
-   *
-   * @param active the status to set
-   */
-  public void setActive(boolean active) {
-    this.active = active;
-  }
-
-  /**
    * Checks if the user is active.
    *
    * @return true if the user is active, false otherwise
    */
   public boolean isActive() {
     return active;
+  }
+
+  /**
+   * Changes the user status.
+   *
+   * @param active the status to set
+   */
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   /**

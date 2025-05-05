@@ -1,5 +1,5 @@
 package no.ntnu.learniverseconnect.controllers;
-import jakarta.persistence.EntityNotFoundException;
+
 import jakarta.transaction.Transactional;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Course;
@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
  *   <li>GET /course/{id} - Retrieves a specific course by its ID.</li>
  * </ul>
  * </p>
- *
  */
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -53,7 +52,8 @@ public class CourseController {
    * @param repo the course repo interface.
    */
   @Autowired
-  public CourseController(CourseRepo repo, OfferableCoursesRepo offerableCoursesRepo, KeywordsRepo keywordsRepo, UserCoursesRepo userCoursesRepo) {
+  public CourseController(CourseRepo repo, OfferableCoursesRepo offerableCoursesRepo,
+                          KeywordsRepo keywordsRepo, UserCoursesRepo userCoursesRepo) {
     this.courseRepo = repo;
     this.offerableCoursesRepo = offerableCoursesRepo;
     this.keywordsRepo = keywordsRepo;
@@ -136,8 +136,8 @@ public class CourseController {
     logger.info("Deleting course with id: {}", id);
     Course course = courseRepo.getCoursesById(id);
     if (course == null) {
-        logger.warn("Course with id {} not found", id);
-        return ResponseEntity.status(404).body("Course with id " + id + " not found");
+      logger.warn("Course with id {} not found", id);
+      return ResponseEntity.status(404).body("Course with id " + id + " not found");
     }
     offerableCoursesRepo.deleteAllByCourse_Id(course.getId());
     keywordsRepo.deleteAllByCourse_Id(id);
@@ -145,4 +145,5 @@ public class CourseController {
     courseRepo.delete(course);
     return ResponseEntity.status(204).body("Course deleted successfully");
   }
+
 }

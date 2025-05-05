@@ -24,7 +24,7 @@ public class AccessUserDetails implements UserDetails {
    *
    * @param user The user to copy data from
    */
-  public AccessUserDetails(User user){
+  public AccessUserDetails(User user) {
     this.username = user.getName();
     this.password = user.getPasswordHash();
     this.isActive = user.isActive();
@@ -32,49 +32,49 @@ public class AccessUserDetails implements UserDetails {
   }
 
   /**
-   * Converts the roles and grants authority
+   * Converts the roles and grants authority.
    *
    * @param roles roles to be granted
    */
-  public void convertRoles(Set<Role> roles){
+  public void convertRoles(Set<Role> roles) {
     authorityList.clear();
-    for (Role role : roles){
+    for (Role role : roles) {
       authorityList.add(new SimpleGrantedAuthority(role.getName()));
     }
   }
 
   @Override
-  public Collection<? extends GrantedAuthority> getAuthorities(){
+  public Collection<? extends GrantedAuthority> getAuthorities() {
     return authorityList;
   }
 
   @Override
-  public String getPassword(){
+  public String getPassword() {
     return this.password;
   }
 
   @Override
-  public String getUsername(){
+  public String getUsername() {
     return this.username;
   }
 
   @Override
-  public boolean isAccountNonExpired(){
+  public boolean isAccountNonExpired() {
     return this.isActive;
   }
 
   @Override
-  public boolean isAccountNonLocked(){
+  public boolean isAccountNonLocked() {
     return this.isActive;
   }
 
   @Override
-  public boolean isCredentialsNonExpired(){
+  public boolean isCredentialsNonExpired() {
     return this.isActive;
   }
 
   @Override
-  public boolean isEnabled(){
+  public boolean isEnabled() {
     return true;
   }
 

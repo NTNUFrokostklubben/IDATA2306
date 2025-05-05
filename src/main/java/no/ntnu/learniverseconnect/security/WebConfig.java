@@ -1,4 +1,5 @@
 package no.ntnu.learniverseconnect.security;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -17,13 +18,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     String[] allowedOrigins = {
         "http://localhost:3000",
-    };
+        };
 
     registry.addMapping("/**")
-        .allowedOrigins(allowedOrigins)
-        .allowedMethods("GET", "PUT", "DELETE", "POST", "OPTIONS")
-        .allowedHeaders("*")
-        .allowCredentials(true);
+            .allowedOrigins(allowedOrigins)
+            .allowedMethods("GET", "PUT", "DELETE", "POST", "OPTIONS")
+            .allowedHeaders("*")
+            .allowCredentials(true);
   }
 
 }
