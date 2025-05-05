@@ -7,10 +7,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import java.sql.Date;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
@@ -25,7 +25,10 @@ public class UserCourse {
   private Long id;
   @OneToOne
   private Review review;
-  private Date date;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  private Timestamp timestamp;
+
   @ManyToOne
   @JoinColumn(nullable = false)
   private Course course;
@@ -33,9 +36,6 @@ public class UserCourse {
   @JoinColumn(nullable = false)
   private User user;
 
-  public UserCourse() {
-    this.date = new Date(System.currentTimeMillis());
-  }
   /**
    * Sets the current timestamp before persisting the entity.
    */
@@ -77,8 +77,9 @@ public class UserCourse {
      *
      * @return the date
      */
-    public Date getDate() {
-        return date;
+    public Timestamp getTimestamp() {
+      return this.timestamp;
+
     }
 
   /**
@@ -123,9 +124,6 @@ public class UserCourse {
     this.user = user;
   }
 
-  public Timestamp getTimestamp() {
-    return this.timestamp;
-  }
 
 
 }

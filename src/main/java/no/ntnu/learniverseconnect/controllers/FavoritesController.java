@@ -31,7 +31,7 @@ public class FavoritesController {
   private static final Logger logger = LoggerFactory.getLogger(FavoritesController.class);
   private final UserRepo userRepo;
   private final CourseRepo courseRepo;
-  private FavoritesRepo repo;
+  private final FavoritesRepo repo;
 
   /**
    * Constructor for FavoritesController.

@@ -80,20 +80,19 @@ public class UserController {
   /**
    * Get the user id that matches the email.
    *
-   * @param name the email of the user to fetch
+   * @param email the email of the user to fetch
    * @return the user with that email
    */
-  @GetMapping("/userIdByName/{name}")
-  public ResponseEntity<Long> getIdByEmail(@PathVariable String name) {
-    Optional<User> userOptional = repo.findUserByName(name);
+  @GetMapping("/UserByEmail/{email}")
+  public ResponseEntity<User> getIdByEmail(@PathVariable String email) {
+    Optional<User> userOptional = repo.findUserByEmail(email);
     if (userOptional.isEmpty()) {
-      logger.warn("ID of user with email {} not found", name);
+      logger.warn("User with email {} not found", email);
       return ResponseEntity.status(404).body(null);
     } else {
       User user = userOptional.get();
-      Long id = user.getId();
-      logger.info("Fetching id for user with name: {}", name);
-      return ResponseEntity.status(200).body(id);
+      logger.info("Fetching user with email: {}", email);
+      return ResponseEntity.status(200).body(user);
     }
   }
 

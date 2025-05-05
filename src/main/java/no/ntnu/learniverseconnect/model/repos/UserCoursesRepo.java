@@ -25,4 +25,6 @@ public interface UserCoursesRepo extends JpaRepository<UserCourse, Integer> {
   int countByCourseId(long id);
 
   User getById(Long id);
+
+  UserCourse getUserCoursesByUser_IdAndCourse_Id(Long userId, long courseId);
 }

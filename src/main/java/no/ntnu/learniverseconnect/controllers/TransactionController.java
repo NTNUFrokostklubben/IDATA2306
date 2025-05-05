@@ -1,20 +1,20 @@
 package no.ntnu.learniverseconnect.controllers;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.dto.CourseProviderStatsDto;
 import no.ntnu.learniverseconnect.model.entities.Course;
-import no.ntnu.learniverseconnect.model.entities.CourseProvider;
 import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
 import no.ntnu.learniverseconnect.model.entities.Transaction;
 import no.ntnu.learniverseconnect.model.entities.User;
+import no.ntnu.learniverseconnect.model.entities.CourseProvider;
 import no.ntnu.learniverseconnect.model.repos.CourseProviderRepo;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.TransactionRepo;
+import no.ntnu.learniverseconnect.model.repos.UserCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
