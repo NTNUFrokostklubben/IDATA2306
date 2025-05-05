@@ -5,6 +5,9 @@ import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+/**
+ * The offerable courses repository.
+ */
 @Repository
 public interface OfferableCoursesRepo extends JpaRepository<OfferableCourses, Integer> {
   List<OfferableCourses> getAllByCourse_Id(long cid);

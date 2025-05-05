@@ -7,7 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 /**
- * Represents the keywords associated with a course
+ * Represents the keywords associated with a course.
  */
 
 @Entity
@@ -29,7 +29,7 @@ public class Keywords {
   }
 
   /**
-   * Sets the course associated with the keyword
+   * Sets the course associated with the keyword.
    *
    * @param course the course to set
    */
@@ -42,14 +42,14 @@ public class Keywords {
   }
 
   /**
-   * Gets the keyword associated with the course
+   * Gets the keyword associated with the course.
    */
   public String getKeyword() {
     return keyword;
   }
 
   /**
-   * Sets the keyword associated with the course
+   * Sets the keyword associated with the course.
    *
    * @param keyword the keyword to set
    */

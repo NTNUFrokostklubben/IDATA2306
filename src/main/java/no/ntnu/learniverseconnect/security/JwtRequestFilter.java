@@ -35,10 +35,44 @@ public class JwtRequestFilter extends OncePerRequestFilter {
   @Autowired
   private JwtUtil jwtUtil;
 
+  /**
+   * Strip the "Bearer " prefix from the Header "Authorization: Bearer ...
+   *
+   * @param authorizationHeaderValue The value of the Authorization HTTP header
+   * @return The JWT token following the "Bearer " prefix
+   */
+  private static String stripBearerPrefixFrom(String authorizationHeaderValue) {
+    final int numberOfCharsToStrip = "Bearer ".length();
+    return authorizationHeaderValue.substring(numberOfCharsToStrip);
+  }
+
+  /**
+   * Checks if they are authenticated yet.
+   *
+   * @return if they are authenticated yet
+   */
+  private static boolean notAuthenticatedYet() {
+    return SecurityContextHolder.getContext().getAuthentication() == null;
+  }
+
+  /**
+   * Register the user as authenticated.
+   *
+   * @param request     the request
+   * @param userDetails the user details
+   */
+  private static void registerUserAsAuthenticated(HttpServletRequest request,
+                                                  UserDetails userDetails) {
+    final UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(
+        userDetails, null, userDetails.getAuthorities());
+    upat.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+    SecurityContextHolder.getContext().setAuthentication(upat);
+  }
+
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                   FilterChain filterChain)
-  throws ServletException, IOException {
+      throws ServletException, IOException {
     String jwtToken = getJwtToken(request);
     String username = jwtToken != null ? getEmailFrom(jwtToken) : null;
 
@@ -52,6 +86,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
+  /**
+   * Retrieves the user details from the database.
+   *
+   * @param email the identifying email of the user
+   * @return the user details of that user
+   */
   private UserDetails getUserDetailsFromDatabase(String email) {
     UserDetails userDetails = null;
     try {
@@ -62,6 +102,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     return userDetails;
   }
 
+  /**
+   * Retrieves the JWT token.
+   *
+   * @param request the http servlet request
+   * @return tje JWT token
+   */
   private String getJwtToken(HttpServletRequest request) {
     final String authorizationHeader = request.getHeader("Authorization");
     String jwt = null;
@@ -72,16 +118,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
   }
 
   /**
-   * Strip the "Bearer " prefix from the Header "Authorization: Bearer ...
+   * Get the email from the jwt token.
    *
-   * @param authorizationHeaderValue The value of the Authorization HTTP header
-   * @return The JWT token following the "Bearer " prefix
+   * @param jwtToken the jwt token
+   * @return the email
    */
-  private static String stripBearerPrefixFrom(String authorizationHeaderValue) {
-    final int numberOfCharsToStrip = "Bearer ".length();
-    return authorizationHeaderValue.substring(numberOfCharsToStrip);
-  }
-
   private String getEmailFrom(String jwtToken) {
     String username = null;
     try {
@@ -92,17 +133,5 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       logger.warn("Error in the JWT token: " + e.getMessage());
     }
     return username;
-  }
-
-  private static boolean notAuthenticatedYet() {
-    return SecurityContextHolder.getContext().getAuthentication() == null;
-  }
-
-  private static void registerUserAsAuthenticated(HttpServletRequest request,
-                                                  UserDetails userDetails) {
-    final UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(
-        userDetails, null, userDetails.getAuthorities());
-    upat.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-    SecurityContextHolder.getContext().setAuthentication(upat);
   }
 }

@@ -8,7 +8,10 @@ import jakarta.persistence.ManyToMany;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@Entity(name="roles")
+/**
+ * Represents a role in the system with a unique id.
+ */
+@Entity(name = "roles")
 public class Role {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

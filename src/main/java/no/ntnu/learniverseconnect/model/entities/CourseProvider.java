@@ -6,6 +6,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * Represents a course provider in the system.
+ */
 @Entity
 public class CourseProvider implements Serializable {
   @Id
@@ -66,32 +69,36 @@ public class CourseProvider implements Serializable {
 
   /**
    * Gets the link to the provider's logo.
+   *
    * @return the provider logo link
    */
   public String getLogoLink() {
     return logoLink;
   }
 
-    /**
-     * Sets the link to the provider's logo.
-     * @param providerLogoLink the provider logo link to set
-     */
+  /**
+   * Sets the link to the provider's logo.
+   *
+   * @param providerLogoLink the provider logo link to set
+   */
   public void setLogoLink(String providerLogoLink) {
     this.logoLink = providerLogoLink;
   }
 
-    /**
-     * Gets the link to the provider's alternative logo.
-     * @return the provider alt logo link
-     */
+  /**
+   * Gets the link to the provider's alternative logo.
+   *
+   * @return the provider alt logo link
+   */
   public String getAltLogoLink() {
     return altLogoLink;
   }
 
-    /**
-     * Sets the link to the provider's alternative logo.
-     * @param providerAltLogoLink the provider alt logo link to set
-     */
+  /**
+   * Sets the link to the provider's alternative logo.
+   *
+   * @param providerAltLogoLink the provider alt logo link to set
+   */
   public void setAltLogoLink(String providerAltLogoLink) {
     this.altLogoLink = providerAltLogoLink;
   }
