@@ -36,6 +36,13 @@ public class UserCoursesController {
     ReviewRepo reviewRepo;
   private static final Logger logger = LoggerFactory.getLogger(UserCoursesController.class);
 
+  /**
+   * Constructor for UserCoursesController.
+   *
+   * @param userCoursesRepo1 the repository for user courses
+   * @param userRepo1 the repository for users
+   * @param courseRepo1 the repository for courses
+   */
   @Autowired
   public UserCoursesController(UserCoursesRepo userCoursesRepo1, UserRepo userRepo1,
                                CourseRepo courseRepo1, ReviewRepo reviewRepo1) {
@@ -103,7 +110,7 @@ public class UserCoursesController {
    * @return all reviews
    */
   @GetMapping("/userCourses")
-  public ResponseEntity<Iterable<UserCourse>> getAllReviews(){
+  public ResponseEntity<Iterable<UserCourse>> getAllReviews() {
     logger.info("Fetching all reviews");
     return ResponseEntity.status(200).body(userCoursesRepo.findAll());
   }
@@ -114,7 +121,7 @@ public class UserCoursesController {
    * @return the last ten reviews
    */
   @GetMapping("/userCourses/lastReviews")
-  public ResponseEntity<Iterable<UserCourse>> getLastReviews(){
+  public ResponseEntity<Iterable<UserCourse>> getLastReviews() {
     logger.info("Fetching the ten last reviews");
     List<UserCourse> userCourseList = userCoursesRepo.findAll();
     List<UserCourse> lastReviews = new ArrayList<>();
@@ -124,7 +131,7 @@ public class UserCoursesController {
   }
 
   /**
-   * Adds a new review to the database
+   * Adds a new review to the database.
    *
    * @param userCourse the review to add
    * @return a response entity with the status of the operation

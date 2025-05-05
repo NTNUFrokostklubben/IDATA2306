@@ -23,20 +23,25 @@ import org.springframework.web.bind.annotation.RestController;
  * It provides methods to add, remove, and retrieve favorite items for a specific user.
  * This controller interacts with the service layer to perform business logic operations
  * and returns appropriate responses to the client.
- *
- *
  */
 
 @RestController
 public class FavoritesController {
 
+  private static final Logger logger = LoggerFactory.getLogger(FavoritesController.class);
   private final UserRepo userRepo;
   private final CourseRepo courseRepo;
   private final FavoritesRepo repo;
-  private static final Logger logger = LoggerFactory.getLogger(FavoritesController.class);
 
+  /**
+   * Constructor for FavoritesController.
+   *
+   * @param repo The repository for managing favorite items.
+   * @param userRepo The repository for managing user data.
+   * @param courseRepo The repository for managing course data.
+   */
   @Autowired
-  public FavoritesController(FavoritesRepo repo, UserRepo userRepo, CourseRepo courseRepo){
+  public FavoritesController(FavoritesRepo repo, UserRepo userRepo, CourseRepo courseRepo) {
     this.repo = repo;
     this.userRepo = userRepo;
     this.courseRepo = courseRepo;
@@ -46,22 +51,23 @@ public class FavoritesController {
    * Retrieves all favorite items for a specific user by their user ID.
    *
    * @param id The unique identifier of the user.
-   * @return A ResponseEntity containing a list of Favorite objects if found, or a 404 status if no favorites are found.
+   * @return A ResponseEntity containing a list of Favorite objects if found, or a 404 status
+   * if no favorites are found.
    */
   @GetMapping("/userFavorites/{id}")
   public ResponseEntity<List<Favorite>> getFavoritesForUser(@PathVariable long id) {
     logger.info("Fetching favorites for user with id: {}", id);
     int status = 0;
     List<Favorite> list = repo.getAllByUser_Id(id);
-    if(!list.isEmpty()){
+    if (!list.isEmpty()) {
       status = 200;
-    }else{
+    } else {
       status = 404;
       list = null;
     }
-
     return ResponseEntity.status(status).body(list);
   }
+
   /**
    * Retrieves the count of favorites for a specific course by its course ID.
    *
@@ -69,9 +75,9 @@ public class FavoritesController {
    * @return A ResponseEntity containing the count of favorites for the specified course.
    */
   @GetMapping("/favoriteCount/{id}")
-  public ResponseEntity<Integer> getCountOfFavorites(@PathVariable long id){
+  public ResponseEntity<Integer> getCountOfFavorites(@PathVariable long id) {
     logger.info("Fetching favorite count for course with id: {}", id);
-    return  ResponseEntity.status(200).body(repo.getByCourse_Id(id).size());
+    return ResponseEntity.status(200).body(repo.getByCourse_Id(id).size());
   }
 
   /**
@@ -82,7 +88,7 @@ public class FavoritesController {
    * @return A ResponseEntity with a 200 status if the favorite is successfully added.
    */
   @PostMapping("/addFavorite/{uid}/{cid}")
-  public ResponseEntity<Void> addFavorite(@PathVariable long uid, @PathVariable long cid){
+  public ResponseEntity<Void> addFavorite(@PathVariable long uid, @PathVariable long cid) {
     logger.info("Adding favorite for user with id: {} and course with id: {}", uid, cid);
     int status = 200;
     User user = userRepo.getUsersById(uid);
@@ -90,10 +96,10 @@ public class FavoritesController {
     Favorite favorite = new Favorite(user, course);
     if (repo.existsByCourse_IdAndUser_Id(cid, uid)) {
       status = 400;
-    } else if ( user == null || course == null) {
-        status = 404;
-        } else {
-        repo.save(favorite);
+    } else if (user == null || course == null) {
+      status = 404;
+    } else {
+      repo.save(favorite);
     }
     return ResponseEntity.status(status).body(null);
   }

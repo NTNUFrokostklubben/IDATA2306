@@ -46,6 +46,7 @@ public class Course implements Serializable {
   public long getId() {
     return id;
   }
+
   /**
    * Gets the level title of the course.
    *

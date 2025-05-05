@@ -9,11 +9,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
- * Represents the ratings made by a user, associated with a course
+ * Represents the ratings made by a user, associated with a course.
  */
 
 @Entity
@@ -24,7 +26,8 @@ public class UserCourse {
   private Long id;
   @OneToOne
   private Review review;
-  private Date date;
+  @Temporal(TemporalType.TIMESTAMP)
+  private Timestamp timestamp;
   @ManyToOne
   @JoinColumn(nullable = false)
   private Course course;
@@ -34,7 +37,7 @@ public class UserCourse {
 
   @PrePersist
   protected void onCreate() {
-    this.date = new Date(System.currentTimeMillis());
+    this.timestamp = new Timestamp(System.currentTimeMillis());
   }
 
   /**
@@ -70,8 +73,8 @@ public class UserCourse {
      *
      * @return the date
      */
-    public Date getDate() {
-        return date;
+    public Timestamp getTimestamp() {
+      return this.timestamp;
     }
 
   /**
@@ -115,6 +118,7 @@ public class UserCourse {
     }
     this.user = user;
   }
+
 
 
 }

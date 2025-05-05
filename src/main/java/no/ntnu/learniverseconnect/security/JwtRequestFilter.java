@@ -35,42 +35,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
   @Autowired
   private JwtUtil jwtUtil;
 
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                  FilterChain filterChain)
-  throws ServletException, IOException {
-    String jwtToken = getJwtToken(request);
-    String username = jwtToken != null ? getUsernameFrom(jwtToken) : null;
-
-    if (username != null && notAuthenticatedYet()) {
-      UserDetails userDetails = getUserDetailsFromDatabase(username);
-      if (jwtUtil.validateToken(jwtToken, userDetails)) {
-        registerUserAsAuthenticated(request, userDetails);
-      }
-    }
-
-    filterChain.doFilter(request, response);
-  }
-
-  private UserDetails getUserDetailsFromDatabase(String username) {
-    UserDetails userDetails = null;
-    try {
-      userDetails = userDetailsService.loadUserByUsername(username);
-    } catch (UsernameNotFoundException e) {
-      logger.warn("User " + username + " not found in the database");
-    }
-    return userDetails;
-  }
-
-  private String getJwtToken(HttpServletRequest request) {
-    final String authorizationHeader = request.getHeader("Authorization");
-    String jwt = null;
-    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-      jwt = stripBearerPrefixFrom(authorizationHeader);
-    }
-    return jwt;
-  }
-
   /**
    * Strip the "Bearer " prefix from the Header "Authorization: Bearer ...
    *
@@ -82,27 +46,92 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     return authorizationHeaderValue.substring(numberOfCharsToStrip);
   }
 
-  private String getUsernameFrom(String jwtToken) {
-    String username = null;
-    try {
-      username = jwtUtil.extractUsername(jwtToken);
-    } catch (MalformedJwtException e) {
-      logger.warn("Malformed JWT: " + e.getMessage());
-    } catch (JwtException e) {
-      logger.warn("Error in the JWT token: " + e.getMessage());
-    }
-    return username;
-  }
-
+  /**
+   * Checks if they are authenticated yet.
+   *
+   * @return if they are authenticated yet
+   */
   private static boolean notAuthenticatedYet() {
     return SecurityContextHolder.getContext().getAuthentication() == null;
   }
 
+  /**
+   * Register the user as authenticated.
+   *
+   * @param request     the request
+   * @param userDetails the user details
+   */
   private static void registerUserAsAuthenticated(HttpServletRequest request,
                                                   UserDetails userDetails) {
     final UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(
         userDetails, null, userDetails.getAuthorities());
     upat.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
     SecurityContextHolder.getContext().setAuthentication(upat);
+  }
+
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                  FilterChain filterChain)
+      throws ServletException, IOException {
+    String jwtToken = getJwtToken(request);
+    String username = jwtToken != null ? getEmailFrom(jwtToken) : null;
+
+    if (username != null && notAuthenticatedYet()) {
+      UserDetails userDetails = getUserDetailsFromDatabase(username);
+      if (jwtUtil.validateToken(jwtToken, userDetails)) {
+        registerUserAsAuthenticated(request, userDetails);
+      }
+    }
+
+    filterChain.doFilter(request, response);
+  }
+
+  /**
+   * Retrieves the user details from the database.
+   *
+   * @param email the identifying email of the user
+   * @return the user details of that user
+   */
+  private UserDetails getUserDetailsFromDatabase(String email) {
+    UserDetails userDetails = null;
+    try {
+      userDetails = userDetailsService.loadUserByUsername(email);
+    } catch (UsernameNotFoundException e) {
+      logger.warn("User " + email + " not found in the database");
+    }
+    return userDetails;
+  }
+
+  /**
+   * Retrieves the JWT token.
+   *
+   * @param request the http servlet request
+   * @return tje JWT token
+   */
+  private String getJwtToken(HttpServletRequest request) {
+    final String authorizationHeader = request.getHeader("Authorization");
+    String jwt = null;
+    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+      jwt = stripBearerPrefixFrom(authorizationHeader);
+    }
+    return jwt;
+  }
+
+  /**
+   * Get the email from the jwt token.
+   *
+   * @param jwtToken the jwt token
+   * @return the email
+   */
+  private String getEmailFrom(String jwtToken) {
+    String username = null;
+    try {
+      username = jwtUtil.extractEmail(jwtToken);
+    } catch (MalformedJwtException e) {
+      logger.warn("Malformed JWT: " + e.getMessage());
+    } catch (JwtException e) {
+      logger.warn("Error in the JWT token: " + e.getMessage());
+    }
+    return username;
   }
 }
