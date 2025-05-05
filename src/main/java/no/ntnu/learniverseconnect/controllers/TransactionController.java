@@ -164,7 +164,6 @@ public class TransactionController {
       }
     transaction.setOfferableCourses(offerableCourse);
     transaction.setUser(user);
-    transaction.setDate(new Date(System.currentTimeMillis()));
     transaction.setPricePaid(offerableCourse.getPrice()* (1- offerableCourse.getDiscount()));
     repo.save(transaction);
     return ResponseEntity.status(201).body("ok");

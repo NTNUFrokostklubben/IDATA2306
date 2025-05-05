@@ -8,7 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  * Represents the ratings made by a user, associated with a course
@@ -30,9 +32,11 @@ public class UserCourse {
   @JoinColumn(nullable = false)
   private User user;
 
-  public UserCourse() {
+  @PrePersist
+  protected void onCreate() {
     this.date = new Date(System.currentTimeMillis());
   }
+
   /**
    * Gets the unique ID of the rating.
    *
