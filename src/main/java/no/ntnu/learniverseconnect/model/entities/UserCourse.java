@@ -1,6 +1,5 @@
 package no.ntnu.learniverseconnect.model.entities;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,8 +25,10 @@ public class UserCourse {
   private Long id;
   @OneToOne
   private Review review;
+
   @Temporal(TemporalType.TIMESTAMP)
   private Timestamp timestamp;
+
   @ManyToOne
   @JoinColumn(nullable = false)
   private Course course;
@@ -35,6 +36,9 @@ public class UserCourse {
   @JoinColumn(nullable = false)
   private User user;
 
+  /**
+   * Sets the current timestamp before persisting the entity.
+   */
   @PrePersist
   protected void onCreate() {
     this.timestamp = new Timestamp(System.currentTimeMillis());
@@ -75,6 +79,7 @@ public class UserCourse {
      */
     public Timestamp getTimestamp() {
       return this.timestamp;
+
     }
 
   /**

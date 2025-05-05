@@ -145,4 +145,5 @@ public class CourseController {
     courseRepo.delete(course);
     return ResponseEntity.status(204).body("Course deleted successfully");
   }
+
 }

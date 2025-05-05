@@ -103,7 +103,22 @@ public class UserCoursesController {
     return ResponseEntity.status(status).body(average);
   }
 
-  //TODO: Fix these methods so they dont say review when userCourse is meant
+
+
+    /**
+     * Get all user courses associated with a course.
+     * @param cid the course to get by
+     * @return the list of courses a course is associated with.
+     */
+  @GetMapping("/userCourses/course/{cid}")
+    public ResponseEntity<List<UserCourse>> getAllByCourse(@PathVariable long cid){
+        List<UserCourse> userCourseList = userCoursesRepo.getAllByCourse_Id(cid);
+        int status = 404;
+        if(!userCourseList.isEmpty()){
+         status = 200;
+        }
+        return ResponseEntity.status(status).body(userCourseList);
+    }
   /**
    * Get all reviews from the database.
    *
@@ -115,6 +130,7 @@ public class UserCoursesController {
     return ResponseEntity.status(200).body(userCoursesRepo.findAll());
   }
 
+   //TODO: Fix these methods so they dont say review when userCourse is meant
   /**
    * Get the last ten reviews from the database.
    *

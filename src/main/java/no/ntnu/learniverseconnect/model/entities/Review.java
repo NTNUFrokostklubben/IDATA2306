@@ -31,6 +31,7 @@ public class Review {
     return id;
   }
 
+
   public void setDate() {
     this.reviewDate = new Date(System.currentTimeMillis());
   }

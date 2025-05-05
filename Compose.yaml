@@ -1,8 +1,52 @@
 services:
-  mysql:
-    image: 'mysql:latest'
-    container_name: 'learniverseDatabase'
-    env_file:
-      - .env
+  app:
+    build: .
+    container_name: learniverse-app
+    hostname: learniverse-app
     ports:
-      - '3306:3306'
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - learniverse-network
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/${MYSQL_DATABASE}
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    volumes:
+      - ./saved/images:/usr/share/nginx/html/uploads/images
+  mysql:
+    image: 'mysql:8.0'
+    container_name: learniverse-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - '3307:3306'
+    networks:
+      - learniverse-network
+    volumes:
+      - mysql_data:/var/lib/mysql
+  nginx:
+    image: nginx:latest
+    container_name: learniverse-nginx
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./saved/images:/usr/share/nginx/html/uploads/images
+    depends_on:
+      - mysql
+      - app
+    networks:
+        - learniverse-network
+networks:
+  learniverse-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
