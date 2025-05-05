@@ -3,7 +3,7 @@ package no.ntnu.learniverseconnect.controllers;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.CourseProvider;
-import no.ntnu.learniverseconnect.model.repos.courseProviderRepo;
+import no.ntnu.learniverseconnect.model.repos.CourseProviderRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +36,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CourseProviderController {
 
-  courseProviderRepo repo;
   public static final Logger logger = LoggerFactory.getLogger(CourseProviderController.class);
+  CourseProviderRepo repo;
 
   @Autowired
-  public CourseProviderController(courseProviderRepo repo) {
+  public CourseProviderController(CourseProviderRepo repo) {
     this.repo = repo;
   }
 
@@ -55,7 +55,7 @@ public class CourseProviderController {
     return ResponseEntity.status(200).body(repo.findAll());
   }
 
-
+  ;
 
   /**
    * Returns a course provider with the given id.

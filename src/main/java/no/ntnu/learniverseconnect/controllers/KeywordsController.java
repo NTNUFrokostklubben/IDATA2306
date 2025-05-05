@@ -13,12 +13,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller for handling keywords.
+ */
 @RestController
 public class KeywordsController {
+  private static final Logger logger = LoggerFactory.getLogger(KeywordsController.class);
   private final KeywordsRepo keywordsRepo;
   private final CourseRepo courseRepo;
-  private static final Logger logger = LoggerFactory.getLogger(KeywordsController.class);
 
+  /**
+   * Constructor for KeywordsController.
+   *
+   * @param keywordsRepo the keyword repository
+   * @param courseRepo the course repository
+   * @param userRepo the user repository
+   */
   @Autowired
   public KeywordsController(KeywordsRepo keywordsRepo, CourseRepo courseRepo, UserRepo userRepo) {
     this.keywordsRepo = keywordsRepo;

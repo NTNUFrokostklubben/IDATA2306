@@ -7,6 +7,9 @@ import no.ntnu.learniverseconnect.model.entities.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+/**
+ * The transaction repository.
+ */
 @Repository
 public interface TransactionRepo extends JpaRepository<Transaction, Integer> {
 
@@ -18,7 +21,8 @@ public interface TransactionRepo extends JpaRepository<Transaction, Integer> {
 
   List<Transaction> findAllByOfferableCourses_Course(Course offerableCoursesCourse);
 
-  List<Transaction> findAllByUser_IdAndOfferableCourses_Course(Long userId, Course offerableCoursesCourse);
+  List<Transaction> findAllByUser_IdAndOfferableCourses_Course(Long userId,
+                                                               Course offerableCoursesCourse);
 
   List<Transaction> findAllByOfferableCourses_Provider(CourseProvider provider);
 }

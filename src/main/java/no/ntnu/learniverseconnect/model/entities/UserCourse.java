@@ -13,7 +13,7 @@ import jakarta.persistence.TemporalType;
 import java.sql.Timestamp;
 
 /**
- * Represents the ratings made by a user, associated with a course
+ * Represents the ratings made by a user, associated with a course.
  */
 
 @Entity
@@ -129,7 +129,7 @@ public class UserCourse {
     this.user = user;
   }
 
-  public Timestamp getTimestamp(){
+  public Timestamp getTimestamp() {
     return this.timestamp;
   }
 
