@@ -1,22 +1,24 @@
 package no.ntnu.learniverseconnect.controllers;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Review;
-import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.entities.UserCourse;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.ReviewRepo;
 import no.ntnu.learniverseconnect.model.repos.UserCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,7 +34,7 @@ public class UserCoursesController {
   UserRepo userRepo;
   CourseRepo courseRepo;
     ReviewRepo reviewRepo;
-
+  private static final Logger logger = LoggerFactory.getLogger(UserCoursesController.class);
 
   @Autowired
   public UserCoursesController(UserCoursesRepo userCoursesRepo1, UserRepo userRepo1,
@@ -94,6 +96,51 @@ public class UserCoursesController {
     return ResponseEntity.status(status).body(average);
   }
 
+  //TODO: Fix these methods so they dont say review when userCourse is meant
+  /**
+   * Get all reviews from the database.
+   *
+   * @return all reviews
+   */
+  @GetMapping("/userCourses")
+  public ResponseEntity<Iterable<UserCourse>> getAllReviews(){
+    logger.info("Fetching all reviews");
+    return ResponseEntity.status(200).body(userCoursesRepo.findAll());
+  }
+
+  /**
+   * Get the last ten reviews from the database.
+   *
+   * @return the last ten reviews
+   */
+  @GetMapping("/userCourses/lastReviews")
+  public ResponseEntity<Iterable<UserCourse>> getLastReviews(){
+    logger.info("Fetching the ten last reviews");
+    List<UserCourse> userCourseList = userCoursesRepo.findAll();
+    List<UserCourse> lastReviews = new ArrayList<>();
+    userCourseList.sort((a, b) -> b.getDate().compareTo(a.getDate()));
+    lastReviews.addAll(userCourseList.subList(0, Math.min(10, userCourseList.size())));
+    return ResponseEntity.status(200).body(lastReviews);
+  }
+
+  /**
+   * Adds a new review to the database
+   *
+   * @param userCourse the review to add
+   * @return a response entity with the status of the operation
+   */
+  @PostMapping("/userCourses/review")
+  public ResponseEntity<String> addNewReview(@RequestBody UserCourse userCourse) {
+    this.userCoursesRepo.save(userCourse);
+    if (userCoursesRepo.existsById(Math.toIntExact(userCourse.getId()))) {
+      return ResponseEntity.status(HttpStatus.CREATED).body(
+          "Review with id " + userCourse.getId() + " saved");
+    } else {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+
   /**
    * Get all user courses associated with a course.
    *
@@ -109,7 +156,14 @@ public class UserCoursesController {
     }
     return ResponseEntity.status(status).body(userCourseList);
   }
-
+    /**
+     * Adds a new rating to a user course.
+     *
+     * @param review the review to add/replace in the user course
+        * @param uid    the user making the review
+     * @param cid    the course id to add the review to
+     * @return a response entity with the status of the operation.
+     */
   @Transactional
   @PutMapping("/userCourses/addRating/{uid}/{cid}")
   public ResponseEntity<Void> addRating(@RequestBody Review review, @PathVariable long uid,
@@ -117,6 +171,7 @@ public class UserCoursesController {
     if(review == null){
       return ResponseEntity.status(400).build();
     }
+    // Makes sure the minimum review is 1 one star.
     if (review.getRating() < 1) {
       review.setRating(1);
     }
@@ -132,4 +187,3 @@ public class UserCoursesController {
 
   }
 }
-

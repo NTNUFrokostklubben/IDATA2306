@@ -5,7 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import java.sql.Date;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import java.sql.Timestamp;
 
 
 /**
@@ -28,8 +31,18 @@ public class Transaction {
   private User user;
   @ManyToOne
   private OfferableCourses offerableCourses;
-  private Date date;
+  @Temporal(TemporalType.TIMESTAMP)
+  private Timestamp timeOfTransaction;
   private float pricePaid;
+
+
+  /**
+   * Sets the current timestamp before persisting the entity.
+   */
+  @PrePersist
+  protected void onCreate() {
+    this.timeOfTransaction = new Timestamp(System.currentTimeMillis());
+  }
 
   /**
    * Gets the user associated with this transaction.
@@ -72,17 +85,17 @@ public class Transaction {
    *
    * @return The date when the transaction occurred.
    */
-  public Date getDate() {
-    return date;
+  public Timestamp getTimeOfTransaction() {
+    return this.timeOfTransaction;
   }
 
   /**
    * Sets the date of the transaction.
    *
-   * @param date The date when the transaction occurred.
+   * @param timestamp The date when the transaction occurred.
    */
-  public void setDate(Date date) {
-    this.date = date;
+  public void setTimeOfTransaction(Timestamp timestamp) {
+    this.timeOfTransaction = timestamp;
   }
 
   /**
