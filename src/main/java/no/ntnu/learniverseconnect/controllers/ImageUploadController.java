@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * Controller for handling image uploads.
+ */
 @RestController
 @RequestMapping("/images")
 @CrossOrigin(origins = "http://localhost:3000")

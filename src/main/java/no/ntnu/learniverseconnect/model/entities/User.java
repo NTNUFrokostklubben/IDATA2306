@@ -1,13 +1,20 @@
 package no.ntnu.learniverseconnect.model.entities;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.sql.Timestamp;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Represents a user in the system with a unique id.
@@ -21,12 +28,30 @@ public class User {
   private String name;
   private String email;
   private String passwordHash;
-  private String role;
+  private boolean active = true;
+
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "user_role",
+      joinColumns = @JoinColumn(name = "user_id"),
+      inverseJoinColumns = @JoinColumn(name = "role_id")
+  )
+  private Set<Role> roles = new LinkedHashSet<>();
+
   private String profilePicture;
-  //TODO: Change to enum
   @Temporal(TemporalType.TIMESTAMP)
   private Timestamp userCreated;
 
+  public User() {
+  }
+
+  /**
+   * Constructor for creating a new user with the specified name, password, and email.
+   */
+  public User(String name, String password, String email) {
+    this.name = name;
+    this.passwordHash = password;
+    this.email = email;
+  }
 
   /**
    * Sets the current timestamp before persisting the entity.
@@ -37,7 +62,7 @@ public class User {
   }
 
   /**
-   * Gets the id of the user
+   * Gets the id of the user.
    *
    * @return the id of the user
    */
@@ -46,9 +71,9 @@ public class User {
   }
 
   /**
-   * Gets the timestamp of when the user was created
+   * Gets the timestamp of when the user was created.
    */
-  public Timestamp getUserCreated(){
+  public Timestamp getUserCreated() {
     return this.userCreated;
   }
 
@@ -58,7 +83,7 @@ public class User {
    * @return the name
    */
   public String getName() {
-    return name;
+    return this.name;
   }
 
   /**
@@ -76,7 +101,7 @@ public class User {
    * @return the email
    */
   public String getEmail() {
-    return email;
+    return this.email;
   }
 
   /**
@@ -94,7 +119,7 @@ public class User {
    * @return the password hash
    */
   public String getPasswordHash() {
-    return passwordHash;
+    return this.passwordHash;
   }
 
   /**
@@ -114,17 +139,17 @@ public class User {
    *
    * @return the role
    */
-  public String getRole() {
-    return role;
+  public Set<Role> getRole() {
+    return roles;
   }
 
   /**
    * Sets the role of the user.
    *
-   * @param role the role to set
+   * @param roles the role to set
    */
-  public void setRole(String role) {
-    this.role = role;
+  public void setRole(Set<Role> roles) {
+    this.roles = roles;
   }
 
   /**
@@ -144,4 +169,59 @@ public class User {
   public void setProfilePicture(String profilePicture) {
     this.profilePicture = profilePicture;
   }
+
+  /**
+   * Checks if the user is active.
+   *
+   * @return true if the user is active, false otherwise
+   */
+  public boolean isActive() {
+    return active;
+  }
+
+  /**
+   * Changes the user status.
+   *
+   * @param active the status to set
+   */
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
+  /**
+   * Add a role to the user.
+   *
+   * @param role Role to add
+   */
+  public void addRole(Role role) {
+    this.roles.add(role);
+  }
+
+  /**
+   * Check if this user is an admin.
+   *
+   * @return True if the user has admin role, false otherwise
+   */
+  public boolean isAdmin() {
+    return this.hasRole("ROLE_ADMIN");
+  }
+
+  /**
+   * Check if the user has a specified role.
+   *
+   * @param roleName Name of the role
+   * @return True if hte user has the role, false otherwise.
+   */
+  public boolean hasRole(String roleName) {
+    boolean found = false;
+    Iterator<Role> it = roles.iterator();
+    while (!found && it.hasNext()) {
+      Role role = it.next();
+      if (role.getName().equals(roleName)) {
+        found = true;
+      }
+    }
+    return found;
+  }
+
 }
