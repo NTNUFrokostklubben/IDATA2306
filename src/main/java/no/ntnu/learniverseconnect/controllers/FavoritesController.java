@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.entities.Favorite;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -101,4 +103,39 @@ public class FavoritesController {
     }
     return ResponseEntity.status(status).body(null);
   }
+
+
+    /**
+     * Removes a course from a user's list of favorites.
+     *
+     * @param uid The unique identifier of the user.
+     * @param cid The unique identifier of the course.
+     * @return A ResponseEntity with a 200 status if the favorite is successfully removed.
+     */
+    @Transactional
+    @DeleteMapping("/removeFavorite/{uid}/{cid}")
+    public ResponseEntity<Void> removeFavorite(@PathVariable long uid, @PathVariable long cid){
+      logger.info("Removing favorite for user with id: {} and course with id: {}", uid, cid);
+      int status = 200;
+      if (repo.existsByCourse_IdAndUser_Id(cid, uid)) {
+        repo.deleteFavoriteByCourse_IdAndUser_Id(cid, uid);
+      } else {
+        status = 400;
+      }
+      return ResponseEntity.status(status).body(null);
+    }
+
+  /**
+   * Check if a course is already favorited by a user.
+   *
+   * @param uid The unique identifier of the user.
+    * @param cid The unique identifier of the course.
+   */
+    @GetMapping("/isFavorited/{uid}/{cid}")
+    public ResponseEntity<Boolean> isFavorited(@PathVariable long uid, @PathVariable long cid){
+      logger.info("Checking if course with id: {} is favorited by user with id: {}", cid, uid);
+      int status = 200;
+      boolean isFavorited = repo.existsByCourse_IdAndUser_Id(cid, uid);
+      return ResponseEntity.status(status).body(isFavorited);
+    }
 }

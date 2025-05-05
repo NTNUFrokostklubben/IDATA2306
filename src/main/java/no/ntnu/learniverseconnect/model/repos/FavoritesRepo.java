@@ -19,4 +19,6 @@ public interface FavoritesRepo extends JpaRepository<Favorite, Integer> {
   List<Favorite> findFavoritesByUser_Id(Long userId);
 
   boolean existsByCourse_IdAndUser_Id(long courseId, Long userId);
+
+  void deleteFavoriteByCourse_IdAndUser_Id(long courseId, Long userId);
 }
