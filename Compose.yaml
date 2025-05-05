@@ -13,6 +13,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/${MYSQL_DATABASE}
       - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
       - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - ./saved/images:/usr/share/nginx/html/uploads/images
   mysql:
     image: 'mysql:8.0'
     container_name: learniverse-mysql
