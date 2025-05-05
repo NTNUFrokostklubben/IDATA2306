@@ -5,8 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Represents a favorite course for a user.
+ */
 @Entity
 public class Favorite {
   @Id
@@ -18,14 +20,15 @@ public class Favorite {
   @ManyToOne
   private User user;
 
-  public Favorite(User user, Course course){
+  public Favorite(User user, Course course) {
     this.user = user;
     this.course = course;
   }
 
-  public Favorite() {
-
-  }
+  /**
+   * Default constructor for JPA.
+   */
+  public Favorite() {}
 
   /**
    * Gets the unique ID of the favorite.

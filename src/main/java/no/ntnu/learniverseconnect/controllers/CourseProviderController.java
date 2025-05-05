@@ -36,8 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CourseProviderController {
 
-  CourseProviderRepo repo;
   public static final Logger logger = LoggerFactory.getLogger(CourseProviderController.class);
+  CourseProviderRepo repo;
 
   @Autowired
   public CourseProviderController(CourseProviderRepo repo) {
