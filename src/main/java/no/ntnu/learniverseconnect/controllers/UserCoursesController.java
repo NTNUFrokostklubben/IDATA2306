@@ -125,7 +125,7 @@ public class UserCoursesController {
     logger.info("Fetching the ten last reviews");
     List<UserCourse> userCourseList = userCoursesRepo.findAll();
     List<UserCourse> lastReviews = new ArrayList<>();
-    userCourseList.sort((a, b) -> b.getDate().compareTo(a.getDate()));
+    userCourseList.sort((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()));
     lastReviews.addAll(userCourseList.subList(0, Math.min(10, userCourseList.size())));
     return ResponseEntity.status(200).body(lastReviews);
   }

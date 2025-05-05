@@ -25,7 +25,7 @@ public class AccessUserDetails implements UserDetails {
    * @param user The user to copy data from
    */
   public AccessUserDetails(User user) {
-    this.username = user.getName();
+    this.username = user.getEmail();
     this.password = user.getPasswordHash();
     this.isActive = user.isActive();
     this.convertRoles(user.getRole());
