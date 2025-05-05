@@ -52,41 +52,41 @@ public class UserController {
   }
 
   /**
-   * Get the user that matches the username.
+   * Get the user that matches the email.
    *
-   * @param name the username of the user to fetch
-   * @return the user with that username
+   * @param email the email of the user to fetch
+   * @return the user with that email
    */
-  @GetMapping("/userProfilePicture/{name}")
-  public ResponseEntity<String> getProfilePicByUsername(@PathVariable String name){
-    Optional<User> userOptional = repo.findUserByName(name);
+  @GetMapping("/userProfilePicture/{email}")
+  public ResponseEntity<String> getProfilePicByEmail(@PathVariable String email){
+    Optional<User> userOptional = repo.findUserByEmail(email);
     if (userOptional.isEmpty()){
-      logger.warn("User with username {} not found", name);
+      logger.warn("User with email {} not found", email);
       return ResponseEntity.status(404).body(null);
     } else{
       User user = userOptional.get();
       String profilePicture = user.getProfilePicture();
       if (profilePicture == null || profilePicture.isEmpty()){
-        logger.warn("User with username {} has no profile picture", name);
+        logger.warn("User with email {} has no profile picture", email);
         return ResponseEntity.status(204).body(null);
       } else {
-        logger.info("Fetching profile picture for user with name: {}", name);
+        logger.info("Fetching profile picture for user with email: {}", email);
         return ResponseEntity.status(200).body(user.getProfilePicture());
       }
     }
   }
 
   /**
-   * Get the user that matches the username.
+   * Get the user id that matches the email.
    *
-   * @param name the username of the user to fetch
-   * @return the user with that username
+   * @param name the email of the user to fetch
+   * @return the user with that email
    */
   @GetMapping("/userIdByName/{name}")
-  public ResponseEntity<Long> getIdByUsername(@PathVariable String name){
+  public ResponseEntity<Long> getIdByEmail(@PathVariable String name){
     Optional<User> userOptional = repo.findUserByName(name);
     if (userOptional.isEmpty()){
-      logger.warn("ID of user with username {} not found", name);
+      logger.warn("ID of user with email {} not found", name);
       return ResponseEntity.status(404).body(null);
     } else{
       User user = userOptional.get();

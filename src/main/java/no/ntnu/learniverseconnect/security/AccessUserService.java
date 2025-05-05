@@ -28,25 +28,18 @@ public class AccessUserService implements UserDetailsService {
   RoleRepo roleRepo;
 
   @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    Optional<User> user = userRepo.findUserByName(username);
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    Optional<User> user = userRepo.findUserByEmail(email);
     if (user.isPresent()) {
       return new AccessUserDetails(user.get());
     } else {
-      throw new UsernameNotFoundException("User " + username + " not found");
+      throw new UsernameNotFoundException("User with email: " + email + " not found");
     }
   }
 
-  public User getSessionUser(){
-    SecurityContext securityContext = SecurityContextHolder.getContext();
-    Authentication authentication = securityContext.getAuthentication();
-    String username = authentication.getName();
-    return userRepo.findUserByName(username).orElse(null);
-  }
-
-  private boolean userExists(String username){
+  private boolean userExists(String email){
     try{
-      loadUserByUsername(username);
+      loadUserByUsername(email);
       return true;
     } catch (UsernameNotFoundException ex){
       return false;
@@ -55,13 +48,13 @@ public class AccessUserService implements UserDetailsService {
 
   public void tryCreateNewUser(String username, String password, String email) throws IOException{
     String errormessage;
-    if(username.isEmpty()){
+    String emailCheck = checkEmailRequirements(email);
+    if(emailCheck != null){
+      errormessage = emailCheck;
+    } else if (username == null || username.isEmpty()){
       errormessage = "Username cannot be empty";
-    } else if (userExists(username)){
-      errormessage = "Username is already taken";
     } else{
       errormessage = checkPasswordRequirements(password);
-      //TODO add gard for emails as well
       if (errormessage == null){
         createUser(username, password, email);
       }
@@ -80,6 +73,21 @@ public class AccessUserService implements UserDetailsService {
     }
     return errormessage;
   }
+
+  public String checkEmailRequirements(String email){
+    String errormessage = null;
+    if (email == null || email.isEmpty()){
+      errormessage = "Email cannot be empty";
+    } else if (!email.contains("@")){
+      errormessage = "Email must contain @";
+    } else if (!email.contains(".")){
+      errormessage = "Email must contain .";
+    } else if (userRepo.findUserByEmail(email).isPresent()) {
+      errormessage = "Email already exists";
+    }
+    return errormessage;
+  }
+
 
   private void createUser(String username, String password, String email){
     Role role = roleRepo.findOneByName("ROLE_USER");

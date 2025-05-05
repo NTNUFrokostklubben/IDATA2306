@@ -62,9 +62,10 @@ public class JwtUtil {
    * @param token JWT token
    * @return Username
    */
-  public String extractUsername(String token) throws JwtException{
+  public String extractEmail(String token) throws JwtException{
     return extractClaim(token, Claims::getSubject);
   }
+  //TODO this might be wrong
 
   /**
    * Extracts the claim based on token.
@@ -117,7 +118,7 @@ public class JwtUtil {
    * @throws JwtException
    */
   public boolean validateToken(String token, UserDetails userDetails) throws JwtException{
-    final String username = extractUsername(token);
+    final String username = extractEmail(token);
     Boolean isValid = (userDetails != null && username.equals(userDetails.getUsername())
                       && !isTokenExpired(token));
     return isValid;

@@ -25,31 +25,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-  /**
-   * A service providing our users from the database.
-   */
-//  @Autowired
-//  private UserDetailsService userDetailsService;
-
-//  @Bean
-//  public UserDetailsService userDetailsService() {
-//    return super.userDetailsService();
-//  }
 
   @Autowired
   private JwtRequestFilter jwtRequestFilter;
 
-  /**
-   * This method will be called automatically by the framework to find the authentication to use.
-   * Here we tell that we want to load users from a database
-   *
-   * @param auth Authentication builder
-   * @throws Exception When user service is not found
-   */
-//  @Autowired
-//  protected void configureAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-//    auth.userDetailsService(userDetailsService);
-//  }
 
   /**
    * This method will be called automatically by the framework to find the authentication to use.

@@ -40,14 +40,14 @@ public class AuthenticationController {
   public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest authenticationRequest){
     try{
       authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-          authenticationRequest.getUsername(),
+          authenticationRequest.getEmail(),
           authenticationRequest.getPassword()));
     } catch (BadCredentialsException e){
       System.out.println(e.getMessage());
       return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
     }
     final UserDetails userDetails = userService.loadUserByUsername(
-        authenticationRequest.getUsername());
+        authenticationRequest.getEmail());
     final String jwt = jwtUtil.generateToken(userDetails);
     return ResponseEntity.ok(new AuthenticationResponse(jwt));
   }
@@ -58,8 +58,7 @@ public class AuthenticationController {
     ResponseEntity<?> response;
     try{
       userService.tryCreateNewUser(userDto.getName(), userDto.getPasswordHash(), userDto.getEmail());
-      AuthenticationRequest signinNewUser = new AuthenticationRequest(userDto.getName(), userDto.getPasswordHash());
-      response = authenticate(signinNewUser);
+      response = authenticate(new AuthenticationRequest(userDto.getEmail(), userDto.getPasswordHash()));
     } catch (IOException e){
       response = new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }

@@ -40,7 +40,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                                   FilterChain filterChain)
   throws ServletException, IOException {
     String jwtToken = getJwtToken(request);
-    String username = jwtToken != null ? getUsernameFrom(jwtToken) : null;
+    String username = jwtToken != null ? getEmailFrom(jwtToken) : null;
 
     if (username != null && notAuthenticatedYet()) {
       UserDetails userDetails = getUserDetailsFromDatabase(username);
@@ -52,12 +52,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
-  private UserDetails getUserDetailsFromDatabase(String username) {
+  private UserDetails getUserDetailsFromDatabase(String email) {
     UserDetails userDetails = null;
     try {
-      userDetails = userDetailsService.loadUserByUsername(username);
+      userDetails = userDetailsService.loadUserByUsername(email);
     } catch (UsernameNotFoundException e) {
-      logger.warn("User " + username + " not found in the database");
+      logger.warn("User " + email + " not found in the database");
     }
     return userDetails;
   }
@@ -82,10 +82,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     return authorizationHeaderValue.substring(numberOfCharsToStrip);
   }
 
-  private String getUsernameFrom(String jwtToken) {
+  private String getEmailFrom(String jwtToken) {
     String username = null;
     try {
-      username = jwtUtil.extractUsername(jwtToken);
+      username = jwtUtil.extractEmail(jwtToken);
     } catch (MalformedJwtException e) {
       logger.warn("Malformed JWT: " + e.getMessage());
     } catch (JwtException e) {
