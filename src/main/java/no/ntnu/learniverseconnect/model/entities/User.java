@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -35,6 +36,7 @@ public class User {
       joinColumns = @JoinColumn(name = "user_id"),
       inverseJoinColumns = @JoinColumn(name = "role_id")
   )
+  @JsonManagedReference
   private Set<Role> roles = new LinkedHashSet<>();
 
   private String profilePicture;
