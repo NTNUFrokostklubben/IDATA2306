@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,6 +19,7 @@ public class Role {
   private Long id;
   private String name;
   @ManyToMany(mappedBy = "roles")
+  @JsonBackReference
   private Set<User> users = new LinkedHashSet<>();
 
   /**

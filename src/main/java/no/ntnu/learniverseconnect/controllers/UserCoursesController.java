@@ -107,45 +107,45 @@ public class UserCoursesController {
 
 
   /**
-   * Get all reviews from the database.
+   * Get all user courses from the database.
    *
-   * @return all reviews
+   * @return all user courses
    */
   @GetMapping("/userCourses")
-  public ResponseEntity<Iterable<UserCourse>> getAllReviews() {
-    logger.info("Fetching all reviews");
+  public ResponseEntity<Iterable<UserCourse>> getAllUserCourses() {
+    logger.info("Fetching all user Courses");
     return ResponseEntity.status(200).body(userCoursesRepo.findAll());
   }
 
   //TODO: Fix these methods so they dont say review when userCourse is meant
 
   /**
-   * Get the last ten reviews from the database.
+   * Get the last ten user courses from the database.
    *
-   * @return the last ten reviews
+   * @return the last ten user courses
    */
   @GetMapping("/userCourses/lastReviews")
-  public ResponseEntity<Iterable<UserCourse>> getLastReviews() {
-    logger.info("Fetching the ten last reviews");
+  public ResponseEntity<Iterable<UserCourse>> getLastTenUserCourses() {
+    logger.info("Fetching the ten last user courses");
     List<UserCourse> userCourseList = userCoursesRepo.findAll();
-    List<UserCourse> lastReviews = new ArrayList<>();
+    List<UserCourse> lastTenUserCourses = new ArrayList<>();
     userCourseList.sort((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()));
-    lastReviews.addAll(userCourseList.subList(0, Math.min(10, userCourseList.size())));
-    return ResponseEntity.status(200).body(lastReviews);
+    lastTenUserCourses.addAll(userCourseList.subList(0, Math.min(10, userCourseList.size())));
+    return ResponseEntity.status(200).body(lastTenUserCourses);
   }
 
   /**
-   * Adds a new review to the database.
+   * Adds a new user course to the database.
    *
-   * @param userCourse the review to add
+   * @param userCourse the user course to add
    * @return a response entity with the status of the operation
    */
-  @PostMapping("/userCourses/review")
+  @PostMapping("/userCourses/add")
   public ResponseEntity<String> addNewReview(@RequestBody UserCourse userCourse) {
     this.userCoursesRepo.save(userCourse);
     if (userCoursesRepo.existsById(Math.toIntExact(userCourse.getId()))) {
       return ResponseEntity.status(HttpStatus.CREATED).body(
-          "Review with id " + userCourse.getId() + " saved");
+          "User course with id " + userCourse.getId() + " saved");
     } else {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
