@@ -151,6 +151,30 @@ public class UserCoursesController {
     }
   }
 
+    /**
+     * Adds a new user course to the database.
+     *
+     * @param uid the user id
+     * @param cid the course id
+     * @return a response entity with the status of the operation
+     */
+
+  @PostMapping("/userCourses/add/{uid}/{cid}")
+  public ResponseEntity<String> addNewUserCourse(@PathVariable long uid,
+                                             @PathVariable long cid) {
+    UserCourse userCourse = new UserCourse();
+    userCourse.setCourse(courseRepo.getCoursesById(cid));
+    userCourse.setUser(userRepo.getUsersById(uid));
+
+    this.userCoursesRepo.save(userCourse);
+    if (userCoursesRepo.existsById(Math.toIntExact(userCourse.getId()))) {
+      return ResponseEntity.status(HttpStatus.CREATED).body(
+          "User course with id " + userCourse.getId() + " saved");
+    } else {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
 
   /**
    * Get all user courses associated with a course.
@@ -188,7 +212,7 @@ public class UserCoursesController {
       review.setRating(1);
     }
     review.setDate();
-    UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(cid, uid);
+    UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(uid, cid);
     if (userCourse.getReview() != null) {
       reviewRepo.delete(userCourse.getReview());
     }
@@ -197,5 +221,23 @@ public class UserCoursesController {
     reviewRepo.save(review);
     return ResponseEntity.status(200).build();
 
+  }
+
+    /**
+     * Checks if a user is enrolled in a course.
+     *
+     * @param uid the user id
+     * @param cid the course id
+     * @return true if the user is enrolled, false otherwise
+     */
+
+  @GetMapping("/userCourses/user/{uid}/course/{cid}")
+  public ResponseEntity<Boolean> isUserEnrolledInCourse(@PathVariable long uid, @PathVariable long cid) {
+    UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(uid, cid);
+    if (userCourse != null) {
+      return ResponseEntity.status(200).body(true);
+    } else {
+      return ResponseEntity.status(404).body(false);
+    }
   }
 }
