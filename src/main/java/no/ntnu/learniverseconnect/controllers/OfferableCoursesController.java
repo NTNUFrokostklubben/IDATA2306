@@ -1,7 +1,12 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
+import no.ntnu.learniverseconnect.model.dto.CourseWithMinPriceAndRatingDto;
+import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
+import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class OfferableCoursesController {
 
   private OfferableCoursesRepo repo;
+  private CourseRepo courseRepo;
+
 
   @Autowired
-  public OfferableCoursesController(OfferableCoursesRepo repo) {
+  public OfferableCoursesController(OfferableCoursesRepo repo, CourseRepo courseRepor) {
     this.repo = repo;
+    this.courseRepo = courseRepo;
   }
 
   /**
@@ -86,11 +94,11 @@ public class OfferableCoursesController {
     }
   }
 
-
   /**
    * Returns the lowest price of offerable courses for a given course id.
    */
-  @GetMapping("/offerableCourses/coursePrice/{cid}")
+  //TODO delete?
+  @GetMapping("/offerableCourses/lowestPrice/course/{cid}")
   public ResponseEntity<Float> getOfferablePriceByCourseId(@PathVariable long cid) {
     List<OfferableCourses> list = repo.getAllByCourse_Id(cid);
 
@@ -98,20 +106,37 @@ public class OfferableCoursesController {
     if (list.isEmpty()) {
       return ResponseEntity.status(404).body(null);
     } else {
-      lowestPrice = list.get(0).getPrice();
-    }
-
-    for (OfferableCourses oc : list) {
-      if (lowestPrice > oc.getPrice()) {
-        lowestPrice = oc.getPrice();
-      }
-      if (lowestPrice > oc.getDiscount()) {
-        lowestPrice = oc.getDiscount();
+      lowestPrice = list.get(0).getPrice()- (1*list.get(0).getDiscount()/100);
+      for (OfferableCourses oc : list) {
+        float discountedPrice = oc.getPrice() - (1 * oc.getDiscount() / 100);
+        if (discountedPrice < lowestPrice) {
+          lowestPrice = discountedPrice;
+        }
       }
     }
     return ResponseEntity.status(200).body(lowestPrice);
+  }
 
+  /**
+   * Returns the lowest price of offerable courses for a given course id.
+   */
+  //TODO delete?
+  @GetMapping("/offerableCourses/closestDate/course/{cid}")
+  public ResponseEntity<Date> getOfferableClosestDateByCourseID(@PathVariable long cid) {
+    List<OfferableCourses> list = repo.getAllByCourse_Id(cid);
 
+    Date closestDate;
+    if (list.isEmpty()) {
+      return ResponseEntity.status(404).body(null);
+    } else {
+      closestDate = list.get(0).getDate();
+      for (OfferableCourses oc : list) {
+        if (oc.getDate().before(closestDate)) {
+          closestDate = oc.getDate();
+        }
+      }
+    }
+    return ResponseEntity.status(200).body(closestDate);
   }
 
   /**

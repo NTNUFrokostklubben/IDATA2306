@@ -33,15 +33,15 @@ public class UserCoursesController {
   UserCoursesRepo userCoursesRepo;
   UserRepo userRepo;
   CourseRepo courseRepo;
-  ReviewRepo reviewRepo;
+    ReviewRepo reviewRepo;
   private static final Logger logger = LoggerFactory.getLogger(UserCoursesController.class);
 
   /**
    * Constructor for UserCoursesController.
    *
    * @param userCoursesRepo1 the repository for user courses
-   * @param userRepo1        the repository for users
-   * @param courseRepo1      the repository for courses
+   * @param userRepo1 the repository for users
+   * @param courseRepo1 the repository for courses
    */
   @Autowired
   public UserCoursesController(UserCoursesRepo userCoursesRepo1, UserRepo userRepo1,
@@ -105,7 +105,20 @@ public class UserCoursesController {
 
 
 
-
+    /**
+     * Get all user courses associated with a course.
+     * @param cid the course to get by
+     * @return the list of courses a course is associated with.
+     */
+  @GetMapping("/userCourses/course/{cid}")
+    public ResponseEntity<List<UserCourse>> getAllByCourse(@PathVariable long cid){
+        List<UserCourse> userCourseList = userCoursesRepo.getAllByCourse_Id(cid);
+        int status = 404;
+        if(!userCourseList.isEmpty()){
+         status = 200;
+        }
+        return ResponseEntity.status(status).body(userCourseList);
+    }
   /**
    * Get all reviews from the database.
    *
@@ -117,8 +130,7 @@ public class UserCoursesController {
     return ResponseEntity.status(200).body(userCoursesRepo.findAll());
   }
 
-  //TODO: Fix these methods so they dont say review when userCourse is meant
-
+   //TODO: Fix these methods so they dont say review when userCourse is meant
   /**
    * Get the last ten reviews from the database.
    *
@@ -151,36 +163,19 @@ public class UserCoursesController {
     }
   }
 
-
-  /**
-   * Get all user courses associated with a course.
-   *
-   * @param cid the course to get by
-   * @return the list of courses a course is associated with.
-   */
-  @GetMapping("/userCourses/course/{cid}")
-  public ResponseEntity<List<UserCourse>> getAllByCourse(@PathVariable long cid) {
-    List<UserCourse> userCourseList = userCoursesRepo.getAllByCourse_Id(cid);
-    int status = 404;
-    if (!userCourseList.isEmpty()) {
-      status = 200;
-    }
-    return ResponseEntity.status(status).body(userCourseList);
-  }
-
-  /**
-   * Adds a new rating to a user course.
-   *
-   * @param review the review to add/replace in the user course
-   * @param uid    the user making the review
-   * @param cid    the course id to add the review to
-   * @return a response entity with the status of the operation.
-   */
+    /**
+     * Adds a new rating to a user course.
+     *
+     * @param review the review to add/replace in the user course
+        * @param uid    the user making the review
+     * @param cid    the course id to add the review to
+     * @return a response entity with the status of the operation.
+     */
   @Transactional
   @PutMapping("/userCourses/addRating/{uid}/{cid}")
   public ResponseEntity<Void> addRating(@RequestBody Review review, @PathVariable long uid,
                                         @PathVariable long cid) {
-    if (review == null) {
+    if(review == null){
       return ResponseEntity.status(400).build();
     }
     // Makes sure the minimum review is 1 one star.
@@ -189,7 +184,7 @@ public class UserCoursesController {
     }
     review.setDate();
     UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(cid, uid);
-    if (userCourse.getReview() != null) {
+    if(userCourse.getReview() != null){
       reviewRepo.delete(userCourse.getReview());
     }
     userCourse.setReview(review);
