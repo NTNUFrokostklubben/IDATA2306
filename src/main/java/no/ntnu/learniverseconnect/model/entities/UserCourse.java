@@ -53,6 +53,9 @@ public class UserCourse {
     return id;
   }
 
+  public void setTimestamp(){
+    this.timestamp = new Timestamp(System.currentTimeMillis());
+  }
   /**
    * Gets the rating value.
    *
