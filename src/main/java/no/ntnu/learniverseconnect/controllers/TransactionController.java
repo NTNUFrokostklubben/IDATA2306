@@ -10,6 +10,7 @@ import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
 import no.ntnu.learniverseconnect.model.entities.Transaction;
 import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.entities.CourseProvider;
+import no.ntnu.learniverseconnect.model.entities.UserCourse;
 import no.ntnu.learniverseconnect.model.repos.CourseProviderRepo;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
@@ -17,6 +18,7 @@ import no.ntnu.learniverseconnect.model.repos.TransactionRepo;
 import no.ntnu.learniverseconnect.model.repos.UserCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +37,7 @@ public class TransactionController {
   private final OfferableCoursesRepo offerableCoursesRepo;
   private final UserRepo userRepo;
   private final CourseProviderRepo courseProviderRepo;
+  private final UserCoursesRepo userCoursesRepo;
 
   /**
    * Constructor for TransactionController.
@@ -48,12 +51,14 @@ public class TransactionController {
   @Autowired
   public TransactionController(TransactionRepo transactionRepo, CourseRepo courseRepo,
                                OfferableCoursesRepo offerableCoursesRepo, UserRepo userRepo,
-                               CourseProviderRepo courseProviderRepo) {
+                               CourseProviderRepo courseProviderRepo, UserCoursesRepo userCoursesRepo) {
     this.repo = transactionRepo;
     this.courseRepo = courseRepo;
     this.offerableCoursesRepo = offerableCoursesRepo;
     this.userRepo = userRepo;
     this.courseProviderRepo = courseProviderRepo;
+    this.userCoursesRepo = userCoursesRepo;
+
 
   }
 
@@ -159,6 +164,8 @@ public class TransactionController {
 
   /**
    * Adds a new transaction based on offerable course ID and user ID.
+   * Adds the transaction to the database and updates or adds the corresponding user course
+   * to the database.
    *
    * @param oId the ID of the offerable course.
    * @param uId the ID of the user.
@@ -172,12 +179,32 @@ public class TransactionController {
     if (offerableCourse == null || user == null) {
       return ResponseEntity.status(404).body(null);
     }
+    // Add the transaction to the database
     transaction.setOfferableCourses(offerableCourse);
     transaction.setUser(user);
     transaction.setTimeOfTransaction(new Timestamp(System.currentTimeMillis()));
     transaction.setPricePaid(offerableCourse.getPrice() * (1 - offerableCourse.getDiscount()));
-    repo.save(transaction);
-    return ResponseEntity.status(201).body("ok");
+     repo.save(transaction);
+    // TODO add guard?
+
+    // Add the user course to the database after transaction is created;
+    UserCourse userCourse;
+    if (userCoursesRepo.existsByUser_IdAndCourse_Id(uId, offerableCourse.getCourse().getId())) {
+      userCourse =  userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(uId, offerableCourse.getCourse().getId());
+      userCourse.setTimestamp();
+      // If the user course doesn't exist, create a new one
+    } else {
+      userCourse = new UserCourse();
+      userCourse.setCourse(courseRepo.getCoursesById(offerableCourse.getCourse().getId()));
+      userCourse.setUser(userRepo.getUsersById(uId));
+    }
+    this.userCoursesRepo.save(userCourse);
+    if (userCoursesRepo.existsById(userCourse.getId())) {
+      return ResponseEntity.status(HttpStatus.CREATED).body(
+          "transaction with course id " + userCourse.getId() + "and  offerable course id " +offerableCourse.getCourse().getId() + " saved");
+    } else {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
   }
 
   /**
