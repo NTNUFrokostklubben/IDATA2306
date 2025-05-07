@@ -1,8 +1,14 @@
 package no.ntnu.learniverseconnect.controllers;
 
 import jakarta.transaction.Transactional;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import no.ntnu.learniverseconnect.model.dto.CourseWithMinPriceAndRatingDto;
 import no.ntnu.learniverseconnect.model.entities.Course;
+import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.KeywordsRepo;
 import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
@@ -112,6 +118,52 @@ public class CourseController {
       return ResponseEntity.status(200).body(course);
     }
   }
+
+  /**
+   * Returns the dto's needed to show the course card.
+   *
+   * @return the dto's needed to show the course card.
+   */
+  @GetMapping("/courses/courseCard")
+  public ResponseEntity<List<CourseWithMinPriceAndRatingDto>> getOfferableCoursesByCourseCard() {
+    List<OfferableCourses> courses = offerableCoursesRepo.findAll();
+    List<CourseWithMinPriceAndRatingDto> filteredResult = new ArrayList<>(courses.stream()
+     .collect(Collectors.groupingBy(
+         OfferableCourses::getCourse,
+         Collectors.collectingAndThen(
+             Collectors.toList(),
+             list -> {
+               // Find offer with min discounted price and closest date
+               OfferableCourses bestOffer = list.stream()
+                  .min(Comparator.comparingDouble(
+                                     (OfferableCourses o) -> o.getPrice() * (1 - o.getDiscount()))
+                                 .thenComparing(OfferableCourses::getDate))
+                  .orElseThrow();
+
+               // Calculate average rating (assuming UserCourseRepo is available)
+               Float avgRating =
+                       userCoursesRepo.getAverageRatingByCourseId(bestOffer.getCourse().getId());
+               int numberOfRatings =
+                   userCoursesRepo.countByCourseId(bestOffer.getCourse().getId());
+               return new CourseWithMinPriceAndRatingDto(
+                   bestOffer.getCourse(),
+                   bestOffer.getPrice() * (1 - bestOffer.getDiscount()),
+                   bestOffer.getDate(),
+                   avgRating != null ? avgRating.floatValue() : 0f,
+                   numberOfRatings
+               );
+             }
+         )
+     )).values());
+    if (filteredResult.isEmpty()) {
+      logger.warn("No courses found");
+      return ResponseEntity.status(404).body(null);
+    } else if (filteredResult.size()>10) {
+      filteredResult.subList(0,10);
+    }
+    return ResponseEntity.status(200).body(filteredResult);
+  }
+
 
   /**
    * Updates a course in the database.
