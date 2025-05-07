@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import no.ntnu.learniverseconnect.model.dto.ReduxUserDto;
+import no.ntnu.learniverseconnect.model.entities.Role;
 import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -189,4 +191,32 @@ public class UserController {
       return ResponseEntity.status(404).body("User with id " + id + " not found");
     }
   }
+
+  /**
+   * Updates roles and profile picture for user in the database.
+   *
+   * @param id the id of the user to update
+   * @param user the user object with updated information
+   * @return a response entity with the updated user
+   */
+  @PutMapping("/user/{id}")
+  public ResponseEntity<User> updateUser(
+      @PathVariable long id, @RequestBody User user) {
+    if (user == null) {
+      logger.warn("User object is null");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+    Optional<User> existingUserOptional = repo.findById((int) id);
+    if (existingUserOptional.isPresent()) {
+      User existingUser = existingUserOptional.get();
+      existingUser.setProfilePicture(user.getProfilePicture());
+      existingUser.setRole(user.getRole());
+      repo.save(existingUser);
+      return ResponseEntity.status(HttpStatus.OK).body(existingUser);
+    } else {
+      logger.warn("User with id {} not found", id);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+  }
+
 }
