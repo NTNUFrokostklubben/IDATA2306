@@ -33,15 +33,15 @@ public class UserCoursesController {
   UserCoursesRepo userCoursesRepo;
   UserRepo userRepo;
   CourseRepo courseRepo;
-  ReviewRepo reviewRepo;
+    ReviewRepo reviewRepo;
   private static final Logger logger = LoggerFactory.getLogger(UserCoursesController.class);
 
   /**
    * Constructor for UserCoursesController.
    *
    * @param userCoursesRepo1 the repository for user courses
-   * @param userRepo1        the repository for users
-   * @param courseRepo1      the repository for courses
+   * @param userRepo1 the repository for users
+   * @param courseRepo1 the repository for courses
    */
   @Autowired
   public UserCoursesController(UserCoursesRepo userCoursesRepo1, UserRepo userRepo1,
@@ -105,7 +105,20 @@ public class UserCoursesController {
 
 
 
-
+    /**
+     * Get all user courses associated with a course.
+     * @param cid the course to get by
+     * @return the list of courses a course is associated with.
+     */
+  @GetMapping("/userCourses/course/{cid}")
+    public ResponseEntity<List<UserCourse>> getAllByCourse(@PathVariable long cid){
+        List<UserCourse> userCourseList = userCoursesRepo.getAllByCourse_Id(cid);
+        int status = 404;
+        if(!userCourseList.isEmpty()){
+         status = 200;
+        }
+        return ResponseEntity.status(status).body(userCourseList);
+    }
   /**
    * Get all user courses from the database.
    *
@@ -117,21 +130,26 @@ public class UserCoursesController {
     return ResponseEntity.status(200).body(userCoursesRepo.findAll());
   }
 
-  //TODO: Fix these methods so they dont say review when userCourse is meant
-
   /**
    * Get the last ten user courses from the database.
    *
    * @return the last ten user courses
    */
-  @GetMapping("/userCourses/lastReviews")
+  @GetMapping("/userCourses/lastUserCourses")
   public ResponseEntity<Iterable<UserCourse>> getLastTenUserCourses() {
     logger.info("Fetching the ten last user courses");
     List<UserCourse> userCourseList = userCoursesRepo.findAll();
-    List<UserCourse> lastTenUserCourses = new ArrayList<>();
-    userCourseList.sort((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()));
-    lastTenUserCourses.addAll(userCourseList.subList(0, Math.min(10, userCourseList.size())));
-    return ResponseEntity.status(200).body(lastTenUserCourses);
+    if (userCourseList.isEmpty()) {
+      return ResponseEntity.status(404).body(null);
+    } else {
+      logger.info("Fetching the ten last user courses");
+      userCourseList.stream()
+          .filter(userCourse -> userCourse.getReview() != null)
+          .sorted((a, b) -> b.getReview().getDate().compareTo(a.getReview().getDate()))
+          .toList();
+    }
+    userCourseList.subList(0, Math.min(10, userCourseList.size()));
+    return ResponseEntity.status(200).body(userCourseList);
   }
 
   /**
@@ -204,7 +222,7 @@ public class UserCoursesController {
   @PutMapping("/userCourses/addRating/{uid}/{cid}")
   public ResponseEntity<Void> addRating(@RequestBody Review review, @PathVariable long uid,
                                         @PathVariable long cid) {
-    if (review == null) {
+    if(review == null){
       return ResponseEntity.status(400).build();
     }
     // Makes sure the minimum review is 1 one star.
@@ -212,8 +230,10 @@ public class UserCoursesController {
       review.setRating(1);
     }
     review.setDate();
+
     UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(uid, cid);
     if (userCourse.getReview() != null) {
+
       reviewRepo.delete(userCourse.getReview());
     }
     userCourse.setReview(review);
