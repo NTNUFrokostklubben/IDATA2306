@@ -3,11 +3,8 @@
 FROM maven:3.8.4-openjdk-17 AS build
 WORKDIR /app
 
-# Copy the pom.xml and download dependencies first (for layer caching)
+# Copy the pom.xml and src
 COPY pom.xml .
-RUN mvn dependency:go-offline
-
-# Copy the rest of the source code
 COPY src ./src
 
 # Build the application
@@ -20,8 +17,9 @@ WORKDIR /app
 # Copy the built JAR file from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose the port your Spring app runs on
+# Expose the port your Spring app runs on and debug port 5005
 EXPOSE 8080
+EXPOSE 5005
 
 # Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-jar", "app.jar"]
