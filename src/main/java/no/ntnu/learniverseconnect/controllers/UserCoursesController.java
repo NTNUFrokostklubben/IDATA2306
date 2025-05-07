@@ -130,20 +130,26 @@ public class UserCoursesController {
     return ResponseEntity.status(200).body(userCoursesRepo.findAll());
   }
 
-   //TODO: Fix these methods so they dont say review when userCourse is meant
   /**
    * Get the last ten user courses from the database.
    *
    * @return the last ten user courses
    */
-  @GetMapping("/userCourses/lastReviews")
+  @GetMapping("/userCourses/lastUserCourses")
   public ResponseEntity<Iterable<UserCourse>> getLastTenUserCourses() {
     logger.info("Fetching the ten last user courses");
     List<UserCourse> userCourseList = userCoursesRepo.findAll();
-    List<UserCourse> lastTenUserCourses = new ArrayList<>();
-    userCourseList.sort((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()));
-    lastTenUserCourses.addAll(userCourseList.subList(0, Math.min(10, userCourseList.size())));
-    return ResponseEntity.status(200).body(lastTenUserCourses);
+    if (userCourseList.isEmpty()) {
+      return ResponseEntity.status(404).body(null);
+    } else {
+      logger.info("Fetching the ten last user courses");
+      userCourseList.stream()
+          .filter(userCourse -> userCourse.getReview() != null)
+          .sorted((a, b) -> b.getReview().getDate().compareTo(a.getReview().getDate()))
+          .toList();
+    }
+    userCourseList.subList(0, Math.min(10, userCourseList.size()));
+    return ResponseEntity.status(200).body(userCourseList);
   }
 
   /**
