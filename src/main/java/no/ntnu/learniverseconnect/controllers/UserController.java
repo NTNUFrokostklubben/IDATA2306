@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import no.ntnu.learniverseconnect.model.dto.ReduxUserDto;
 import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import org.slf4j.Logger;
@@ -49,6 +50,24 @@ public class UserController {
     } else {
       logger.info("Fetching user with id: {}", id);
       return ResponseEntity.status(200).body(user);
+    }
+  }
+
+  /**
+   * Get safe user dto by email.
+   *
+   * @param email the id of the user
+   * @return the user with the given id
+   */
+  @GetMapping("/userDto/{email}")
+  public ResponseEntity<ReduxUserDto> getReduxUserDtoById(@PathVariable String email) {
+    User user = repo.getUsersByEmail(email);
+    if (user == null) {
+      logger.warn("User with email {} not found", email);
+      return ResponseEntity.status(404).body(null);
+    } else {
+      logger.info("Fetching user with email: {}", email);
+      return ResponseEntity.status(200).body( new ReduxUserDto(user.getEmail(), user.getId()));
     }
   }
 

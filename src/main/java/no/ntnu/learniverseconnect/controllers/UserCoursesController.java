@@ -170,13 +170,54 @@ public class UserCoursesController {
   }
 
     /**
-     * Adds a new rating to a user course.
+     * Adds a new user course to the database.
      *
-     * @param review the review to add/replace in the user course
-        * @param uid    the user making the review
-     * @param cid    the course id to add the review to
-     * @return a response entity with the status of the operation.
+     * @param uid the user id
+     * @param cid the course id
+     * @return a response entity with the status of the operation
      */
+
+  @PostMapping("/userCourses/add/{uid}/{cid}")
+  public ResponseEntity<String> addNewUserCourse(@PathVariable long uid,
+                                             @PathVariable long cid) {
+    UserCourse userCourse = new UserCourse();
+    userCourse.setCourse(courseRepo.getCoursesById(cid));
+    userCourse.setUser(userRepo.getUsersById(uid));
+
+    this.userCoursesRepo.save(userCourse);
+    if (userCoursesRepo.existsById(Math.toIntExact(userCourse.getId()))) {
+      return ResponseEntity.status(HttpStatus.CREATED).body(
+          "User course with id " + userCourse.getId() + " saved");
+    } else {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+
+  /**
+   * Get all user courses associated with a course.
+   *
+   * @param cid the course to get by
+   * @return the list of courses a course is associated with.
+   */
+  @GetMapping("/userCourses/course/{cid}")
+  public ResponseEntity<List<UserCourse>> getAllByCourse(@PathVariable long cid) {
+    List<UserCourse> userCourseList = userCoursesRepo.getAllByCourse_Id(cid);
+    int status = 404;
+    if (!userCourseList.isEmpty()) {
+      status = 200;
+    }
+    return ResponseEntity.status(status).body(userCourseList);
+  }
+
+  /**
+   * Adds a new rating to a user course.
+   *
+   * @param review the review to add/replace in the user course
+   * @param uid    the user making the review
+   * @param cid    the course id to add the review to
+   * @return a response entity with the status of the operation.
+   */
   @Transactional
   @PutMapping("/userCourses/addRating/{uid}/{cid}")
   public ResponseEntity<Void> addRating(@RequestBody Review review, @PathVariable long uid,
@@ -189,8 +230,10 @@ public class UserCoursesController {
       review.setRating(1);
     }
     review.setDate();
-    UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(cid, uid);
-    if(userCourse.getReview() != null){
+
+    UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(uid, cid);
+    if (userCourse.getReview() != null) {
+
       reviewRepo.delete(userCourse.getReview());
     }
     userCourse.setReview(review);
@@ -198,5 +241,23 @@ public class UserCoursesController {
     reviewRepo.save(review);
     return ResponseEntity.status(200).build();
 
+  }
+
+    /**
+     * Checks if a user is enrolled in a course.
+     *
+     * @param uid the user id
+     * @param cid the course id
+     * @return true if the user is enrolled, false otherwise
+     */
+
+  @GetMapping("/userCourses/user/{uid}/course/{cid}")
+  public ResponseEntity<Boolean> isUserEnrolledInCourse(@PathVariable long uid, @PathVariable long cid) {
+    UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(uid, cid);
+    if (userCourse != null) {
+      return ResponseEntity.status(200).body(true);
+    } else {
+      return ResponseEntity.status(404).body(false);
+    }
   }
 }
