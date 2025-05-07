@@ -106,9 +106,9 @@ public class OfferableCoursesController {
     if (list.isEmpty()) {
       return ResponseEntity.status(404).body(null);
     } else {
-      lowestPrice = list.get(0).getPrice()- (1*list.get(0).getDiscount()/100);
+      lowestPrice = list.get(0).getPrice() * (1 - list.get(0).getDiscount());
       for (OfferableCourses oc : list) {
-        float discountedPrice = oc.getPrice() - (1 * oc.getDiscount() / 100);
+        float discountedPrice = oc.getPrice() * (1 - oc.getDiscount());
         if (discountedPrice < lowestPrice) {
           lowestPrice = discountedPrice;
         }
