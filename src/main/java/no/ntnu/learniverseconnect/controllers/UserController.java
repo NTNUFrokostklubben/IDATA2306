@@ -4,7 +4,10 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import no.ntnu.learniverseconnect.model.dto.ReduxUserDto;
+import no.ntnu.learniverseconnect.model.entities.Role;
 import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import org.slf4j.Logger;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -187,6 +191,105 @@ public class UserController {
     } else {
       logger.warn("User with id {} not found", id);
       return ResponseEntity.status(404).body("User with id " + id + " not found");
+    }
+  }
+
+  /**
+   * Updates a user in the database.
+   *
+   * @param id the id of the user to update
+   * @param userDto the user object with updated information (profile picture, roles, active)
+   * @return a response entity with the status of the operation
+   */
+  @PutMapping("/user/{id}")
+  public ResponseEntity<User> updateUser(
+      @PathVariable long id, @RequestBody UserUpdateDto userDto) {
+    if (userDto == null) {
+      logger.warn("User object is null");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+    Optional<User> existingUserOptional = repo.findById((int) id);
+    if (existingUserOptional.isPresent()) {
+      User existingUser = existingUserOptional.get();
+      existingUser.setProfilePicture(userDto.getProfilePicture());
+
+      // Update roles (fetch existing roles by ID to avoid circular references)
+      if (userDto.getRole() != null) {
+        Set<Role> roles = userDto.getRole().stream()
+            .map(roleInput -> {
+              Role role = new Role();
+              role.setId(roleInput.getId());
+              role.setName(roleInput.getName());
+              return role;
+            })
+            .collect(Collectors.toSet());
+        existingUser.setRole(roles);
+      }
+
+      existingUser.setActive(userDto.getActive());
+
+      repo.save(existingUser);
+      return ResponseEntity.status(HttpStatus.OK).body(existingUser);
+    } else {
+      logger.warn("User with id {} not found", id);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+  }
+
+  /**
+   * Dto for updating limited user information.
+   */
+  private static class UserUpdateDto {
+    private String profilePicture;
+    private Set<RoleDto> role;
+    private boolean active;
+
+    public Set<RoleDto> getRole() {
+      return role;
+    }
+
+    public void setRole(Set<RoleDto> roles) {
+      this.role = roles;
+    }
+
+
+    public String getProfilePicture() {
+      return profilePicture;
+    }
+    public void setProfilePicture(String profilePicture) {
+      this.profilePicture = profilePicture;
+    }
+
+    public boolean getActive() {
+      return active;
+    }
+    public void setActive(boolean active) {
+      this.active = active;
+    }
+  }
+
+  /**
+   * Nested DTO class for automatic Role mapping.
+   */
+  private static class RoleDto {
+    private Long id;
+    private String name;
+
+    // Getters and setters
+    public Long getId() {
+      return id;
+    }
+
+    public void setId(Long id) {
+      this.id = id;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
     }
   }
 }

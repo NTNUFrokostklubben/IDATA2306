@@ -186,23 +186,6 @@ public class UserCoursesController {
     }
   }
 
-
-  /**
-   * Get all user courses associated with a course.
-   *
-   * @param cid the course to get by
-   * @return the list of courses a course is associated with.
-   */
-  @GetMapping("/userCourses/course/{cid}")
-  public ResponseEntity<List<UserCourse>> getAllByCourse(@PathVariable long cid) {
-    List<UserCourse> userCourseList = userCoursesRepo.getAllByCourse_Id(cid);
-    int status = 404;
-    if (!userCourseList.isEmpty()) {
-      status = 200;
-    }
-    return ResponseEntity.status(status).body(userCourseList);
-  }
-
   /**
    * Adds a new rating to a user course.
    *
