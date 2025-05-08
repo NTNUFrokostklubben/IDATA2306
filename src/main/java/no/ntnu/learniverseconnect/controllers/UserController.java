@@ -70,8 +70,10 @@ public class UserController {
       logger.warn("User with email {} not found", email);
       return ResponseEntity.status(404).body(null);
     } else {
+      ReduxUserDto userDto = new ReduxUserDto(user.getEmail(),
+          user.getId(), user.getProfilePicture());
       logger.info("Fetching user with email: {}", email);
-      return ResponseEntity.status(200).body( new ReduxUserDto(user.getEmail(), user.getId()));
+      return ResponseEntity.status(200).body(userDto);
     }
   }
 
