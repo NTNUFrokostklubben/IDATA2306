@@ -61,6 +61,7 @@ public class User {
   @PrePersist
   protected void onCreate() {
     this.userCreated = new Timestamp(System.currentTimeMillis());
+    this.profilePicture ="http://localhost:8081/uploads/images/default_img.png";
   }
 
   /**
