@@ -197,6 +197,30 @@ public class UserController {
   }
 
   /**
+   * Updates a user's image link in the backend.
+   *
+   * @param id the id of the user
+   * @param imageLink the new image link to set
+   * @return a response entity with the updated ReduxUserDto or a 404 status if no user found.
+   */
+    @PutMapping("/user/image/{id}")
+    public ResponseEntity<ReduxUserDto> updateUserImage(@PathVariable long id,
+        @RequestBody String imageLink) {
+        Optional<User> userOptional = repo.findById((int) id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setProfilePicture(imageLink);
+            repo.save(user);
+            ReduxUserDto userDto = new ReduxUserDto(user.getEmail(), user.getId(),
+                user.getProfilePicture());
+            return ResponseEntity.status(HttpStatus.OK).body(userDto);
+        } else {
+            logger.warn("User with id {} not found", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+  /**
    * Updates a user in the database.
    *
    * @param id the id of the user to update
