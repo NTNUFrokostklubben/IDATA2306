@@ -129,6 +129,11 @@ public class UserController {
   @GetMapping("/users/total")
   public ResponseEntity<Integer> getUserTotal() {
     List<User> totalUsers = repo.findAll();
+    if (totalUsers.isEmpty()) {
+      logger.warn("No users found");
+      return ResponseEntity.status(404).body(0);
+    }
+    logger.info("Fetching total number of users");
     return ResponseEntity.status(200).body(totalUsers.size());
   }
 
@@ -146,6 +151,10 @@ public class UserController {
   @GetMapping("/users/newUsers")
   public ResponseEntity<Float> getNewUsers() {
     List<User> users = repo.findAll();
+    if (users.isEmpty()) {
+      logger.warn("No users found");
+      return ResponseEntity.status(404).body(0f);
+    }
     float userSum = 0;
     for (User user : users) {
       if (user.getUserCreated().after(
@@ -153,6 +162,7 @@ public class UserController {
         userSum++;
       }
     }
+    logger.info("Fetching total number of new users in the last 30 days");
     return ResponseEntity.status(200).body(userSum);
   }
 
@@ -166,14 +176,15 @@ public class UserController {
   public ResponseEntity<String> addUser(@RequestBody User user) {
     if (user == null) {
       logger.warn("User object is null");
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User object is null");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
-
     this.repo.save(user);
     if (repo.existsById(Math.toIntExact(user.getId()))) {
+      logger.info("User with id {} saved", user.getId());
       return ResponseEntity.status(HttpStatus.CREATED).body(
           "User with id " + user.getId() + " saved");
     } else {
+      logger.error("Failed to save user with id {}", user.getId());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
@@ -231,6 +242,7 @@ public class UserController {
       existingUser.setActive(userDto.getActive());
 
       repo.save(existingUser);
+      logger.info("User with id {} updated", id);
       return ResponseEntity.status(HttpStatus.OK).body(existingUser);
     } else {
       logger.warn("User with id {} not found", id);

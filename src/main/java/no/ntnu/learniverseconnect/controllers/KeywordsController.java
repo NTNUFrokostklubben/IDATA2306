@@ -43,8 +43,10 @@ public class KeywordsController {
     logger.info("Fetching keywords with CourseId: {}", cid);
     List<Keywords> keyword = keywordsRepo.getAllByCourse_Id(cid);
     if (keyword.isEmpty()) {
+      logger.error("No keywords found for course with ID: {}", cid);
       return ResponseEntity.status(404).body(null);
     }
+    logger.info("Keywords found for course with ID: {}", cid);
     return ResponseEntity.status(200).body(keyword);
   }
 }
