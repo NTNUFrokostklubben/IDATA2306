@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -47,4 +49,17 @@ public class KeywordsController {
     }
     return ResponseEntity.status(200).body(keyword);
   }
+
+  @PostMapping("/keyword/{cid}")
+  public ResponseEntity<Keywords> addKeyword(@PathVariable Long cid, @RequestBody String[] keywords) {
+    logger.info("Adding keywords to course with ID: {}", cid);
+    for (String keyword : keywords) {
+      Keywords newKeyword = new Keywords();
+      newKeyword.setKeyword(keyword);
+      newKeyword.setCourse(courseRepo.getReferenceById(cid.intValue()));
+      keywordsRepo.save(newKeyword);
+    }
+    return ResponseEntity.status(200).body(null);
+  }
+
 }
