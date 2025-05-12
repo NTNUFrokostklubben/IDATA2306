@@ -9,7 +9,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.sql.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
+import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,13 +30,15 @@ import org.springframework.web.bind.annotation.RestController;
     description = "APIs for managing course offerings by providers")
 public class OfferableCoursesController {
 
+  private final CourseRepo courseRepo;
   private OfferableCoursesRepo repo;
   private final Logger logger = Logger.getLogger(OfferableCoursesController.class.getName());
 
 
   @Autowired
-  public OfferableCoursesController(OfferableCoursesRepo repo) {
+  public OfferableCoursesController(OfferableCoursesRepo repo, CourseRepo courseRepo) {
     this.repo = repo;
+    this.courseRepo = courseRepo;
   }
 
   /**
@@ -229,6 +233,7 @@ public class OfferableCoursesController {
 
   /**
    * Adds an offerable course to the database.
+   * Updates "Closest Course" if the new date is sooner than the current closest date.
    *
    * @param offerableCourse the offerable course to add.
    */
@@ -243,6 +248,17 @@ public class OfferableCoursesController {
   public ResponseEntity<OfferableCourses> addOfferableCourse(
       @RequestBody OfferableCourses offerableCourse) {
     repo.save(offerableCourse);
+
+    // Get the associated course
+    Course course = courseRepo.getById(offerableCourse.getCourse().getId());
+    Date newCourseDate = offerableCourse.getDate();
+
+
+    if (course.getClosestCourse() == null || newCourseDate.before(course.getClosestCourse())) {
+      course.setClosestCourse(newCourseDate);
+      courseRepo.save(course);
+    }
+
     logger.info("Offerable course added with id: " + offerableCourse.getId());
     return ResponseEntity.status(201).body(offerableCourse);
   }
