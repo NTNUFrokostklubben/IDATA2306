@@ -83,7 +83,8 @@ public class SearchController {
    */
   @Operation(
       summary = "Search courses with URL parameters",
-      description = "Filters courses based on multiple criteria including difficulty, categories, price range, etc."
+      description = "Filters courses based on multiple criteria including difficulty, categories," +
+          " price range, etc."
   )
   @ApiResponses(value = {
       @ApiResponse(
@@ -198,7 +199,8 @@ public class SearchController {
    *
    * @param searchFilterDto The search filter object containing various search parameters.
    * @return A ResponseEntity containing a list of CourseWithMinPriceAndRatingDto objects.
-   * @deprecated Can be used for admin filtering, but is deprecated in favor of the URL-based search for customers.
+   * @deprecated Can be used for admin filtering, but is deprecated in favor of the URL-based
+   * search for customers.
    */
   @Operation(
       summary = "Search courses with JSON filter (Deprecated)",
@@ -208,7 +210,8 @@ public class SearchController {
       @ApiResponse(
           responseCode = "200",
           description = "Courses found",
-          content = @Content(schema = @Schema(implementation = CourseWithMinPriceAndRatingDto.class, type = "array"))
+          content = @Content(schema = @Schema(implementation = CourseWithMinPriceAndRatingDto.class,
+              type = "array"))
       )})
   @Deprecated(
       since = "1.0",
