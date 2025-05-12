@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Keywords;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
@@ -28,8 +29,8 @@ public class KeywordsController {
    * Constructor for KeywordsController.
    *
    * @param keywordsRepo the keyword repository
-   * @param courseRepo the course repository
-   * @param userRepo the user repository
+   * @param courseRepo   the course repository
+   * @param userRepo     the user repository
    */
   @Autowired
   public KeywordsController(KeywordsRepo keywordsRepo, CourseRepo courseRepo, UserRepo userRepo) {
@@ -39,27 +40,71 @@ public class KeywordsController {
 
   /**
    * Retrieves all keywords for a specific course by its course ID.
+   * Uses minimal DTO for returning keyword data.
    */
   @GetMapping("/keyword/{cid}")
-  public ResponseEntity<List<Keywords>> getKeyword(@PathVariable long cid) {
+  public ResponseEntity<List<KeywordsDTO>> getKeyword(@PathVariable long cid) {
     logger.info("Fetching keywords with CourseId: {}", cid);
     List<Keywords> keyword = keywordsRepo.getAllByCourse_Id(cid);
-    if (keyword.isEmpty()) {
+    List<KeywordsDTO> keywordsDTOList = keyword
+        .stream()
+        .map(keywords1 -> {
+          KeywordsDTO keywordsDTO = new KeywordsDTO();
+          keywordsDTO.keyword = keywords1.getKeyword();
+          return keywordsDTO;
+        })
+        .toList();
+
+    if (keywordsDTOList.isEmpty()) {
       return ResponseEntity.status(404).body(null);
     }
-    return ResponseEntity.status(200).body(keyword);
+    return ResponseEntity.status(200).body(keywordsDTOList);
   }
 
+  /**
+   * Replaces the keywords for a specific course by its course ID.
+   *
+   * @param cid course ID
+   * @param keywords keywords to be added (array of strings)
+   * @return ResponseEntity with the updated list of keywords
+   */
   @PostMapping("/keyword/{cid}")
-  public ResponseEntity<Keywords> addKeyword(@PathVariable Long cid, @RequestBody String[] keywords) {
+  public ResponseEntity<List<KeywordsDTO>> addKeyword(@PathVariable Long cid,
+                                             @RequestBody String[] keywords) {
     logger.info("Adding keywords to course with ID: {}", cid);
+    List<Keywords> existingKeywords = keywordsRepo.getAllByCourse_Id(cid);
+    keywordsRepo.deleteAll(existingKeywords);
     for (String keyword : keywords) {
       Keywords newKeyword = new Keywords();
       newKeyword.setKeyword(keyword);
       newKeyword.setCourse(courseRepo.getReferenceById(cid.intValue()));
       keywordsRepo.save(newKeyword);
+
     }
-    return ResponseEntity.status(200).body(null);
+    List<KeywordsDTO> keywordsDTOList = keywordsRepo.getAllByCourse_Id(cid)
+        .stream()
+        .map(keywords1 -> {
+          KeywordsDTO keywordsDTO = new KeywordsDTO();
+          keywordsDTO.keyword = keywords1.getKeyword();
+          return keywordsDTO;
+        })
+        .toList();
+
+
+    return ResponseEntity.status(200).body(keywordsDTOList);
+  }
+
+  /**
+   * Minimal keyword DTO for returning keyword data.
+   */
+  private static class KeywordsDTO {
+    private String keyword;
+    public String getKeyword() {
+      return keyword;
+    }
+    public void setKeyword(String keyword) {
+      this.keyword = keyword;
+    }
   }
 
 }
