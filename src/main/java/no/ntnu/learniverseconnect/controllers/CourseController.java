@@ -1,5 +1,11 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -42,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  */
 @RestController
+@Tag(name = "Courses", description = "APIs for managing courses")
 @CrossOrigin(origins = "http://localhost:3000")
 public class CourseController {
 
@@ -57,6 +64,7 @@ public class CourseController {
    *
    * @param repo the course repo interface.
    */
+
   @Autowired
   public CourseController(CourseRepo repo, OfferableCoursesRepo offerableCoursesRepo,
                           KeywordsRepo keywordsRepo, UserCoursesRepo userCoursesRepo) {
@@ -71,6 +79,13 @@ public class CourseController {
    *
    * @return a list of all courses.
    */
+  @Operation(summary = "Get all courses",
+      description = "Retrieves list of all courses")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(implementation = Course.class, type = "array"))),
+      @ApiResponse(responseCode = "404", description = "No courses found")
+  })
   @GetMapping("/courses")
   public ResponseEntity<List<Course>> getCourses() {
     logger.info("Fetching all courses");
@@ -89,6 +104,13 @@ public class CourseController {
    *
    * @return the amount of courses in the database.
    */
+  @Operation(summary = "Get course count",
+      description = "Returns total number of courses")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(implementation = Integer.class))),
+      @ApiResponse(responseCode = "404", description = "No courses found")
+  })
   @GetMapping("/courses/total")
   public ResponseEntity<Integer> getCourseTotal() {
     logger.info("Fetching total number of courses");
@@ -107,6 +129,16 @@ public class CourseController {
    *
    * @param course the course to add.
    */
+  @Operation(summary = "Create course",
+      description = "Adds a new course to the system")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201",
+          content = @Content(schema = @Schema(implementation = Course.class)))
+  })
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      description = "Course object to be added",
+      content = @Content(schema = @Schema(implementation = Course.class))
+  )
   @PostMapping("/course")
   public ResponseEntity<Course> addCourse(@RequestBody Course course) {
     logger.info("Adding course: {}", course.getId());
@@ -120,6 +152,14 @@ public class CourseController {
    * @param id the id of the course to return.
    * @return the course with the given id.
    */
+  @Operation(summary = "Get course by ID",
+      description = "Retrieves specific course details")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(implementation = Course.class))),
+      @ApiResponse(responseCode = "404", description = "Course not found")
+  })
+
   @GetMapping("/course/{id}")
   public ResponseEntity<Course> getCourse(@PathVariable int id) {
     logger.info("Fetching course with id: {}", id);
@@ -137,6 +177,14 @@ public class CourseController {
    *
    * @return the dto's needed to show the course card.
    */
+  @Operation(summary = "Get course cards",
+      description = "Retrieves course cards with min price/rating")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(implementation = CourseWithMinPriceAndRatingDto.class,
+              type = "array"))),
+      @ApiResponse(responseCode = "404", description = "No courses found")
+  })
   @GetMapping("/courses/courseCard")
   public ResponseEntity<List<CourseWithMinPriceAndRatingDto>> getOfferableCoursesByCourseCard() {
     List<OfferableCourses> courses = offerableCoursesRepo.findAll();
@@ -184,6 +232,12 @@ public class CourseController {
    *
    * @param course the course to update.
    */
+  @Operation(summary = "Update course",
+      description = "Modifies existing course details")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(implementation = Course.class)))
+  })
   @PutMapping("/course")
   public ResponseEntity<Course> updateCourse(@RequestBody Course course) {
     logger.info("Updating course with id: {}", course.getId());
@@ -195,6 +249,12 @@ public class CourseController {
    *
    * @param id the id of the course to delete.
    */
+  @Operation(summary = "Delete course",
+      description = "Removes a course and all related data")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "204"),
+      @ApiResponse(responseCode = "404", description = "Course not found")
+  })
   @Transactional
   @DeleteMapping("/course/{id}")
   public ResponseEntity<String> deleteCourse(@PathVariable int id) {

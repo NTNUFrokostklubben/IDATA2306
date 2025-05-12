@@ -1,5 +1,8 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,6 +35,20 @@ public class ImageUploadController {
    * @param file image file to upload
    * @return URL of the uploaded image
    */
+  @Operation(
+      summary = "Upload an image",
+      description = "Uploads an image to the server and returns the URL of the uploaded image"
+  )
+  @ApiResponses({
+      @ApiResponse(
+          responseCode = "200",
+          description = "Image uploaded successfully"
+      ),
+      @ApiResponse(
+          responseCode = "500",
+          description = "Failed to upload image"
+      )
+  })
   @PostMapping("/upload")
   public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
     // Ensure the uploads directory exists

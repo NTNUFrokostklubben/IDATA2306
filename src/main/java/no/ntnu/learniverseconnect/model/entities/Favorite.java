@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.model.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,17 +10,21 @@ import jakarta.persistence.ManyToOne;
 /**
  * Represents a favorite course for a user.
  */
+@Schema(description = "User's favorite course relationship")
 @Entity
 public class Favorite {
+  @Schema(description = "Unique favorite ID", example = "1")
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Schema(description = "Favorited course")
   @ManyToOne
   private Course course;
+
+  @Schema(description = "User who favorited the course")
   @ManyToOne
   private User user;
-
   public Favorite(User user, Course course) {
     this.user = user;
     this.course = course;

@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.model.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,16 +10,28 @@ import java.io.Serializable;
 /**
  * Represents a course provider in the system.
  */
+@Schema(description = "Organization offering courses in the system")
 @Entity
 public class CourseProvider implements Serializable {
+  @Schema(description = "Unique provider ID", example = "1")
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
-  private String name;
-  private String passwordHash;
-  private String logoLink;
-  private String altLogoLink;
 
+  @Schema(description = "Provider name", example = "NTNU")
+  private String name;
+
+  @Schema(description = "Hashed password",
+      accessMode = Schema.AccessMode.READ_ONLY)
+  private String passwordHash;
+
+  @Schema(description = "URL to primary logo",
+      example = "http://example.com/logo.png")
+  private String logoLink;
+
+  @Schema(description = "URL to alternative logo",
+      example = "http://example.com/alt-logo.png")
+  private String altLogoLink;
   /**
    * Gets the unique ID of the course provider.
    *

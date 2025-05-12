@@ -1,6 +1,7 @@
 package no.ntnu.learniverseconnect.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -23,23 +24,36 @@ import java.util.Set;
 @Entity
 public class User {
 
+  @Schema(description = "Unique ID of the user", example = "1")
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Schema(description = "Full name of the user", example = "John Doe")
   private String name;
+
+  @Schema(description = "Email address (unique)", example = "user@example.com")
   private String email;
+
+  @Schema(description = "Hashed password (never exposed in API responses)", accessMode = Schema.AccessMode.READ_ONLY)
   private String passwordHash;
+
+  @Schema(description = "Account active status", example = "true")
   private boolean active = true;
 
+  @JsonManagedReference
+  @Schema(description = "Roles assigned to the user")
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "user_role",
       joinColumns = @JoinColumn(name = "user_id"),
       inverseJoinColumns = @JoinColumn(name = "role_id")
   )
-  @JsonManagedReference
   private Set<Role> roles = new LinkedHashSet<>();
 
+  @Schema(description = "URL to the user's profile picture", example = "http://example.com/image.jpg")
   private String profilePicture;
+
+  @Schema(description = "Timestamp of account creation", example = "2023-01-01T12:00:00Z")
   @Temporal(TemporalType.TIMESTAMP)
   private Timestamp userCreated;
 

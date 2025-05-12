@@ -1,6 +1,8 @@
 package no.ntnu.learniverseconnect.controllers;
 
-import java.util.ArrayList;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Keywords;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
@@ -42,6 +44,20 @@ public class KeywordsController {
    * Retrieves all keywords for a specific course by its course ID.
    * Uses minimal DTO for returning keyword data.
    */
+  @Operation(
+      summary = "Get keywords by course ID",
+      description = "Retrieves all keywords associated with a specific course ID"
+  )
+  @ApiResponses({
+      @ApiResponse(
+          responseCode = "200",
+          description = "List of keywords for the specified course ID"
+      ),
+      @ApiResponse(
+          responseCode = "404",
+          description = "No keywords found for the specified course ID"
+      )
+  })
   @GetMapping("/keyword/{cid}")
   public ResponseEntity<List<KeywordsDTO>> getKeyword(@PathVariable long cid) {
     logger.info("Fetching keywords with CourseId: {}", cid);

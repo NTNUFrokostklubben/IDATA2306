@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.model.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,15 +8,26 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.sql.Date;
 
+@Schema(description = "Represents a user's review/rating for a course")
 @Entity
 public class Review {
+  @Schema(description = "Unique identifier of the review", example = "1")
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Schema(description = "Rating value (1-5 scale)", example = "4", minimum = "1", maximum = "5")
   private int rating;
+
+  @Schema(description = "Date when the review was submitted", example = "2023-01-01")
   private Date reviewDate;
+
+  @Schema(description = "Detailed review comment (max 2048 chars)",
+      example = "Great course with comprehensive materials")
   @Column(length = 2048)
   private String comment;
+
+  @Schema(description = "Title/summary of the review", example = "Highly Recommended")
   private String title;
 
   public Review() {

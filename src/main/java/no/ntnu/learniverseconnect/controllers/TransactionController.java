@@ -1,5 +1,11 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,6 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller for handling transaction-related requests.
  */
+@Tag(name = "Transaction Management",
+    description = "APIs for managing course purchase transactions and revenue analytics")
 @RestController
 public class TransactionController {
 
@@ -62,11 +70,19 @@ public class TransactionController {
     this.userCoursesRepo = userCoursesRepo;
   }
 
+
   /**
    * Returns a list of all transactions.
    *
    * @return a list of all transactions.
    */
+  @Operation(summary = "Get all transactions",
+      description = "Retrieves a list of all financial transactions")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Transactions found",
+          content = @Content(schema = @Schema(implementation = Transaction.class, type = "array"))),
+      @ApiResponse(responseCode = "404", description = "No transactions found")
+  })
   @GetMapping("/transactions")
   public ResponseEntity<List<Transaction>> getTransactions() {
     List<Transaction> transactions = repo.findAll();
@@ -79,12 +95,20 @@ public class TransactionController {
     }
   }
 
+
   /**
    * Returns a transaction by its ID.
    *
    * @param id the ID of the transaction to retrieve.
    * @return the transaction with the specified ID, or null if not found.
    */
+  @Operation(summary = "Get transaction by ID",
+      description = "Retrieves a specific transaction by its unique ID")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Transaction found",
+          content = @Content(schema = @Schema(implementation = Transaction.class))),
+      @ApiResponse(responseCode = "404", description = "Transaction not found")
+  })
   @GetMapping("/transaction/{id}")
   public ResponseEntity<Transaction> getTransactionById(@PathVariable long id) {
     Transaction transaction = repo.findById(id);
@@ -97,12 +121,20 @@ public class TransactionController {
     }
   }
 
+
   /**
    * Returns a list of transactions for a specific user.
    *
    * @param userId the ID of the user to retrieve transactions for.
    * @return a list of transactions for the specified user.
    */
+  @Operation(summary = "Get user transactions",
+      description = "Retrieves all transactions for a specific user")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Transactions found",
+          content = @Content(schema = @Schema(implementation = Transaction.class, type = "array"))),
+      @ApiResponse(responseCode = "404", description = "No transactions found")
+  })
   @GetMapping("/transaction/user/{userId}")
   public ResponseEntity<List<Transaction>> getTransactionsByUserId(@PathVariable long userId) {
     List<Transaction> transactions = repo.findAllByUser_Id(userId);
@@ -115,12 +147,20 @@ public class TransactionController {
     }
   }
 
+
   /**
    * Returns a list of transactions for a specific course.
    *
    * @param courseId the ID of the course to retrieve transactions for.
    * @return a list of transactions for the specified course.
    */
+  @Operation(summary = "Get course transactions",
+      description = "Retrieves all transactions for a specific course")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Transactions found",
+          content = @Content(schema = @Schema(implementation = Transaction.class, type = "array"))),
+      @ApiResponse(responseCode = "404", description = "No transactions found")
+  })
   @GetMapping("/transaction/course/{courseId}")
   public ResponseEntity<List<Transaction>> getTransactionsByCourseId(@PathVariable long courseId) {
     Course course = courseRepo.getCoursesById(courseId);
@@ -134,7 +174,6 @@ public class TransactionController {
     }
   }
 
-
   /**
    * Returns a list of transactions for a specific user and course.
    *
@@ -142,6 +181,14 @@ public class TransactionController {
    * @param courseId the ID of the course to retrieve transactions for.
    * @return a list of transactions for the specified user and course.
    */
+
+  @Operation(summary = "Get user-course transactions",
+      description = "Retrieves transactions for a specific user and course combination")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Transactions found",
+          content = @Content(schema = @Schema(implementation = Transaction.class, type = "array"))),
+      @ApiResponse(responseCode = "404", description = "No transactions found")
+  })
   @GetMapping("/transaction/user/{userId}/course/{courseId}")
   public ResponseEntity<List<Transaction>> getTransactionsByUserIdAndCourseId(
       @PathVariable long userId, @PathVariable long courseId) {
@@ -154,11 +201,12 @@ public class TransactionController {
           + courseId);
       return ResponseEntity.status(200).body(transactions);
     } else {
-      logger.warning("No transactions found for user with id: " + userId + " and course with id: "
-          + courseId);
+      logger.warning("No transactions found for user with id: " + userId +
+          " and course with id: " + courseId);
       return ResponseEntity.status(404).body(null);
     }
   }
+
 
   /**
    * Adds a new transaction.
@@ -166,7 +214,17 @@ public class TransactionController {
    * @param transaction the transaction to add.
    * @return the added transaction.
    */
-
+  @Operation(summary = "Create transaction",
+      description = "Records a new course purchase transaction")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "Transaction created",
+          content = @Content(schema = @Schema(implementation = Transaction.class))),
+      @ApiResponse(responseCode = "400", description = "Invalid input")
+  })
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      description = "Transaction object to be created",
+      required = true,
+      content = @Content(schema = @Schema(implementation = Transaction.class)))
   @PostMapping("/transaction")
   public ResponseEntity<Transaction> addTransaction(@PathVariable Transaction transaction) {
     if (transaction == null) {
@@ -191,6 +249,12 @@ public class TransactionController {
    * @param uId the ID of the user.
    * @return the added transaction.
    */
+  @Operation(summary = "Create transaction with IDs",
+      description = "Records a new transaction using offerable course and user IDs")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "Transaction created"),
+      @ApiResponse(responseCode = "404", description = "User or course not found")
+  })
   @PostMapping("/transaction/offerId/{oId}/userid/{uId}")
   public ResponseEntity<String> addTransaction(@PathVariable long oId, @PathVariable long uId) {
     Transaction transaction = new Transaction();
@@ -232,6 +296,13 @@ public class TransactionController {
    *
    * @return the revenue for each provider
    */
+  @Operation(summary = "Get provider statistics",
+      description = "Retrieves revenue statistics per course provider")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Statistics found",
+          content = @Content(schema = @Schema(implementation = CourseProviderStatsDto.class, type = "array"))),
+      @ApiResponse(responseCode = "404", description = "No providers found")
+  })
   @GetMapping("/transaction/providersStats")
   public ResponseEntity<List<CourseProviderStatsDto>> getProviderStats() {
     List<CourseProviderStatsDto> statsList = new ArrayList<>();
@@ -260,6 +331,13 @@ public class TransactionController {
    *
    * @return the total revenue
    */
+  @Operation(summary = "Get total revenue",
+      description = "Calculates the sum of all transaction revenues")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Revenue calculated",
+          content = @Content(schema = @Schema(implementation = Float.class))),
+      @ApiResponse(responseCode = "204", description = "No transactions found")
+  })
   @GetMapping("/transaction/totalRevenue")
   public ResponseEntity<Float> getTotalRevenue() {
     List<Transaction> transactions = repo.findAll();
@@ -280,6 +358,13 @@ public class TransactionController {
    *
    * @Return the average revenue per course
    */
+  @Operation(summary = "Get average revenue per course",
+      description = "Calculates the average revenue across all courses")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Average calculated",
+          content = @Content(schema = @Schema(implementation = Float.class))),
+      @ApiResponse(responseCode = "404", description = "No transactions or courses found")
+  })
   @GetMapping("/transaction/averageRevenuePerCourse")
   public ResponseEntity<Float> getAvgRevenuePerCourse() {
     List<Course> courses = courseRepo.findAll();
@@ -308,6 +393,13 @@ public class TransactionController {
    *
    * @return the revenue for the last 30 days
    */
+  @Operation(summary = "Get recent revenue",
+      description = "Calculates revenue from the last 30 days")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Revenue calculated",
+          content = @Content(schema = @Schema(implementation = Float.class))),
+      @ApiResponse(responseCode = "404", description = "No transactions found")
+  })
   @GetMapping("/transaction/revenueLast30Days")
   public ResponseEntity<Float> getRevenueLast30Days() {
     List<Transaction> transactions = repo.findAll();
