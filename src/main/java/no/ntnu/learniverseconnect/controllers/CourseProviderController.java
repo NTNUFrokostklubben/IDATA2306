@@ -72,6 +72,7 @@ public class CourseProviderController {
       logger.error("Course provider with id {} not found", id);
       status = 404;
     }
+    logger.info("Found course provider with id: {}", id);
     return ResponseEntity.status(status).body(provider);
   }
 
@@ -86,6 +87,7 @@ public class CourseProviderController {
   @PostMapping("/provider")
   public ResponseEntity<CourseProvider> addProvider(@RequestBody CourseProvider provider) {
     if (provider == null) {
+      logger.error("Course provider is null");
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
     logger.info("Adding new course provider with id: {}", provider.getId());
@@ -105,11 +107,14 @@ public class CourseProviderController {
     try {
       CourseProvider provider = repo.getCourseProviderById(id);
       if (provider == null) {
+        logger.error("Course provider with id {} not found", id);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
       }
       repo.delete(provider);
+      logger.info("Deleted course provider with id: {}", id);
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     } catch (EntityNotFoundException e) {
+      logger.error("Course provider with id {} not found", id);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
   }

@@ -63,6 +63,15 @@ public class Transaction {
   }
 
   /**
+   * Gets the ID of the transaction.
+   *
+   * @return The unique identifier of the transaction.
+   */
+  public long getId() {
+    return id;
+  }
+
+  /**
    * Gets the offerable course associated with this transaction.
    *
    * @return The offerable course involved in the transaction.

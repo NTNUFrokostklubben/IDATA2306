@@ -2,6 +2,7 @@ package no.ntnu.learniverseconnect.controllers;
 
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import no.ntnu.learniverseconnect.model.entities.Role;
 import no.ntnu.learniverseconnect.model.repos.RoleRepo;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RoleController {
 
   private RoleRepo roleRepo;
+  private final Logger logger = Logger.getLogger(RoleController.class.getName());
 
   /**
    * Constructor for RoleController.
@@ -34,8 +36,10 @@ public class RoleController {
   public ResponseEntity<List<Role>> getRoles() {
     List<Role> roles = roleRepo.findAll();
     if (roles.isEmpty()) {
+      logger.warning("No roles found");
       return ResponseEntity.status(404).body(null);
     } else {
+      logger.info("Fetching all roles");
       return ResponseEntity.status(200).body(roles);
     }
   }

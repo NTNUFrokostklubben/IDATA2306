@@ -63,9 +63,13 @@ public class UserCoursesController {
     List<UserCourse> userCourseList = userCoursesRepo.getAllByUser_Id(id);
     int status = 404;
     if (!userCourseList.isEmpty()) {
+      logger.info("Fetching all courses for user with id: {}", id);
       status = 200;
+    } else {
+      logger.error("No courses found for user with id: {}", id);
     }
     return ResponseEntity.status(status).body(userCourseList);
+
   }
 
 
@@ -96,6 +100,7 @@ public class UserCoursesController {
   public ResponseEntity<Float> getAverageByCourse(@PathVariable long cid) {
     List<UserCourse> courses = userCoursesRepo.getAllByCourse_Id(cid);
     if (courses.isEmpty()) {
+      logger.error("No courses found for course with id: {}", cid);
       return ResponseEntity.status(404).body(null);
     }
     float average = 0;
@@ -120,10 +125,9 @@ public class UserCoursesController {
         status = 204;
       }
     }
+    logger.info("Fetching average rating for course with id: {}", cid);
     return ResponseEntity.status(status).body(average);
   }
-
-
 
   /**
    * Get all user courses from the database.
@@ -133,7 +137,14 @@ public class UserCoursesController {
   @GetMapping("/userCourses")
   public ResponseEntity<Iterable<UserCourse>> getAllUserCourses() {
     logger.info("Fetching all user Courses");
-    return ResponseEntity.status(200).body(userCoursesRepo.findAll());
+    List<UserCourse> userCourseList;
+    if (userCoursesRepo.findAll().isEmpty()) {
+      return ResponseEntity.status(404).body(null);
+    } else {
+      logger.info("Fetching all user courses");
+      userCourseList = userCoursesRepo.findAll();
+    }
+    return ResponseEntity.status(200).body(userCourseList);
   }
 
   /**
@@ -146,15 +157,16 @@ public class UserCoursesController {
     logger.info("Fetching the ten last user courses");
     List<UserCourse> userCourseList = userCoursesRepo.findAll();
     if (userCourseList.isEmpty()) {
+      logger.error("No user courses found");
       return ResponseEntity.status(404).body(null);
     } else {
-      logger.info("Fetching the ten last user courses");
       userCourseList.stream()
           .filter(userCourse -> userCourse.getReview() != null)
           .sorted((a, b) -> b.getReview().getDate().compareTo(a.getReview().getDate()))
           .toList();
     }
     userCourseList.subList(0, Math.min(10, userCourseList.size()));
+    logger.info("Successfully fetched the ten last user courses");
     return ResponseEntity.status(200).body(userCourseList);
   }
 
@@ -168,10 +180,12 @@ public class UserCoursesController {
   public ResponseEntity<String> addNewReview(@RequestBody UserCourse userCourse) {
     this.userCoursesRepo.save(userCourse);
     if (userCoursesRepo.existsById(Math.toIntExact(userCourse.getId()))) {
+      logger.info("User course with id {} saved", userCourse.getId());
       return ResponseEntity.status(HttpStatus.CREATED).body(
           "User course with id " + userCourse.getId() + " saved");
     } else {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+      logger.error("Failed to save user course with id {}", userCourse.getId());
+      return ResponseEntity.status(400).build();
     }
   }
 
@@ -197,10 +211,12 @@ public class UserCoursesController {
     }
     this.userCoursesRepo.save(userCourse);
     if (userCoursesRepo.existsById(userCourse.getId())) {
+      logger.info("User course with id {} saved", userCourse.getId());
       return ResponseEntity.status(HttpStatus.CREATED).body(
           "User course with id " + userCourse.getId() + " saved");
     } else {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+      logger.error("Failed to save user course with id {}", userCourse.getId());
+      return ResponseEntity.status(400).build();
     }
   }
 
@@ -217,6 +233,7 @@ public class UserCoursesController {
   public ResponseEntity<Void> addRating(@RequestBody Review review, @PathVariable long uid,
                                         @PathVariable long cid) {
     if(review == null){
+      logger.error("Review object is null");
       return ResponseEntity.status(400).build();
     }
     // Makes sure the minimum review is 1 one star.
@@ -227,12 +244,13 @@ public class UserCoursesController {
 
     UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(uid, cid);
     if (userCourse.getReview() != null) {
-
       reviewRepo.delete(userCourse.getReview());
     }
     userCourse.setReview(review);
     userCoursesRepo.save(userCourse);
     reviewRepo.save(review);
+    logger.info("Added review with id {} to user course with id {}", review.getId(),
+        userCourse.getId());
     return ResponseEntity.status(200).build();
 
   }
@@ -250,8 +268,10 @@ public class UserCoursesController {
                                                         @PathVariable long cid) {
     UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(uid, cid);
     if (userCourse != null) {
+      logger.info("User with id {} is enrolled in course with id {}", uid, cid);
       return ResponseEntity.status(200).body(true);
     } else {
+      logger.error("User with id {} is not enrolled in course with id {}", uid, cid);
       return ResponseEntity.status(404).body(false);
     }
   }
