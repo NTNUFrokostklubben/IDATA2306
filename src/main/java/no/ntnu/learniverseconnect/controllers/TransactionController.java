@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import no.ntnu.learniverseconnect.model.dto.CourseProviderStatsDto;
 import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
@@ -38,6 +39,7 @@ public class TransactionController {
   private final UserRepo userRepo;
   private final CourseProviderRepo courseProviderRepo;
   private final UserCoursesRepo userCoursesRepo;
+  private final Logger logger = Logger.getLogger(TransactionController.class.getName());
 
   /**
    * Constructor for TransactionController.
@@ -58,8 +60,6 @@ public class TransactionController {
     this.userRepo = userRepo;
     this.courseProviderRepo = courseProviderRepo;
     this.userCoursesRepo = userCoursesRepo;
-
-
   }
 
   /**
@@ -69,7 +69,14 @@ public class TransactionController {
    */
   @GetMapping("/transactions")
   public ResponseEntity<List<Transaction>> getTransactions() {
-    return ResponseEntity.status(200).body(repo.findAll());
+    List<Transaction> transactions = repo.findAll();
+    if (transactions == null || transactions.isEmpty()) {
+      logger.warning("No transactions found");
+      return ResponseEntity.status(404).body(null);
+    } else {
+      logger.info("Transactions found: " + transactions.size());
+      return ResponseEntity.status(200).body(transactions);
+    }
   }
 
   /**
@@ -82,8 +89,10 @@ public class TransactionController {
   public ResponseEntity<Transaction> getTransactionById(@PathVariable long id) {
     Transaction transaction = repo.findById(id);
     if (transaction != null) {
+      logger.info("Transaction found with id: " + id);
       return ResponseEntity.status(200).body(transaction);
     } else {
+      logger.warning("No transactions found with id: " + id);
       return ResponseEntity.status(404).body(null);
     }
   }
@@ -98,8 +107,10 @@ public class TransactionController {
   public ResponseEntity<List<Transaction>> getTransactionsByUserId(@PathVariable long userId) {
     List<Transaction> transactions = repo.findAllByUser_Id(userId);
     if (transactions != null && !transactions.isEmpty()) {
+      logger.info("Transactions found for user with id: " + userId);
       return ResponseEntity.status(200).body(transactions);
     } else {
+      logger.warning("No transactions found for user with id: " + userId);
       return ResponseEntity.status(404).body(null);
     }
   }
@@ -115,8 +126,10 @@ public class TransactionController {
     Course course = courseRepo.getCoursesById(courseId);
     List<Transaction> transactions = repo.findAllByOfferableCourses_Course(course);
     if (transactions != null && !transactions.isEmpty()) {
+      logger.info("Transactions found for course with id: " + courseId);
       return ResponseEntity.status(200).body(transactions);
     } else {
+      logger.warning("No transactions found for course with id: " + courseId);
       return ResponseEntity.status(404).body(null);
     }
   }
@@ -137,8 +150,12 @@ public class TransactionController {
     List<Transaction> transactions = repo.findAllByUser_IdAndOfferableCourses_Course(userId,
                                                                                      course);
     if (transactions != null && !transactions.isEmpty()) {
+      logger.info("Transactions found for user with id: " + userId + " and course with id: "
+          + courseId);
       return ResponseEntity.status(200).body(transactions);
     } else {
+      logger.warning("No transactions found for user with id: " + userId + " and course with id: "
+          + courseId);
       return ResponseEntity.status(404).body(null);
     }
   }
@@ -153,12 +170,15 @@ public class TransactionController {
   @PostMapping("/transaction")
   public ResponseEntity<Transaction> addTransaction(@PathVariable Transaction transaction) {
     if (transaction == null) {
+      logger.warning("Transaction is null");
       return ResponseEntity.status(400).body(null);
     }
     if (transaction.getUser() == null || transaction.getOfferableCourses() == null) {
+      logger.warning("Transaction is missing user or offerable course");
       return ResponseEntity.status(400).body(null);
     }
     repo.save(transaction);
+    logger.info("Transaction added with id: " + transaction.getId());
     return ResponseEntity.status(201).body(transaction);
   }
 
@@ -222,14 +242,15 @@ public class TransactionController {
       for (Transaction transaction : transactions) {
         revenueSum += transaction.getPricePaid();
       }
-      CourseProviderStatsDto providerStats = new CourseProviderStatsDto(provider.getId(),
-                                                                        provider.getName(),
-                                                                        revenueSum);
+      CourseProviderStatsDto providerStats =
+          new CourseProviderStatsDto(provider.getId(), provider.getName(), revenueSum);
       statsList.add(providerStats);
     }
     if (statsList.isEmpty()) {
+      logger.warning("No providers found");
       return ResponseEntity.status(404).body(null);
     } else {
+      logger.info("Providers found: " + statsList.size());
       return ResponseEntity.status(200).body(statsList);
     }
   }
@@ -242,10 +263,15 @@ public class TransactionController {
   @GetMapping("/transaction/totalRevenue")
   public ResponseEntity<Float> getTotalRevenue() {
     List<Transaction> transactions = repo.findAll();
+    if (transactions.isEmpty()) {
+      logger.warning("No transactions found");
+      return ResponseEntity.status(204).body(null);
+    }
     float revenueSum = 0;
     for (Transaction transaction : transactions) {
       revenueSum += transaction.getPricePaid();
     }
+    logger.info("Total revenue: " + revenueSum);
     return ResponseEntity.status(200).body(revenueSum);
   }
 
@@ -259,11 +285,21 @@ public class TransactionController {
     List<Course> courses = courseRepo.findAll();
     int totalCourses = courses.size();
     List<Transaction> transactions = repo.findAll();
+
+    if (transactions.isEmpty()) {
+      logger.warning("No transactions found");
+      return ResponseEntity.status(404).body(null);
+    } else if (courses.isEmpty()) {
+      logger.warning("No courses found");
+      return ResponseEntity.status(404).body(null);
+    }
+
     float revenueSum = 0;
     for (Transaction transaction : transactions) {
       revenueSum += transaction.getPricePaid();
     }
     Float avgRevenue = revenueSum / totalCourses;
+    logger.info("Average revenue per course: " + avgRevenue);
     return ResponseEntity.status(200).body(avgRevenue);
   }
 
@@ -275,6 +311,11 @@ public class TransactionController {
   @GetMapping("/transaction/revenueLast30Days")
   public ResponseEntity<Float> getRevenueLast30Days() {
     List<Transaction> transactions = repo.findAll();
+
+    if (transactions.isEmpty()) {
+      logger.warning("No transactions found");
+      return ResponseEntity.status(404).body(null);
+    }
     float revenueSum = 0;
     for (Transaction transaction : transactions) {
       if (transaction.getTimeOfTransaction().after(

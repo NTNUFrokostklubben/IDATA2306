@@ -3,6 +3,7 @@ package no.ntnu.learniverseconnect.controllers;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import no.ntnu.learniverseconnect.model.dto.CourseWithMinPriceAndRatingDto;
 import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
@@ -24,13 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class OfferableCoursesController {
 
   private OfferableCoursesRepo repo;
-  private CourseRepo courseRepo;
+  private final Logger logger = Logger.getLogger(OfferableCoursesController.class.getName());
 
 
   @Autowired
-  public OfferableCoursesController(OfferableCoursesRepo repo, CourseRepo courseRepor) {
+  public OfferableCoursesController(OfferableCoursesRepo repo) {
     this.repo = repo;
-    this.courseRepo = courseRepo;
   }
 
   /**
@@ -40,6 +40,7 @@ public class OfferableCoursesController {
    */
   @GetMapping("/offerableCourses")
   public ResponseEntity<List<OfferableCourses>> getOfferableCourses() {
+    logger.info("Fetching all offerable courses");
     return ResponseEntity.status(200).body(repo.findAll());
   }
 
@@ -53,8 +54,10 @@ public class OfferableCoursesController {
   public ResponseEntity<OfferableCourses> getOfferableCourseById(@PathVariable int id) {
     OfferableCourses offerableCourse = repo.findById(id).orElse(null);
     if (offerableCourse != null) {
+      logger.info("Offerable course found with id: " + id);
       return ResponseEntity.status(200).body(offerableCourse);
     } else {
+      logger.warning("Offerable course not found with id: " + id);
       return ResponseEntity.status(404).body(null);
     }
   }
@@ -69,9 +72,11 @@ public class OfferableCoursesController {
   public ResponseEntity<Void> deleteOfferableCourse(@PathVariable long id) {
     OfferableCourses offerableCourse = repo.getOfferableCoursesById(id);
     if (offerableCourse != null) {
+      logger.info("Deleting offerable course with id: " + id);
       repo.delete(offerableCourse);
       return ResponseEntity.status(200).build();
     } else {
+      logger.warning("Offerable course not found with id: " + id);
       return ResponseEntity.status(404).build();
     }
   }
@@ -88,8 +93,10 @@ public class OfferableCoursesController {
       @PathVariable long cid) {
     List<OfferableCourses> list = repo.getAllByCourse_Id(cid);
     if (!list.isEmpty()) {
+      logger.info("Offerable courses found for course with id: " + cid);
       return ResponseEntity.status(200).body(list);
     } else {
+      logger.warning("No offerable courses found for course with id: " + cid);
       return ResponseEntity.status(404).body(null);
     }
   }
@@ -104,6 +111,7 @@ public class OfferableCoursesController {
 
     float lowestPrice;
     if (list.isEmpty()) {
+      logger.warning("No offerable courses found for course with id: " + cid);
       return ResponseEntity.status(404).body(null);
     } else {
       lowestPrice = list.get(0).getPrice() * (1 - list.get(0).getDiscount());
@@ -114,6 +122,7 @@ public class OfferableCoursesController {
         }
       }
     }
+    logger.info("Lowest price found for course with id: " + cid + " is: " + lowestPrice);
     return ResponseEntity.status(200).body(lowestPrice);
   }
 
@@ -127,6 +136,7 @@ public class OfferableCoursesController {
 
     Date closestDate;
     if (list.isEmpty()) {
+      logger.warning("No offerable courses found for course with id: " + cid);
       return ResponseEntity.status(404).body(null);
     } else {
       closestDate = list.get(0).getDate();
@@ -136,6 +146,7 @@ public class OfferableCoursesController {
         }
       }
     }
+    logger.info("Closest date found for course with id: " + cid + " is: " + closestDate);
     return ResponseEntity.status(200).body(closestDate);
   }
 
@@ -150,8 +161,10 @@ public class OfferableCoursesController {
       @PathVariable long pid) {
     List<OfferableCourses> list = repo.getAllByProvider_Id(pid);
     if (!list.isEmpty()) {
+      logger.info("Offerable courses found for provider with id: " + pid);
       return ResponseEntity.status(200).body(list);
     } else {
+      logger.warning("No offerable courses found for provider with id: " + pid);
       return ResponseEntity.status(404).body(null);
     }
   }
@@ -165,8 +178,7 @@ public class OfferableCoursesController {
   public ResponseEntity<OfferableCourses> addOfferableCourse(
       @RequestBody OfferableCourses offerableCourse) {
     repo.save(offerableCourse);
+    logger.info("Offerable course added with id: " + offerableCourse.getId());
     return ResponseEntity.status(201).body(offerableCourse);
   }
-
-
 }
