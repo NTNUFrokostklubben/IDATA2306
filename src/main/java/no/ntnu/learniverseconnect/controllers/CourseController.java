@@ -74,7 +74,14 @@ public class CourseController {
   @GetMapping("/courses")
   public ResponseEntity<List<Course>> getCourses() {
     logger.info("Fetching all courses");
-    return ResponseEntity.status(200).body(courseRepo.findAll());
+    List<Course> courses = courseRepo.findAll();
+    if (courses.isEmpty()) {
+      logger.warn("No courses found");
+      return ResponseEntity.status(404).body(null);
+    } else {
+      logger.info("Found {} courses", courses.size());
+      return ResponseEntity.status(200).body(courses);
+    }
   }
 
   /**
@@ -86,7 +93,13 @@ public class CourseController {
   public ResponseEntity<Integer> getCourseTotal() {
     logger.info("Fetching total number of courses");
     List<Course> totalCourses = courseRepo.findAll();
-    return ResponseEntity.status(200).body(totalCourses.size());
+    if (totalCourses.isEmpty()) {
+      logger.warn("No courses found");
+      return ResponseEntity.status(404).body(null);
+    } else {
+      logger.info("Found {} courses", totalCourses.size());
+      return ResponseEntity.status(200).body(totalCourses.size());
+    }
   }
 
   /**
@@ -161,6 +174,7 @@ public class CourseController {
     } else if (filteredResult.size()>10) {
       filteredResult.subList(0,10);
     }
+    logger.info("Found {} courses", filteredResult.size());
     return ResponseEntity.status(200).body(filteredResult);
   }
 
@@ -173,7 +187,6 @@ public class CourseController {
   @PutMapping("/course")
   public ResponseEntity<Course> updateCourse(@RequestBody Course course) {
     logger.info("Updating course with id: {}", course.getId());
-
     return ResponseEntity.status(200).body(courseRepo.save(course));
   }
 

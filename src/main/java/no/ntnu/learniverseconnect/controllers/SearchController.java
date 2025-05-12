@@ -118,8 +118,7 @@ public class SearchController {
                 searchFilterDto.getPriceRange().getMaxPrice()
             ))
             .and(hasTitle(searchFilterDto.getSearchValue()).or(
-                    hasDescription(searchFilterDto.getSearchValue()))
-                .or(hasKeywords(searchFilterDto.getSearchValue())))
+                hasDescription(searchFilterDto.getSearchValue())))
             .and(hasDateBetween(
                 searchFilterDto.getDateRange().getStartDate(),
                 searchFilterDto.getDateRange().getEndDate()

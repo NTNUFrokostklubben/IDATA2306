@@ -95,10 +95,13 @@ public class FavoritesController {
     Course course = courseRepo.getCoursesById(cid);
     Favorite favorite = new Favorite(user, course);
     if (repo.existsByCourse_IdAndUser_Id(cid, uid)) {
+      logger.error("Favorite already exists for user with id: {} and course with id: {}", uid, cid);
       status = 400;
     } else if (user == null || course == null) {
+      logger.error("User with id: {} or course with id: {} not found", uid, cid);
       status = 404;
     } else {
+      logger.info("Saving favorite for user with id: {} and course with id: {}", uid, cid);
       repo.save(favorite);
     }
     return ResponseEntity.status(status).body(null);
@@ -118,8 +121,11 @@ public class FavoritesController {
       logger.info("Removing favorite for user with id: {} and course with id: {}", uid, cid);
       int status = 200;
       if (repo.existsByCourse_IdAndUser_Id(cid, uid)) {
+        logger.info("Deleting favorite for user with id: {} and course with id: {}", uid, cid);
         repo.deleteFavoriteByCourse_IdAndUser_Id(cid, uid);
       } else {
+        logger.error("Favorite does not exist for user with id: {} and course with id: {}"
+            , uid, cid);
         status = 400;
       }
       return ResponseEntity.status(status).body(null);
@@ -134,8 +140,7 @@ public class FavoritesController {
     @GetMapping("/isFavorited/{uid}/{cid}")
     public ResponseEntity<Boolean> isFavorited(@PathVariable long uid, @PathVariable long cid){
       logger.info("Checking if course with id: {} is favorited by user with id: {}", cid, uid);
-      int status = 200;
       boolean isFavorited = repo.existsByCourse_IdAndUser_Id(cid, uid);
-      return ResponseEntity.status(status).body(isFavorited);
+      return ResponseEntity.status(200).body(isFavorited);
     }
 }
