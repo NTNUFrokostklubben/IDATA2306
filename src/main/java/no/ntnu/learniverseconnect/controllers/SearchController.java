@@ -5,6 +5,7 @@ import static no.ntnu.learniverseconnect.specifications.FilterSpecification.hasC
 import static no.ntnu.learniverseconnect.specifications.FilterSpecification.hasDateBetween;
 import static no.ntnu.learniverseconnect.specifications.FilterSpecification.hasDescription;
 import static no.ntnu.learniverseconnect.specifications.FilterSpecification.hasDiffLevel;
+import static no.ntnu.learniverseconnect.specifications.FilterSpecification.hasKeywords;
 import static no.ntnu.learniverseconnect.specifications.FilterSpecification.hasPriceBetween;
 import static no.ntnu.learniverseconnect.specifications.FilterSpecification.hasRatingBetween;
 import static no.ntnu.learniverseconnect.specifications.FilterSpecification.hasTitle;
