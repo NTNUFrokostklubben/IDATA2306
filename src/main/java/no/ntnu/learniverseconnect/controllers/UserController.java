@@ -94,7 +94,7 @@ public class UserController {
       return ResponseEntity.status(404).body(null);
     } else {
       ReduxUserDto userDto = new ReduxUserDto(user.getEmail(),
-          user.getId(), user.getProfilePicture());
+          user.getId(), user.getProfilePicture(), user.getName());
       logger.info("Fetching user with email: {}", email);
       return ResponseEntity.status(200).body(userDto);
     }
@@ -323,7 +323,7 @@ public class UserController {
             user.setProfilePicture(imageLink.replace("\"" , ""));
             repo.save(user);
             ReduxUserDto userDto = new ReduxUserDto(user.getEmail(), user.getId(),
-                user.getProfilePicture());
+                user.getProfilePicture(), user.getName());
             return ResponseEntity.status(HttpStatus.OK).body(userDto);
         } else {
             logger.warn("User with id {} not found", id);
