@@ -8,6 +8,7 @@ import jakarta.persistence.criteria.Subquery;
 import java.util.Date;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Course;
+import no.ntnu.learniverseconnect.model.entities.Keywords;
 import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
 import no.ntnu.learniverseconnect.model.entities.UserCourse;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,6 +31,34 @@ public class FilterSpecification {
     }
     return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("course").get("title"),
         "%" + title + "%");
+  }
+
+  /**
+   * Filter courses by keywords containing search string
+   */
+  public static Specification<OfferableCourses> hasKeywords(String keywords) {
+    if (keywords == null || keywords.isEmpty()) {
+      return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+    }
+    return (root, query, criteriaBuilder) -> {
+      Join<OfferableCourses, Course> courseJoin = root.join("course");
+
+      // Subquery to find courses with matching keywords
+      Subquery<Long> keywordSubquery = query.subquery(Long.class);
+      Root<Keywords> keywordRoot = keywordSubquery.from(Keywords.class);
+
+      keywordSubquery.select(keywordRoot.get("course").get("id"))
+          .where(
+              criteriaBuilder.and(
+                  criteriaBuilder.equal(keywordRoot.get("course").get("id"), courseJoin.get("id")),
+                  criteriaBuilder.like(
+                      criteriaBuilder.lower(keywordRoot.get("keyword")),
+                      "%" + keywords.toLowerCase() + "%"
+                  )
+              )
+          );
+      return criteriaBuilder.exists(keywordSubquery);
+    };
   }
 
   /**
