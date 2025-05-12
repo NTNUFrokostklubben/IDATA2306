@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.model.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,19 +13,32 @@ import java.sql.Date;
  * Represents the relation between course providers and the courses
  * they offer. Uses a composite key made from the course id and provider id
  */
+@Schema(description = "Course offering by a specific provider")
 @Entity
 public class OfferableCourses implements Serializable {
+  @Schema(description = "Unique offering ID", example = "1")
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
+
+  @Schema(description = "Base course being offered")
   @ManyToOne
   private Course course;
+
+  @Schema(description = "Provider offering the course")
   @ManyToOne
   private CourseProvider provider;
 
+  @Schema(description = "Course start date", example = "2023-12-01")
   private Date date;
+
+  @Schema(description = "Base price before discount", example = "99.99")
   private float price;
+
+  @Schema(description = "Discount percentage (0-1)", example = "0.2")
   private float discount;
+
+  @Schema(description = "Visibility status", example = "true")
   private boolean visibility;
 
   /**

@@ -1,5 +1,11 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.CourseProvider;
@@ -34,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
+@Tag(name = "Course Providers", description = "APIs for managing course providers")
 public class CourseProviderController {
 
   public static final Logger logger = LoggerFactory.getLogger(CourseProviderController.class);
@@ -49,6 +56,12 @@ public class CourseProviderController {
    *
    * @return a list of all course providers.
    */
+  @Operation(summary = "Get all providers",
+      description = "Retrieves list of all course providers")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(implementation = CourseProvider.class,type = "array")))
+  })
   @GetMapping("/providers")
   public ResponseEntity<List<CourseProvider>> getProviders() {
     logger.info("Fetching all course providers");
@@ -63,6 +76,13 @@ public class CourseProviderController {
    * @param id the id of the course provider to return.
    * @return the course provider with the given id.
    */
+  @Operation(summary = "Get provider by ID",
+      description = "Retrieves specific course provider details")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(implementation = CourseProvider.class))),
+      @ApiResponse(responseCode = "404", description = "Provider not found")
+  })
   @GetMapping("/provider/{id}")
   public ResponseEntity<CourseProvider> getProvider(@PathVariable long id) {
     logger.info("Fetching course provider with id: {}", id);
@@ -84,6 +104,18 @@ public class CourseProviderController {
    * @param provider the course provider to add.
    * @return a ResponseEntity with the status of the operation.
    */
+
+  @Operation(summary = "Add new provider",
+      description = "Creates a new course provider")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201",
+          content = @Content(schema = @Schema(implementation = CourseProvider.class))),
+      @ApiResponse(responseCode = "400", description = "Invalid input")
+  })
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      description = "Course provider to be added",
+      content = @Content(schema = @Schema(implementation = CourseProvider.class))
+  )
   @PostMapping("/provider")
   public ResponseEntity<CourseProvider> addProvider(@RequestBody CourseProvider provider) {
     if (provider == null) {
@@ -101,6 +133,12 @@ public class CourseProviderController {
    * @param id id of the course provider to delete.
    * @return ResponseEntity with the status of the operation.
    */
+  @Operation(summary = "Delete provider",
+      description = "Removes a course provider")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "204"),
+      @ApiResponse(responseCode = "404", description = "Provider not found")
+  })
   @DeleteMapping("/provider/{id}")
   public ResponseEntity<Void> deleteProvider(@PathVariable long id) {
     logger.info("Deleting course provider with id: {}", id);

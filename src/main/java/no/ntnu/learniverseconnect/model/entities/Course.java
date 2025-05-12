@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.model.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +12,7 @@ import java.sql.Date;
 /**
  * Represents a course in the database of the application. Here the values for each course is saved.
  */
+@Schema(description = "Represents an educational course in the system")
 @Entity
 public class Course implements Serializable {
   /**
@@ -24,18 +26,40 @@ public class Course implements Serializable {
    * * description - the description of the course.  <br>
    * * imgLink - a link to a picture in the server directory representing the course.  <br>
    */
+  @Schema(description = "Unique course ID", example = "1")
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
+
+  @Schema(description = "Course title", example = "Introduction to Java")
   private String title;
+
+  @Schema(description = "Difficulty level (1-5)", example = "2")
   private int diffLevel;
+
+  @Schema(description = "Next available date", example = "2023-12-01")
   private Date closestCourse;
+
+  @Schema(description = "Credit value", example = "7.5")
   private float credits;
+
+  @Schema(description = "Weekly hours required", example = "10")
   private int hoursWeek;
+
+  @Schema(description = "Related certifications",
+      example = "Oracle Certified Associate")
   private String relatedCert;
+
+  @Schema(description = "Detailed course description",
+      example = "Learn Java fundamentals...")
   @Column(length = 10000)
   private String description;
+
+  @Schema(description = "Course category", example = "Programming")
   private String category;
+
+  @Schema(description = "Course image URL",
+      example = "http://example.com/course.jpg")
   private String imgLink;
 
   /**

@@ -1,13 +1,15 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import no.ntnu.learniverseconnect.model.dto.CourseWithMinPriceAndRatingDto;
-import no.ntnu.learniverseconnect.model.entities.Course;
 import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
-import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
  * The controller for offerable courses.
  */
 @RestController
+@Tag(name = "Offerable Courses",
+    description = "APIs for managing course offerings by providers")
 public class OfferableCoursesController {
 
   private OfferableCoursesRepo repo;
@@ -38,6 +42,14 @@ public class OfferableCoursesController {
    *
    * @return a list of all offerable courses.
    */
+  @Operation(summary = "Get all offerable courses",
+      description = "Retrieves all available course offerings")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(
+              implementation = OfferableCourses.class,
+              type = "array")))
+  })
   @GetMapping("/offerableCourses")
   public ResponseEntity<List<OfferableCourses>> getOfferableCourses() {
     logger.info("Fetching all offerable courses");
@@ -50,6 +62,13 @@ public class OfferableCoursesController {
    * @param id id of the offerable course to return.
    * @return offerable course with the given id.
    */
+  @Operation(summary = "Get offerable course by ID",
+      description = "Retrieves a specific course offering")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(implementation = OfferableCourses.class))),
+      @ApiResponse(responseCode = "404", description = "Not found")
+  })
   @GetMapping("/offerableCourses/{id}")
   public ResponseEntity<OfferableCourses> getOfferableCourseById(@PathVariable int id) {
     OfferableCourses offerableCourse = repo.findById(id).orElse(null);
@@ -68,6 +87,12 @@ public class OfferableCoursesController {
    * @param id id of the offerable course to delete.
    * @return response entity with status code 200 if the course was deleted, 404 if not found.
    */
+  @Operation(summary = "Delete offerable course",
+      description = "Removes a course offering")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200"),
+      @ApiResponse(responseCode = "404", description = "Not found")
+  })
   @DeleteMapping("/offerableCourses/{id}")
   public ResponseEntity<Void> deleteOfferableCourse(@PathVariable long id) {
     OfferableCourses offerableCourse = repo.getOfferableCoursesById(id);
@@ -88,6 +113,14 @@ public class OfferableCoursesController {
    * @param cid Course id.
    * @return List of offerable courses for the given course id.
    */
+  @Operation(summary = "Get courses by parent course ID",
+      description = "Finds all offerings for a base course")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(implementation = OfferableCourses.class,
+              type = "array"))),
+      @ApiResponse(responseCode = "404", description = "Not found")
+  })
   @GetMapping("/offerableCourses/course/{cid}")
   public ResponseEntity<List<OfferableCourses>> getOfferableCoursesByCourseId(
       @PathVariable long cid) {
@@ -104,6 +137,14 @@ public class OfferableCoursesController {
   /**
    * Returns the lowest price of offerable courses for a given course id.
    */
+  @Operation(summary = "Get lowest price by course",
+      description = "Finds minimum price across all offerings")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(
+              implementation = Float.class))),
+      @ApiResponse(responseCode = "404", description = "Not found")
+  })
   //TODO delete?
   @GetMapping("/offerableCourses/lowestPrice/course/{cid}")
   public ResponseEntity<Float> getOfferablePriceByCourseId(@PathVariable long cid) {
@@ -127,8 +168,16 @@ public class OfferableCoursesController {
   }
 
   /**
-   * Returns the lowest price of offerable courses for a given course id.
+   * Returns the soonest date of offerable courses for a given course id.
    */
+  @Operation(summary = "Get soonest date by course",
+      description = "Finds earliest available course date")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(
+              implementation = Date.class))),
+      @ApiResponse(responseCode = "404", description = "Not found")
+  })
   //TODO delete?
   @GetMapping("/offerableCourses/closestDate/course/{cid}")
   public ResponseEntity<Date> getOfferableClosestDateByCourseID(@PathVariable long cid) {
@@ -156,6 +205,15 @@ public class OfferableCoursesController {
    * @param pid Provider id.
    * @return List of offerable courses for the given provider id.
    */
+  @Operation(summary = "Get offerings by provider",
+      description = "Lists all courses offered by a provider")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(
+              implementation = OfferableCourses.class,
+              type = "array"))),
+      @ApiResponse(responseCode = "404", description = "Not found")
+  })
   @GetMapping("/offerableCourses/provider/{pid}")
   public ResponseEntity<List<OfferableCourses>> getOfferableCoursesByProviderId(
       @PathVariable long pid) {
@@ -174,6 +232,13 @@ public class OfferableCoursesController {
    *
    * @param offerableCourse the offerable course to add.
    */
+  @Operation(summary = "Create new course offering",
+      description = "Adds a new provider course offering")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201",
+          content = @Content(schema = @Schema(
+              implementation = OfferableCourses.class)))
+  })
   @PostMapping("/offerableCourse")
   public ResponseEntity<OfferableCourses> addOfferableCourse(
       @RequestBody OfferableCourses offerableCourse) {

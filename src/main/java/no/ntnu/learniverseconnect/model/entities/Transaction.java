@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.model.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,18 +25,25 @@ import java.sql.Timestamp;
  */
 @Entity
 public class Transaction {
+  @Schema(description = "Unique transaction ID", example = "1")
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
+
+  @Schema(description = "User who made the purchase")
   @ManyToOne
   private User user;
+
+  @Schema(description = "Purchased course offering details")
   @ManyToOne
   private OfferableCourses offerableCourses;
+
+  @Schema(description = "Timestamp of transaction", example = "2023-01-01T12:00:00Z")
   @Temporal(TemporalType.TIMESTAMP)
   private Timestamp timeOfTransaction;
+
+  @Schema(description = "Final price paid (after discounts)", example = "49.99")
   private float pricePaid;
-
-
   /**
    * Sets the current timestamp before persisting the entity.
    */
