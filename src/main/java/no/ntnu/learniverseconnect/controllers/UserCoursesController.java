@@ -1,6 +1,12 @@
 package no.ntnu.learniverseconnect.controllers;
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
+@Tag(name = "User Courses", description = "APIs for managing user-course relationships and reviews")
 public class UserCoursesController {
 
   UserCoursesRepo userCoursesRepo;
@@ -52,12 +59,20 @@ public class UserCoursesController {
     this.reviewRepo = reviewRepo1;
   }
 
+
   /**
    * Get all courses associated with a user.
    *
    * @param id the user to get by
    * @return the list of courses a user is associated with.
    */
+  @Operation(summary = "Get all user-courses for a user",
+      description = "Retrieves all user-courses associated with a user ID")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Courses found", content =
+      @Content(schema = @Schema(implementation = UserCourse.class, type = "array"))),
+      @ApiResponse(responseCode = "404", description = "No courses found")
+  })
   @GetMapping("/userCourses/{id}")
   public ResponseEntity<List<UserCourse>> getAll(@PathVariable long id) {
     List<UserCourse> userCourseList = userCoursesRepo.getAllByUser_Id(id);
@@ -73,12 +88,20 @@ public class UserCoursesController {
   }
 
 
+
   /**
-   * Get all user courses associated with a course.
+   * Get all user-courses associated with a course.
    *
    * @param cid the course to get by
    * @return the list of courses a course is associated with.
    */
+  @Operation(summary = "Get all user-courses associated with a course",
+      description = "Retrieves all users-courses associated  with a course ID")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Users found",
+          content = @Content(schema = @Schema(implementation = UserCourse.class, type = "array"))),
+      @ApiResponse(responseCode = "404", description = "No users found")
+  })
   @GetMapping("/userCourses/course/{cid}")
   public ResponseEntity<List<UserCourse>> getAllByCourse(@PathVariable long cid) {
     List<UserCourse> userCourseList = userCoursesRepo.getAllByCourse_Id(cid);
@@ -96,6 +119,14 @@ public class UserCoursesController {
    * @param cid the course id for the course to find the average on.
    * @return the average.
    */
+  @Operation(summary = "Get average rating for a course",
+      description = "Calculates the average rating of a course based on reviews")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Average calculated",
+          content = @Content(schema = @Schema(implementation = Float.class))),
+      @ApiResponse(responseCode = "404", description = "No reviews found"),
+      @ApiResponse(responseCode = "204", description = "Invalid rating range")
+  })
   @GetMapping("/userCourses/averageRating/{cid}")
   public ResponseEntity<Float> getAverageByCourse(@PathVariable long cid) {
     List<UserCourse> courses = userCoursesRepo.getAllByCourse_Id(cid);
@@ -129,11 +160,19 @@ public class UserCoursesController {
     return ResponseEntity.status(status).body(average);
   }
 
+
   /**
    * Get all user courses from the database.
    *
    * @return all user courses
    */
+  @Operation(summary = "Get all user-course relationships",
+      description = "Retrieves all user-course records")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Records found",
+          content = @Content(schema = @Schema(implementation = UserCourse.class, type = "array"))),
+      @ApiResponse(responseCode = "404", description = "No records found")
+  })
   @GetMapping("/userCourses")
   public ResponseEntity<Iterable<UserCourse>> getAllUserCourses() {
     logger.info("Fetching all user Courses");
@@ -147,11 +186,19 @@ public class UserCoursesController {
     return ResponseEntity.status(200).body(userCourseList);
   }
 
+
   /**
    * Get the last ten user courses from the database.
    *
    * @return the last ten user courses
    */
+  @Operation(summary = "Get latest 10 user-courses",
+      description = "Retrieves the 10 most recent user-courses")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "10 user-courses found",
+          content = @Content(schema = @Schema(implementation = UserCourse.class, type = "array"))),
+      @ApiResponse(responseCode = "404", description = "No user-courses found")
+  })
   @GetMapping("/userCourses/lastUserCourses")
   public ResponseEntity<Iterable<UserCourse>> getLastTenUserCourses() {
     logger.info("Fetching the ten last user courses");
@@ -162,7 +209,8 @@ public class UserCoursesController {
     } else {
       userCourseList.stream()
           .filter(userCourse -> userCourse.getReview() != null)
-          .sorted((a, b) -> b.getReview().getDate().compareTo(a.getReview().getDate()))
+          .sorted((a, b) ->
+              b.getReview().getDate().compareTo(a.getReview().getDate()))
           .toList();
     }
     userCourseList.subList(0, Math.min(10, userCourseList.size()));
@@ -170,14 +218,27 @@ public class UserCoursesController {
     return ResponseEntity.status(200).body(userCourseList);
   }
 
+
+
+
   /**
    * Adds a new user course to the database.
    *
    * @param userCourse the user course to add
    * @return a response entity with the status of the operation
    */
+  @Operation(summary = "Add a new user-course relationship",
+      description = "Creates a new user-course record")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "Record created"),
+      @ApiResponse(responseCode = "400", description = "Invalid input"),
+  })
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      description = "user-course to add", required = true,
+      content = @Content(schema = @Schema(implementation = UserCourse.class))
+  )
   @PostMapping("/userCourses/add")
-  public ResponseEntity<String> addNewReview(@RequestBody UserCourse userCourse) {
+  public ResponseEntity<String> addNewReview( @RequestBody UserCourse userCourse) {
     this.userCoursesRepo.save(userCourse);
     if (userCoursesRepo.existsById(Math.toIntExact(userCourse.getId()))) {
       logger.info("User course with id {} saved", userCourse.getId());
@@ -189,6 +250,8 @@ public class UserCoursesController {
     }
   }
 
+
+
   /**
    * Adds a new user course to the database.
    *
@@ -196,6 +259,12 @@ public class UserCoursesController {
    * @param cid the course id
    * @return a response entity with the status of the operation
    */
+  @Operation(summary = "Enroll user in a course",
+      description = "Creates or updates a user-course relationship")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "Enrollment successful"),
+      @ApiResponse(responseCode = "400", description = "Invalid input")
+  })
   @PostMapping("/userCourses/add/{uid}/{cid}")
   public ResponseEntity<String> addNewUserCourse(@PathVariable long uid,
                                                  @PathVariable long cid) {
@@ -220,6 +289,8 @@ public class UserCoursesController {
     }
   }
 
+
+
   /**
    * Adds a new rating to a user course.
    *
@@ -228,6 +299,12 @@ public class UserCoursesController {
    * @param cid    the course id to add the review to
    * @return a response entity with the status of the operation.
    */
+  @Operation(summary = "Add/update a review",
+      description = "Adds or replaces a review for a user-course relationship")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Review updated"),
+      @ApiResponse(responseCode = "400", description = "Invalid input")
+  })
   @Transactional
   @PutMapping("/userCourses/addRating/{uid}/{cid}")
   public ResponseEntity<Void> addRating(@RequestBody Review review, @PathVariable long uid,
@@ -255,6 +332,14 @@ public class UserCoursesController {
 
   }
 
+
+  @Operation(summary = "Check user enrollment",
+      description = "Checks if a user is enrolled in a course")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "User is enrolled",
+          content = @Content(schema = @Schema(implementation = Boolean.class))),
+      @ApiResponse(responseCode = "404", description = "User is not enrolled")
+  })
   /**
    * Checks if a user is enrolled in a course.
    *
@@ -262,7 +347,6 @@ public class UserCoursesController {
    * @param cid the course id
    * @return true if the user is enrolled, false otherwise
    */
-
   @GetMapping("/userCourses/user/{uid}/course/{cid}")
   public ResponseEntity<Boolean> isUserEnrolledInCourse(@PathVariable long uid,
                                                         @PathVariable long cid) {

@@ -1,5 +1,7 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.io.IOException;
 import no.ntnu.learniverseconnect.model.dto.AuthenticationRequest;
 import no.ntnu.learniverseconnect.model.dto.AuthenticationResponse;
@@ -31,7 +33,27 @@ public class AuthenticationController {
   @Autowired
   private JwtUtil jwtUtil;
 
-
+@Operation(
+    summary = "Authenticate user",
+    description = "Authenticates a user and returns a JWT token")
+@ApiResponses({
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "200",
+        description = "Authentication successful"
+    ),
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "401",
+        description = "Invalid username or password"
+    )
+})
+@io.swagger.v3.oas.annotations.parameters.RequestBody(
+    description = "Authentication request containing email and password",
+    required = true,
+    content = @io.swagger.v3.oas.annotations.media.Content(
+        schema = @io.swagger.v3.oas.annotations.media.Schema(
+            implementation = AuthenticationRequest.class
+        )
+    ))
   /**
    * HTTP POST request to /authenticate.
    *
@@ -61,6 +83,27 @@ public class AuthenticationController {
    * @param userDto the dto with email, username and password
    * @return OK + JWT token; Or UNAUTHORIZED
    */
+    @Operation(
+        summary = "Sign up user",
+        description = "Creates a new user and returns a JWT token")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "User created successfully"
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "400",
+            description = "Invalid input"
+        )
+    })
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        description = "Signup request containing email, name and password hash",
+        required = true,
+        content = @io.swagger.v3.oas.annotations.media.Content(
+            schema = @io.swagger.v3.oas.annotations.media.Schema(
+                implementation = UserDto.class
+            )
+    ))
   @PostMapping("/signup")
   public ResponseEntity<?> signupProcess(@RequestBody UserDto userDto) {
     ResponseEntity<?> response;

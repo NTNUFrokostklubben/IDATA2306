@@ -1,5 +1,7 @@
 package no.ntnu.learniverseconnect.model.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,14 +11,17 @@ import jakarta.persistence.ManyToOne;
 /**
  * Represents the keywords associated with a course.
  */
-
+@Tag(name = "Keywords", description = "Keywords associated with a course")
 @Entity
 public class Keywords {
+  @Schema(description = "Unique identifier of the keyword", example = "1")
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
+    @Schema(description = "Course associated with the keyword")
   @ManyToOne
   private Course course;
+    @Schema(description = "Keyword associated with the course", example = "Java")
   private String keyword;
 
 

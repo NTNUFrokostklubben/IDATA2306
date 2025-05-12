@@ -1,5 +1,7 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Review;
 import no.ntnu.learniverseconnect.model.repos.ReviewRepo;
@@ -26,6 +28,19 @@ public class ReviewController {
    *
    * @return a list of all reviews.
    */
+    @Operation(
+        summary = "Get all reviews",
+        description = "Returns a list of all reviews")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "List of all reviews"
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "404",
+            description = "No reviews found"
+        )
+    })
   @GetMapping("/reviews")
   public ResponseEntity<List<Review>> getReviews() {
     List<Review> reviews = reviewRepo.findAll();

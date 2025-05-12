@@ -1,5 +1,8 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -32,6 +35,20 @@ public class RoleController {
    *
    * @return a list of roles
    */
+  @Operation(
+      summary = "Get all roles",
+      description = "Returns a list of all roles"
+  )
+  @ApiResponses({
+      @ApiResponse(
+          responseCode = "200",
+          description = "List of all roles"
+      ),
+      @ApiResponse(
+          responseCode = "404",
+          description = "No roles found"
+      )
+  })
   @GetMapping("/roles")
   public ResponseEntity<List<Role>> getRoles() {
     List<Role> roles = roleRepo.findAll();

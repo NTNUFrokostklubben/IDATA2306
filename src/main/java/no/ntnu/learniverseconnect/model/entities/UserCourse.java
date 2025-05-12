@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.model.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,22 +17,26 @@ import java.sql.Timestamp;
 /**
  * Represents the ratings made by a user, associated with a course.
  */
-
+@Schema(description = "Represents a user's enrollment in a course and associated review")
 @Entity
 public class UserCourse {
 
+  @Schema(description = "Unique ID of the user-course relationship", example = "1")
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  @Schema(description = "Review associated with the enrollment")
   @OneToOne
   private Review review;
 
+  @Schema(description = "Timestamp of enrollment/review", example = "2023-01-01T12:00:00Z")
   @Temporal(TemporalType.TIMESTAMP)
   private Timestamp timestamp;
-
+  @Schema(description = "Course associated with the enrollment")
   @ManyToOne
   @JoinColumn(nullable = false)
   private Course course;
+  @Schema(description = "User associated with the enrollment")
   @ManyToOne
   @JoinColumn(nullable = false)
   private User user;

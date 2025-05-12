@@ -1,5 +1,11 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Course;
@@ -26,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
+@Tag(name = "Favorites", description = "APIs for managing user favorite courses")
 public class FavoritesController {
 
   private static final Logger logger = LoggerFactory.getLogger(FavoritesController.class);
@@ -54,6 +61,15 @@ public class FavoritesController {
    * @return A ResponseEntity containing a list of Favorite objects if found, or a 404 status
    * if no favorites are found.
    */
+
+  @Operation(summary = "Get user favorites",
+      description = "Retrieves all favorite courses for a user")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(
+              implementation = Favorite.class, type = "array"))),
+      @ApiResponse(responseCode = "404", description = "No favorites found")
+  })
   @GetMapping("/userFavorites/{id}")
   public ResponseEntity<List<Favorite>> getFavoritesForUser(@PathVariable long id) {
     logger.info("Fetching favorites for user with id: {}", id);
@@ -74,6 +90,12 @@ public class FavoritesController {
    * @param id The unique identifier of the course.
    * @return A ResponseEntity containing the count of favorites for the specified course.
    */
+  @Operation(summary = "Get favorite count",
+      description = "Counts favorites for a course")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(implementation = Integer.class)))
+  })
   @GetMapping("/favoriteCount/{id}")
   public ResponseEntity<Integer> getCountOfFavorites(@PathVariable long id) {
     logger.info("Fetching favorite count for course with id: {}", id);
@@ -87,6 +109,13 @@ public class FavoritesController {
    * @param cid The unique identifier of the course.
    * @return A ResponseEntity with a 200 status if the favorite is successfully added.
    */
+  @Operation(summary = "Add favorite",
+      description = "Adds a course to user favorites")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200"),
+      @ApiResponse(responseCode = "400", description = "Already favorited"),
+      @ApiResponse(responseCode = "404", description = "User/course not found")
+  })
   @PostMapping("/addFavorite/{uid}/{cid}")
   public ResponseEntity<Void> addFavorite(@PathVariable long uid, @PathVariable long cid) {
     logger.info("Adding favorite for user with id: {} and course with id: {}", uid, cid);
@@ -115,6 +144,12 @@ public class FavoritesController {
      * @param cid The unique identifier of the course.
      * @return A ResponseEntity with a 200 status if the favorite is successfully removed.
      */
+    @Operation(summary = "Remove favorite",
+        description = "Removes a course from user favorites")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "400", description = "Not favorited")
+    })
     @Transactional
     @DeleteMapping("/removeFavorite/{uid}/{cid}")
     public ResponseEntity<Void> removeFavorite(@PathVariable long uid, @PathVariable long cid){
@@ -137,6 +172,12 @@ public class FavoritesController {
    * @param uid The unique identifier of the user.
     * @param cid The unique identifier of the course.
    */
+  @Operation(summary = "Check favorite status",
+      description = "Checks if a course is favorited by user")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          content = @Content(schema = @Schema(implementation = Boolean.class)))
+  })
     @GetMapping("/isFavorited/{uid}/{cid}")
     public ResponseEntity<Boolean> isFavorited(@PathVariable long uid, @PathVariable long cid){
       logger.info("Checking if course with id: {} is favorited by user with id: {}", cid, uid);

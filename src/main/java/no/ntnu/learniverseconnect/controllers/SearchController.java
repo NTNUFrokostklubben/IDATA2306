@@ -11,6 +11,13 @@ import static no.ntnu.learniverseconnect.specifications.FilterSpecification.hasR
 import static no.ntnu.learniverseconnect.specifications.FilterSpecification.hasTitle;
 import static no.ntnu.learniverseconnect.specifications.FilterSpecification.hasVisibility;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -34,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller for handling search requests.
  */
+@Tag(name = "Course Search", description = "APIs for searching and filtering courses")
 @RestController
 public class SearchController {
 
@@ -73,18 +81,41 @@ public class SearchController {
    * @param endDate    End date in milliseconds since epoch
    * @return
    */
+  @Operation(
+      summary = "Search courses with URL parameters",
+      description = "Filters courses based on multiple criteria including difficulty, categories, price range, etc."
+  )
+  @ApiResponses(value = {
+      @ApiResponse(
+          responseCode = "200",
+          description = "Courses found",
+          content = @Content(schema = @Schema(implementation = CourseWithMinPriceAndRatingDto.class,
+              type = "array"))
+          )})
+
   @GetMapping("/search")
   public ResponseEntity<List<CourseWithMinPriceAndRatingDto>> searchCourse(
+      @Parameter(description = "List of difficulty levels (1-5)", example = "[1,2]")
       @RequestParam(required = false) List<Integer> diffLevels,
+        @Parameter(description = "List of categories", example = "[\"Math\", \"Science\"]")
       @RequestParam(required = false) List<String> categories,
+        @Parameter(description = "Search string", example = "Java programming")
       @RequestParam(required = false) String search,
+        @Parameter(description = "Minimum credits", example = "3.0")
       @RequestParam(required = false, name = "min-credits") Float minCredits,
+        @Parameter(description = "Maximum credits", example = "6.0")
       @RequestParam(required = false, name = "max-credits") Float maxCredits,
+        @Parameter(description = "Minimum rating", example = "4.0")
       @RequestParam(required = false, name = "min-rating") Double minRating,
+        @Parameter(description = "Maximum rating", example = "5.0")
       @RequestParam(required = false, name = "max-rating") Double maxRating,
+        @Parameter(description = "Minimum price", example = "100.0")
       @RequestParam(required = false, name = "min-price") Float minPrice,
+        @Parameter(description = "Maximum price", example = "500.0")
       @RequestParam(required = false, name = "max-price") Float maxPrice,
+      @Parameter(description = "Start date (epoch milliseconds)", example = "1672531200000")
       @RequestParam(required = false) Long startDate,
+      @Parameter(description = "End date (epoch milliseconds)", example = "1704067199000")
       @RequestParam(required = false) Long endDate
   ) {
 
@@ -169,6 +200,16 @@ public class SearchController {
    * @return A ResponseEntity containing a list of CourseWithMinPriceAndRatingDto objects.
    * @deprecated Can be used for admin filtering, but is deprecated in favor of the URL-based search for customers.
    */
+  @Operation(
+      summary = "Search courses with JSON filter (Deprecated)",
+      description = "Alternative search using POST with JSON body - prefer GET with URL parameters"
+  )
+  @ApiResponses(value = {
+      @ApiResponse(
+          responseCode = "200",
+          description = "Courses found",
+          content = @Content(schema = @Schema(implementation = CourseWithMinPriceAndRatingDto.class, type = "array"))
+      )})
   @Deprecated(
       since = "1.0",
       forRemoval = false

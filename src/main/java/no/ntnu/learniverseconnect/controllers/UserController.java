@@ -1,5 +1,11 @@
 package no.ntnu.learniverseconnect.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
+@Tag(name = "User Management", description = "APIs for managing user accounts and profiles")
 public class UserController {
 
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -39,12 +46,20 @@ public class UserController {
     this.repo = repo;
   }
 
+
   /**
    * Get a user by id.
    *
    * @param id the id of the user
    * @return the user with the given id
    */
+  @Operation(summary = "Get user by ID",
+      description = "Retrieves a user's full details by their ID")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "User found",
+          content = @Content(schema = @Schema(implementation = User.class))),
+      @ApiResponse(responseCode = "404", description = "User not found")
+  })
   @GetMapping("/user/{id}")
   public ResponseEntity<User> getUserById(@PathVariable long id) {
     User user = repo.getUsersById(id);
@@ -57,12 +72,20 @@ public class UserController {
     }
   }
 
+
   /**
    * Get safe user dto by email.
    *
    * @param email the id of the user
    * @return the user with the given id
    */
+  @Operation(summary = "Get safe user DTO by email",
+      description = "Retrieves a limited user DTO (for Redux state) by email")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "User found",
+          content = @Content(schema = @Schema(implementation = ReduxUserDto.class))),
+      @ApiResponse(responseCode = "404", description = "User not found")
+  })
   @GetMapping("/userDto/{email}")
   public ResponseEntity<ReduxUserDto> getReduxUserDtoById(@PathVariable String email) {
     User user = repo.getUsersByEmail(email);
@@ -77,12 +100,21 @@ public class UserController {
     }
   }
 
+
   /**
    * Get the user that matches the email.
    *
    * @param email the email of the user to fetch
    * @return the user with that email
    */
+  @Operation(summary = "Get user's profile picture",
+      description = "Retrieves the profile picture URL of a user by email")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Profile picture found",
+          content = @Content(schema = @Schema(implementation = String.class))),
+      @ApiResponse(responseCode = "204", description = "No profile picture set"),
+      @ApiResponse(responseCode = "404", description = "User not found")
+  })
   @GetMapping("/userProfilePicture/{email}")
   public ResponseEntity<String> getProfilePicByEmail(@PathVariable String email) {
     Optional<User> userOptional = repo.findUserByEmail(email);
@@ -102,12 +134,20 @@ public class UserController {
     }
   }
 
+
   /**
    * Get the user id that matches the email.
    *
    * @param email the email of the user to fetch
    * @return the user with that email
    */
+  @Operation(summary = "Get user by email",
+      description = "Retrieves a user's full details by their email")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "User found",
+          content = @Content(schema = @Schema(implementation = User.class))),
+      @ApiResponse(responseCode = "404", description = "User not found")
+  })
   @GetMapping("/UserByEmail/{email}")
   public ResponseEntity<User> getIdByEmail(@PathVariable String email) {
     Optional<User> userOptional = repo.findUserByEmail(email);
@@ -121,11 +161,19 @@ public class UserController {
     }
   }
 
+
   /**
    * Get the total count of users.
    *
    * @return the total count of users
    */
+  @Operation(summary = "Get total user count",
+      description = "Retrieves the total number of registered users")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Count retrieved",
+          content = @Content(schema = @Schema(implementation = Integer.class))),
+      @ApiResponse(responseCode = "404", description = "No users found")
+  })
   @GetMapping("/users/total")
   public ResponseEntity<Integer> getUserTotal() {
     List<User> totalUsers = repo.findAll();
@@ -137,17 +185,38 @@ public class UserController {
     return ResponseEntity.status(200).body(totalUsers.size());
   }
 
+
+    /**
+     * Get all users.
+     *
+     * @return a list of all users
+     */
+  @Operation(summary = "Get all users", description = "Retrieves a list of all registered users")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Users found",
+          content = @Content(schema = @Schema(implementation = User.class, type = "array"))),
+      @ApiResponse(responseCode = "404", description = "No users found")
+  })
   @GetMapping("/users")
   public ResponseEntity<Iterable<User>> getAllUsers() {
     logger.info("Fetching all users");
     return ResponseEntity.status(200).body(repo.findAll());
   }
 
+
+
   /**
    * Get the total users that signed up the last 30 days.
    *
    * @return the amount of users for the last 30 days
    */
+  @Operation(summary = "Get new user count (30 days)",
+      description = "Retrieves the number of users registered in the last 30 days")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Count retrieved",
+          content = @Content(schema = @Schema(implementation = Float.class))),
+      @ApiResponse(responseCode = "404", description = "No users found")
+  })
   @GetMapping("/users/newUsers")
   public ResponseEntity<Float> getNewUsers() {
     List<User> users = repo.findAll();
@@ -166,12 +235,24 @@ public class UserController {
     return ResponseEntity.status(200).body(userSum);
   }
 
+
+
   /**
    * Adds a new user to the database.
    *
    * @param user the user to add
    * @return a response entity with the status of the operation
    */
+  @Operation(summary = "Create a new user", description = "Registers a new user account")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "User created"),
+      @ApiResponse(responseCode = "400", description = "Invalid input")
+  })
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      description = "User object to be created",
+      required = true,
+      content = @Content(schema = @Schema(implementation = User.class))
+  )
   @PostMapping("/user")
   public ResponseEntity<String> addUser(@RequestBody User user) {
     if (user == null) {
@@ -189,12 +270,18 @@ public class UserController {
     }
   }
 
+
   /**
    * Deletes a user from the database.
    *
    * @param id the id of the user to delete
    * @return a response entity with the status of the operation
    */
+  @Operation(summary = "Delete a user", description = "Permanently deletes a user account by ID")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "User deleted"),
+      @ApiResponse(responseCode = "404", description = "User not found")
+  })
   @DeleteMapping("/user/{id}")
   public ResponseEntity<String> deleteUser(@PathVariable int id) {
     if (repo.existsById(id)) {
@@ -207,6 +294,7 @@ public class UserController {
     }
   }
 
+
   /**
    * Updates a user's image link in the backend.
    *
@@ -214,13 +302,25 @@ public class UserController {
    * @param imageLink the new image link to set
    * @return a response entity with the updated ReduxUserDto or a 404 status if no user found.
    */
+  @Operation(summary = "Update user's profile picture",
+      description = "Updates the profile picture URL of a user")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Profile picture updated",
+          content = @Content(schema = @Schema(implementation = ReduxUserDto.class))),
+      @ApiResponse(responseCode = "404", description = "User not found")
+  })
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      description = "New profile picture URL",
+      required = true,
+      content = @Content(schema = @Schema(implementation = String.class))
+  )
     @PutMapping("/user/image/{id}")
     public ResponseEntity<ReduxUserDto> updateUserImage(@PathVariable long id,
         @RequestBody String imageLink) {
         Optional<User> userOptional = repo.findById((int) id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            user.setProfilePicture(imageLink);
+            user.setProfilePicture(imageLink.replace("\"" , ""));
             repo.save(user);
             ReduxUserDto userDto = new ReduxUserDto(user.getEmail(), user.getId(),
                 user.getProfilePicture());
@@ -231,6 +331,7 @@ public class UserController {
         }
     }
 
+
   /**
    * Updates a user in the database.
    *
@@ -238,6 +339,19 @@ public class UserController {
    * @param userDto the user object with updated information (profile picture, roles, active)
    * @return a response entity with the status of the operation
    */
+  @Operation(summary = "Update user details",
+      description = "Updates a user's profile picture, roles, and active status")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "User updated",
+          content = @Content(schema = @Schema(implementation = User.class))),
+      @ApiResponse(responseCode = "400", description = "Invalid input"),
+      @ApiResponse(responseCode = "404", description = "User not found")
+  })
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      description = "User object with updated information",
+      required = true,
+      content = @Content(schema = @Schema(implementation = UserUpdateDto.class))
+  )
   @PutMapping("/user/{id}")
   public ResponseEntity<User> updateUser(
       @PathVariable long id, @RequestBody UserUpdateDto userDto) {
