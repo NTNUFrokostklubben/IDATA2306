@@ -31,4 +31,10 @@ public interface UserCoursesRepo extends JpaRepository<UserCourse, Integer> {
   boolean existsById(Long id);
 
   boolean existsByUser_IdAndCourse_Id(Long userId, long courseId);
+
+  void deleteUserCourseByUser_Id(Long userId);
+
+  void deleteAllByUser_Id(Long userId);
+
+  boolean existsUserCourseByUser_Id(Long userId);
 }

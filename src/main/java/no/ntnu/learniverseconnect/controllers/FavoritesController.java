@@ -161,7 +161,7 @@ public class FavoritesController {
       } else {
         logger.error("Favorite does not exist for user with id: {} and course with id: {}"
             , uid, cid);
-        status = 400;
+        status = 404;
       }
       return ResponseEntity.status(status).body(null);
     }
