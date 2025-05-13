@@ -4,6 +4,11 @@ on:
   push:
     branches: [ main ]
 
+
+permissions:
+  contents: read
+  packages: write  # Required for pushing to GHCR
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -26,6 +31,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: |
-            ghcr.io/ntnufrokostklubben/learniverse-app:latest
-            ghcr.io/ntnufrokostklubben/learniverse-app:${{ github.sha }}
+          tags: ghcr.io/ntnufrokostklubben/learniverse-app:latest
