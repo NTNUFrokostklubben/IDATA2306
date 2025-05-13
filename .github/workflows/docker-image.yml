@@ -1,0 +1,36 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}  
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/NTNUFrokostklubben/learniverse-app:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify server to update
+        run: |
+          echo "Image built successfully. Manually pull on server with:"
+          echo "docker pull ghcr.io/NTNUFrokostklubben/learniverse-app:latest"
+          echo "docker-compose -f docker-compose.prod.yaml up -d"
