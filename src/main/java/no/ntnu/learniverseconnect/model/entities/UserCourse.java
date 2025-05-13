@@ -127,7 +127,7 @@ public class UserCourse {
    */
   public void setUser(User user) {
     if (user == null) {
-      throw new IllegalArgumentException("Course cannot be null");
+      throw new IllegalArgumentException("user cannot be null");
     }
     this.user = user;
   }

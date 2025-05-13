@@ -16,4 +16,6 @@ public interface KeywordsRepo extends JpaRepository<Keywords, Integer> {
   List<Keywords> getAllByCourse_Id(long courseId);
 
   void deleteAllByCourse_Id(long courseId);
+
+  boolean existsByCourse_Id(long courseId);
 }
