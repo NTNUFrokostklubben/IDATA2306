@@ -15,8 +15,12 @@ services:
       - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
       - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - SSL_KEYSTORE_PATH=/app/certs/local/keystore.p12
+      - SSL_KEYSTORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+      - SSL_KEY_ALIAS=${SSL_KEY_ALIAS}
     volumes:
       - ./saved/images:/usr/share/nginx/html/uploads/images
+      - ./certs:/app/certs
   mysql:
     image: 'mysql:8.0'
     container_name: learniverse-mysql
@@ -40,6 +44,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./saved/images:/usr/share/nginx/html/uploads/images
+      - ./certs/local:/etc/nginx/certs/local
     depends_on:
       - mysql
       - app
