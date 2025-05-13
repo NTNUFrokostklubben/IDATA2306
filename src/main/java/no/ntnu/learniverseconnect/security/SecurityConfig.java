@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.security;
 
+import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
  * Creates AuthenticationManager - set up authentication type.
@@ -35,28 +39,15 @@ public class SecurityConfig {
   //TODO fix this so that we only authenticate the necessary endpoints
   @Bean
   public SecurityFilterChain configureAuthorizationFilterChain(HttpSecurity http) throws Exception {
-    // Set up the authorization requests, starting from most restrictive at the top,
-    // to least restrictive on the bottom
     http
-        // Disable CSRF and CORS checks. Without this it will be hard to make automated tests.
+        // Enable CORS with custom configuration
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(AbstractHttpConfigurer::disable)
-        .cors(AbstractHttpConfigurer::disable)
-        // Authentication URL is accessible for everyone
-        .authorizeHttpRequests((auth) -> auth.requestMatchers("/authenticate").permitAll())
         .authorizeHttpRequests((auth) -> auth.anyRequest().permitAll())
-        // The default URL / is accessible to everyone
-//        .authorizeHttpRequests((authorize) -> authorize.requestMatchers("/**").permitAll())
-//        .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/signup").permitAll())
-        // Any other request will be authenticated with a stateless policy
-//        .authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
-        // Enable stateless session policy
         .sessionManagement((session) ->
-                               session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        // Enable our JWT authentication filter
+            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-    // Necessary authorization for each endpoint will be configured by each method,
-    // using @PreAuthorize
     return http.build();
   }
 
@@ -74,5 +65,21 @@ public class SecurityConfig {
   @Bean
   public PasswordEncoder getPasswordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Arrays.asList(
+        "https://localhost:3000",  // Your frontend URL (HTTPS)
+        "http://localhost:3000"    // Fallback for dev
+    ));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    configuration.setAllowedHeaders(Arrays.asList("*"));
+    configuration.setAllowCredentials(true);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
   }
 }
