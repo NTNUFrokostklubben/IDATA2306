@@ -189,33 +189,33 @@ public class UserCoursesController {
 
 
   /**
-   * Get the last ten user courses from the database.
+   * Get the last ten user courses reviews added to the database.
    *
-   * @return the last ten user courses
+   * @return the last ten user courses reviews
    */
-  @Operation(summary = "Get latest 10 user-courses",
-      description = "Retrieves the 10 most recent user-courses")
+  @Operation(summary = "Get latest 10 reviews",
+      description = "Retrieves the 10 most recent user-course reviews")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "10 user-courses found",
+      @ApiResponse(responseCode = "200", description = "10 user-courses reviews found",
           content = @Content(schema = @Schema(implementation = UserCourse.class, type = "array"))),
-      @ApiResponse(responseCode = "404", description = "No user-courses found")
+      @ApiResponse(responseCode = "404", description = "No user-courses reviews found")
   })
   @GetMapping("/userCourses/lastUserCourses")
   public ResponseEntity<Iterable<UserCourse>> getLastTenUserCourses() {
-    logger.info("Fetching the ten last user courses");
+    logger.info("Fetching the ten last user courses reviews");
     List<UserCourse> userCourseList = userCoursesRepo.findAll();
     if (userCourseList.isEmpty()) {
       logger.error("No user courses found");
       return ResponseEntity.status(404).body(null);
     } else {
-      userCourseList.stream()
+      userCourseList =  userCourseList.stream()
           .filter(userCourse -> userCourse.getReview() != null)
           .sorted((a, b) ->
               b.getReview().getDate().compareTo(a.getReview().getDate()))
           .toList();
     }
     userCourseList.subList(0, Math.min(10, userCourseList.size()));
-    logger.info("Successfully fetched the ten last user courses");
+    logger.info("Successfully fetched the ten last user courses reviews");
     return ResponseEntity.status(200).body(userCourseList);
   }
 
