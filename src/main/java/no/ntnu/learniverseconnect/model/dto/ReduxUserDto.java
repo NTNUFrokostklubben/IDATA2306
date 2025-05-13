@@ -7,20 +7,21 @@ package no.ntnu.learniverseconnect.model.dto;
 public class ReduxUserDto {
 
   private final String email;
-    private final long id;
-    private final String profilePicture;
+  private final long id;
+  private final String profilePicture;
+  private final String name;
 
   /**
    * Default constructor for UserDto.
    *
    * @param email name of the user
-   * @param id id of the user
+   * @param id    id of the user
    */
-  public ReduxUserDto(String email, long id, String profilePicture) {
+  public ReduxUserDto(String email, long id, String profilePicture, String name) {
     this.email = email;
     this.id = id;
     this.profilePicture = profilePicture;
-
+    this.name = name;
   }
 
   public String getEmail() {
@@ -31,8 +32,12 @@ public class ReduxUserDto {
     return this.profilePicture;
   }
 
-    public long getId() {
-        return this.id;
-    }
+  public long getId() {
+    return this.id;
+  }
+
+  public String getName() {
+    return this.name;
+  }
 
 }
