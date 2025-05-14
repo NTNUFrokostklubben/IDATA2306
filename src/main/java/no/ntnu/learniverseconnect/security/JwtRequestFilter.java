@@ -1,5 +1,6 @@
 package no.ntnu.learniverseconnect.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
@@ -7,10 +8,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -61,10 +65,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
    * @param request     the request
    * @param userDetails the user details
    */
-  private static void registerUserAsAuthenticated(HttpServletRequest request,
-                                                  UserDetails userDetails) {
-    final UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(
-        userDetails, null, userDetails.getAuthorities());
+  private void registerUserAsAuthenticated(HttpServletRequest request,
+                                           String jwtToken,
+                                           String username) {
+    // Extract roles from JWT
+    var claims = jwtUtil.extractAllClaims(jwtToken);
+    List<Map<String, String>> roles = claims.get("roles", List.class);
+
+    List<SimpleGrantedAuthority> authorities = roles.stream()
+        .map(role -> new SimpleGrantedAuthority(role.get("authority")))
+        .toList();  // Java 16+ or use .collect(Collectors.toList()) for earlier versions
+
+    // Create authentication token
+    UsernamePasswordAuthenticationToken upat =
+        new UsernamePasswordAuthenticationToken(username, null, authorities);
+
     upat.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
     SecurityContextHolder.getContext().setAuthentication(upat);
   }
@@ -77,12 +92,25 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     String username = jwtToken != null ? getEmailFrom(jwtToken) : null;
 
     if (username != null && notAuthenticatedYet()) {
-      UserDetails userDetails = getUserDetailsFromDatabase(username);
-      if (jwtUtil.validateToken(jwtToken, userDetails)) {
-        registerUserAsAuthenticated(request, userDetails);
+      UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+      if (jwtUtil.validateToken(jwtToken, userDetails )) {
+        Claims claims = jwtUtil.extractAllClaims(jwtToken);
+
+        List<Map<String, String>> roles = claims.get("roles", List.class);
+        List<SimpleGrantedAuthority> authorities = roles.stream()
+            .map(role -> new SimpleGrantedAuthority(role.get("authority")))
+            .toList();
+
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+            userDetails, null, authorities);
+
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        System.out.println("Extracted authorities from JWT: " + authorities);
       }
     }
-
+    System.out.println("SECURITY CONTEXT AUTH: " + SecurityContextHolder.getContext().getAuthentication());
     filterChain.doFilter(request, response);
   }
 

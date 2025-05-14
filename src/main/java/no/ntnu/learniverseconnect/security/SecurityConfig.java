@@ -4,6 +4,7 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -28,6 +29,8 @@ public class SecurityConfig {
 
   @Autowired
   private JwtRequestFilter jwtRequestFilter;
+  final static String admin = "ROLE_ADMIN";
+  final static String user = "ROLE_USER";
 
 
   /**
@@ -43,7 +46,23 @@ public class SecurityConfig {
         // Enable CORS with custom configuration
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests((auth) -> auth.anyRequest().permitAll())
+        .authorizeHttpRequests((auth) -> auth
+            .requestMatchers(HttpMethod.POST,  "/authenticate", "/signup").permitAll()
+            .requestMatchers(HttpMethod.GET, "/course/**", "/courses/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/providers/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/userCourses/reviews/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/userCourses/averageRating/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/offerableCourses/**").permitAll()
+            .requestMatchers( HttpMethod.GET, "/keyword/**").permitAll()
+
+            .requestMatchers("/userDto/**").hasAnyAuthority(user, admin)
+            .requestMatchers(HttpMethod.POST, "/transaction/**").hasAnyAuthority(user, admin)
+
+            .requestMatchers("/**").hasAuthority( admin)
+
+
+
+        )
         .sessionManagement((session) ->
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
