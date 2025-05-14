@@ -44,7 +44,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            cd /path/to/your/docker-compose/directory
+            cd /home/local/matthehu/IDATA2306
             docker-compose pull app
             docker-compose up -d --no-deps app
             docker exec learniverse-nginx-prod nginx -s reload
