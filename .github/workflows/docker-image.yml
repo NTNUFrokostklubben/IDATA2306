@@ -33,7 +33,8 @@ jobs:
           tags: ghcr.io/ntnufrokostklubben/learniverse-app:latest
 
   deploy:
-    runs-on: self-hosted  # Use your private runner
+    needs: build-and-push
+    runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
