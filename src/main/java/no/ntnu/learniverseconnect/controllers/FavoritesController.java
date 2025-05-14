@@ -70,7 +70,7 @@ public class FavoritesController {
               implementation = Favorite.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No favorites found")
   })
-  @GetMapping("/userFavorites/{id}")
+  @GetMapping("/favorite/user/{id}")
   public ResponseEntity<List<Favorite>> getFavoritesForUser(@PathVariable long id) {
     logger.info("Fetching favorites for user with id: {}", id);
     int status = 0;
@@ -96,7 +96,7 @@ public class FavoritesController {
       @ApiResponse(responseCode = "200",
           content = @Content(schema = @Schema(implementation = Integer.class)))
   })
-  @GetMapping("/favoriteCount/{id}")
+  @GetMapping("/favorite/count/{id}")
   public ResponseEntity<Integer> getCountOfFavorites(@PathVariable long id) {
     logger.info("Fetching favorite count for course with id: {}", id);
     return ResponseEntity.status(200).body(repo.getByCourse_Id(id).size());
@@ -116,7 +116,7 @@ public class FavoritesController {
       @ApiResponse(responseCode = "400", description = "Already favorited"),
       @ApiResponse(responseCode = "404", description = "User/course not found")
   })
-  @PostMapping("/addFavorite/{uid}/{cid}")
+  @PostMapping("/favorite/add/user/{uid}/course/{cid}")
   public ResponseEntity<Void> addFavorite(@PathVariable long uid, @PathVariable long cid) {
     logger.info("Adding favorite for user with id: {} and course with id: {}", uid, cid);
     int status = 200;
@@ -151,7 +151,7 @@ public class FavoritesController {
         @ApiResponse(responseCode = "400", description = "Not favorited")
     })
     @Transactional
-    @DeleteMapping("/removeFavorite/{uid}/{cid}")
+    @DeleteMapping("/favorite/remove/user/{uid}/course/{cid}")
     public ResponseEntity<Void> removeFavorite(@PathVariable long uid, @PathVariable long cid){
       logger.info("Removing favorite for user with id: {} and course with id: {}", uid, cid);
       int status = 200;
@@ -178,7 +178,7 @@ public class FavoritesController {
       @ApiResponse(responseCode = "200",
           content = @Content(schema = @Schema(implementation = Boolean.class)))
   })
-    @GetMapping("/isFavorited/{uid}/{cid}")
+    @GetMapping("/favorite/isFavorite/user/{uid}/course/{cid}")
     public ResponseEntity<Boolean> isFavorited(@PathVariable long uid, @PathVariable long cid){
       logger.info("Checking if course with id: {} is favorited by user with id: {}", cid, uid);
       boolean isFavorited = repo.existsByCourse_IdAndUser_Id(cid, uid);
