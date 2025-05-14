@@ -41,6 +41,6 @@ jobs:
 
       - name: Deploy
         run: |
-          cd /path/to/your/project  # Path to your docker-compose.yml
+          cd /home/local/matthehu/IDATA2306
           docker-compose pull app
           docker-compose up -d --no-deps app
