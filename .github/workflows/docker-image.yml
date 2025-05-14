@@ -33,18 +33,13 @@ jobs:
           tags: ghcr.io/ntnufrokostklubben/learniverse-app:latest
 
   deploy:
-    needs: build-and-push
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # Use your private runner
     steps:
-      - name: Deploy to Production Server
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          script: |
-            cd /home/local/matthehu/IDATA2306
-            docker-compose pull app
-            docker-compose up -d --no-deps app
-            docker exec learniverse-nginx-prod nginx -s reload
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy
+        run: |
+          cd /path/to/your/project  # Path to your docker-compose.yml
+          docker-compose pull app
+          docker-compose up -d --no-deps app
