@@ -48,7 +48,7 @@ public class SecurityConfig {
         .authorizeHttpRequests((auth) -> auth
             .requestMatchers(HttpMethod.POST,  "/authenticate", "/signup").permitAll()
             .requestMatchers(HttpMethod.GET, "/course/**", "/courses/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/providers/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/providers/**" , "/provider/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/userCourses/reviews/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/userCourses/averageRating/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/offerableCourses/**").permitAll()
@@ -57,7 +57,10 @@ public class SecurityConfig {
             .requestMatchers("/userDto/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.POST, "/transaction/**").hasAnyAuthority(user, admin)
 
-            .requestMatchers("/**").hasAuthority( admin)
+            .requestMatchers(HttpMethod.GET, "/**").hasAuthority( admin)
+            .requestMatchers(HttpMethod.PUT, "/**").hasAuthority( admin)
+            .requestMatchers(HttpMethod.DELETE, "/**").hasAuthority( admin)
+            .requestMatchers(HttpMethod.POST, "/**").hasAuthority( admin)
 
 
 
