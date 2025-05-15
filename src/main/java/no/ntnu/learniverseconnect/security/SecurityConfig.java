@@ -59,7 +59,8 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/transaction/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.GET, "/userCourses/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.PUT, "/userCourses/**").hasAnyAuthority(user, admin)
-
+            .requestMatchers(HttpMethod.POST, "/search/**").hasAnyAuthority(user, admin)
+            .requestMatchers(HttpMethod.GET, "/search/**").hasAnyAuthority(user, admin)
 
 
             .requestMatchers(HttpMethod.GET, "/**").hasAuthority( admin)
