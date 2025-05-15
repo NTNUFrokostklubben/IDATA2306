@@ -122,8 +122,9 @@ public class CourseProviderController {
       logger.error("Course provider is null");
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
+
+    provider = repo.save(provider);
     logger.info("Adding new course provider with id: {}", provider.getId());
-    repo.save(provider);
     return ResponseEntity.status(HttpStatus.CREATED).body(provider);
   }
 

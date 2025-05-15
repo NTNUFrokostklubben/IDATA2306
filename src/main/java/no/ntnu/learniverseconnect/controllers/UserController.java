@@ -51,6 +51,7 @@ public class UserController {
    * Get a user by id.
    *
    * @param id the id of the user
+   * @param id the id of the user
    * @return the user with the given id
    */
   @Operation(summary = "Get user by ID",
@@ -235,40 +236,6 @@ public class UserController {
     return ResponseEntity.status(200).body(userSum);
   }
 
-
-
-  /**
-   * Adds a new user to the database.
-   *
-   * @param user the user to add
-   * @return a response entity with the status of the operation
-   */
-  @Operation(summary = "Create a new user", description = "Registers a new user account")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "User created"),
-      @ApiResponse(responseCode = "400", description = "Invalid input")
-  })
-  @io.swagger.v3.oas.annotations.parameters.RequestBody(
-      description = "User object to be created",
-      required = true,
-      content = @Content(schema = @Schema(implementation = User.class))
-  )
-  @PostMapping("/user")
-  public ResponseEntity<String> addUser(@RequestBody User user) {
-    if (user == null) {
-      logger.warn("User object is null");
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-    }
-    this.repo.save(user);
-    if (repo.existsById(Math.toIntExact(user.getId()))) {
-      logger.info("User with id {} saved", user.getId());
-      return ResponseEntity.status(HttpStatus.CREATED).body(
-          "User with id " + user.getId() + " saved");
-    } else {
-      logger.error("Failed to save user with id {}", user.getId());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
-  }
 
 
   /**

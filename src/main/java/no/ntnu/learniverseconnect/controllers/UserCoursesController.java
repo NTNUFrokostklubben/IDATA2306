@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -187,68 +188,61 @@ public class UserCoursesController {
     return ResponseEntity.status(200).body(userCourseList);
   }
 
+    /**
+     * Get all reviews for a given course.
+     *
+     * @param cid the course id to get the reviews for
+     * @return the list of reviews for the course
+     */
+    @Operation(summary = "Get all reviews for a course",
+        description = "Retrieves all reviews associated with a course ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reviews found",
+            content = @Content(schema = @Schema(implementation = UserCourse.class, type = "array"))),
+        @ApiResponse(responseCode = "404", description = "No reviews found")
+    })
+    @GetMapping("/userCourses/reviews/course/{cid}")
+  public ResponseEntity<List<UserCourse>> getAllReviewsForCourse(@PathVariable long cid) {
+    List<UserCourse> userCourseList = userCoursesRepo.getAllByCourse_Id(cid);
+    List<UserCourse> userCourseListWithReviews = new ArrayList<>();
+    for (UserCourse userCourse : userCourseList) {
+      if (userCourse.getReview() != null) {
+        userCourseListWithReviews.add(userCourse);
+      }
+    }
+    return ResponseEntity.status(200).body(userCourseListWithReviews);
+  }
+
 
   /**
-   * Get the last ten user courses from the database.
+   * Get the last ten user courses reviews added to the database.
    *
-   * @return the last ten user courses
+   * @return the last ten user courses reviews
    */
-  @Operation(summary = "Get latest 10 user-courses",
-      description = "Retrieves the 10 most recent user-courses")
+  @Operation(summary = "Get latest 10 reviews",
+      description = "Retrieves the 10 most recent user-course reviews")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "10 user-courses found",
+      @ApiResponse(responseCode = "200", description = "10 user-courses reviews found",
           content = @Content(schema = @Schema(implementation = UserCourse.class, type = "array"))),
-      @ApiResponse(responseCode = "404", description = "No user-courses found")
+      @ApiResponse(responseCode = "404", description = "No user-courses reviews found")
   })
   @GetMapping("/userCourses/lastUserCourses")
   public ResponseEntity<Iterable<UserCourse>> getLastTenUserCourses() {
-    logger.info("Fetching the ten last user courses");
+    logger.info("Fetching the ten last user courses reviews");
     List<UserCourse> userCourseList = userCoursesRepo.findAll();
     if (userCourseList.isEmpty()) {
       logger.error("No user courses found");
       return ResponseEntity.status(404).body(null);
     } else {
-      userCourseList.stream()
+      userCourseList =  userCourseList.stream()
           .filter(userCourse -> userCourse.getReview() != null)
           .sorted((a, b) ->
               b.getReview().getDate().compareTo(a.getReview().getDate()))
           .toList();
     }
     userCourseList.subList(0, Math.min(10, userCourseList.size()));
-    logger.info("Successfully fetched the ten last user courses");
+    logger.info("Successfully fetched the ten last user courses reviews");
     return ResponseEntity.status(200).body(userCourseList);
-  }
-
-
-
-
-  /**
-   * Adds a new user course to the database.
-   *
-   * @param userCourse the user course to add
-   * @return a response entity with the status of the operation
-   */
-  @Operation(summary = "Add a new user-course relationship",
-      description = "Creates a new user-course record")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "Record created"),
-      @ApiResponse(responseCode = "400", description = "Invalid input"),
-  })
-  @io.swagger.v3.oas.annotations.parameters.RequestBody(
-      description = "user-course to add", required = true,
-      content = @Content(schema = @Schema(implementation = UserCourse.class))
-  )
-  @PostMapping("/userCourses/add")
-  public ResponseEntity<String> addNewReview( @RequestBody UserCourse userCourse) {
-    this.userCoursesRepo.save(userCourse);
-    if (userCoursesRepo.existsById(Math.toIntExact(userCourse.getId()))) {
-      logger.info("User course with id {} saved", userCourse.getId());
-      return ResponseEntity.status(HttpStatus.CREATED).body(
-          "User course with id " + userCourse.getId() + " saved");
-    } else {
-      logger.error("Failed to save user course with id {}", userCourse.getId());
-      return ResponseEntity.status(400).build();
-    }
   }
 
 
@@ -291,6 +285,28 @@ public class UserCoursesController {
   }
 
 
+  /**
+   * Delete a user from the user course database.
+   * <br/>
+   *
+   * Mainly used to clean up postman testing
+   */
+  @Operation(summary = "Delete user-course relationship",
+      description = "Deletes a user-course relationship by user ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User-course relationship deleted"),
+        @ApiResponse(responseCode = "404", description = "User-course relationship not found")
+    })
+  @Transactional
+  @DeleteMapping("/userCourse/user/{cid}")
+  public ResponseEntity<Void> deleteByUser(@PathVariable long cid){
+    if(!userCoursesRepo.existsUserCourseByUser_Id(cid)){
+      return ResponseEntity.status(404).build();
+    }
+    userCoursesRepo.deleteAllByUser_Id(cid);
+    return ResponseEntity.status(200).build();
+  }
+
 
   /**
    * Adds a new rating to a user course.
@@ -308,7 +324,7 @@ public class UserCoursesController {
   })
   @Transactional
   @PutMapping("/userCourses/addRating/{uid}/{cid}")
-  public ResponseEntity<Void> addRating(@RequestBody Review review, @PathVariable long uid,
+  public ResponseEntity<Review> addRating(@RequestBody Review review, @PathVariable long uid,
                                         @PathVariable long cid) {
     if(review == null){
       logger.error("Review object is null");
@@ -326,10 +342,10 @@ public class UserCoursesController {
     }
     userCourse.setReview(review);
     userCoursesRepo.save(userCourse);
-    reviewRepo.save(review);
+     review =  reviewRepo.save(review);
     logger.info("Added review with id {} to user course with id {}", review.getId(),
         userCourse.getId());
-    return ResponseEntity.status(200).build();
+    return ResponseEntity.status(200).body(review);
 
   }
 

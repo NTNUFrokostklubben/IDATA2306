@@ -18,6 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     String[] allowedOrigins = {
         "http://localhost:3000",
+        "https://learniverse.no"
         };
 
     registry.addMapping("/**")

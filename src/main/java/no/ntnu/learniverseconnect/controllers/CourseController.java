@@ -141,6 +141,9 @@ public class CourseController {
   )
   @PostMapping("/course")
   public ResponseEntity<Course> addCourse(@RequestBody Course course) {
+    if(course == null){
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
     logger.info("Adding course: {}", course.getId());
     courseRepo.save(course);
     return ResponseEntity.status(HttpStatus.CREATED).body(course);

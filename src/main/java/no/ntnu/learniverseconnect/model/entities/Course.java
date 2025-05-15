@@ -50,6 +50,10 @@ public class Course implements Serializable {
       example = "Oracle Certified Associate")
   private String relatedCert;
 
+  @Schema(description = "Link to related certification website",
+      example = "https://www.databricks.com/learn/certification/machine-learning-associate")
+  private String certLink;
+
   @Schema(description = "Detailed course description",
       example = "Learn Java fundamentals...")
   @Column(length = 10000)
@@ -69,6 +73,24 @@ public class Course implements Serializable {
    */
   public long getId() {
     return id;
+  }
+
+    /**
+     * Sets the certification link of the related certification.
+     *
+     * @param certLink the certification link to set
+     */
+  public void setCertLink(String certLink) {
+    this.certLink = certLink;
+  }
+
+    /**
+     * Gets the certification link of the related certification.
+     *
+     * @return the certification link
+     */
+  public String getCertLink() {
+    return certLink;
   }
 
   /**

@@ -3,6 +3,8 @@ services:
     build: .
     container_name: learniverse-app
     hostname: learniverse-app
+    env_file:
+      - .env
     ports:
       - "8080:8080"
       - "5005:5005"
@@ -15,8 +17,10 @@ services:
       - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
       - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - SPRING_PROFILES_ACTIVE=dev
     volumes:
       - ./saved/images:/usr/share/nginx/html/uploads/images
+      - ./certs:/app/certs
   mysql:
     image: 'mysql:8.0'
     container_name: learniverse-mysql
@@ -40,6 +44,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./saved/images:/usr/share/nginx/html/uploads/images
+      - ./certs/local:/etc/nginx/certs/local
     depends_on:
       - mysql
       - app

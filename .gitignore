@@ -37,3 +37,6 @@ build/
 
 ### Image saving ###
 saved/*
+
+### Certificates ###
+certs/*

@@ -10,7 +10,9 @@ import java.sql.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import no.ntnu.learniverseconnect.model.entities.Course;
+import no.ntnu.learniverseconnect.model.entities.CourseProvider;
 import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
+import no.ntnu.learniverseconnect.model.repos.CourseProviderRepo;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +33,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class OfferableCoursesController {
 
   private final CourseRepo courseRepo;
-  private OfferableCoursesRepo repo;
+  private final OfferableCoursesRepo repo;
+  private final CourseProviderRepo courseProviderRepo;
   private final Logger logger = Logger.getLogger(OfferableCoursesController.class.getName());
 
 
   @Autowired
-  public OfferableCoursesController(OfferableCoursesRepo repo, CourseRepo courseRepo) {
+  public OfferableCoursesController(OfferableCoursesRepo repo, CourseRepo courseRepo,
+                                    CourseProviderRepo courseProviderRepo) {
     this.repo = repo;
     this.courseRepo = courseRepo;
+    this.courseProviderRepo = courseProviderRepo;
   }
 
   /**
@@ -241,8 +246,7 @@ public class OfferableCoursesController {
       description = "Adds a new provider course offering")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201",
-          content = @Content(schema = @Schema(
-              implementation = OfferableCourses.class)))
+          content = @Content(schema = @Schema(implementation = OfferableCourses.class)))
   })
   @PostMapping("/offerableCourse")
   public ResponseEntity<OfferableCourses> addOfferableCourse(
@@ -252,7 +256,11 @@ public class OfferableCoursesController {
     // Get the associated course
     Course course = courseRepo.getById(offerableCourse.getCourse().getId());
     Date newCourseDate = offerableCourse.getDate();
+    offerableCourse.setCourse(course);
 
+    // Get the associated course provider
+    CourseProvider provider = courseProviderRepo.getCourseProviderById(offerableCourse.getProvider().getId());
+    offerableCourse.setProvider(provider);
 
     if (course.getClosestCourse() == null || newCourseDate.before(course.getClosestCourse())) {
       course.setClosestCourse(newCourseDate);

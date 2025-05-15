@@ -25,4 +25,8 @@ public interface TransactionRepo extends JpaRepository<Transaction, Integer> {
                                                                Course offerableCoursesCourse);
 
   List<Transaction> findAllByOfferableCourses_Provider(CourseProvider provider);
+
+  boolean existsByUser_Id(Long userId);
+
+  void deleteAllByUser_Id(Long userId);
 }

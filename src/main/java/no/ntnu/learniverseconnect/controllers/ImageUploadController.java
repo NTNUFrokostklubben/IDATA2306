@@ -66,7 +66,7 @@ public class ImageUploadController {
       Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
       // Return the URL of the uploaded image (you can return the relative path)
-      String imageUrl = "http://localhost:8081/uploads/images/" + fileName;
+      String imageUrl = "https://localhost:8081/uploads/images/" + fileName;
       return ResponseEntity.status(HttpStatus.OK).body(imageUrl);
     } catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload image");

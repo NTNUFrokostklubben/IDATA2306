@@ -33,6 +33,13 @@ public class AuthenticationController {
   @Autowired
   private JwtUtil jwtUtil;
 
+
+  /**
+   * HTTP POST request to /authenticate.
+   *
+   * @param authenticationRequest The request JSON object containing username and password
+   * @return OK + JWT token; Or UNAUTHORIZED
+   */
 @Operation(
     summary = "Authenticate user",
     description = "Authenticates a user and returns a JWT token")
@@ -54,12 +61,6 @@ public class AuthenticationController {
             implementation = AuthenticationRequest.class
         )
     ))
-  /**
-   * HTTP POST request to /authenticate.
-   *
-   * @param authenticationRequest The request JSON object containing username and password
-   * @return OK + JWT token; Or UNAUTHORIZED
-   */
   @PostMapping("/authenticate")
   public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
     try {

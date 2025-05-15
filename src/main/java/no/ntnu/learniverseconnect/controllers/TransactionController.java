@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -95,6 +97,28 @@ public class TransactionController {
     }
   }
 
+  /**
+   * Deletes all transactions for users.
+   * <br/>
+   * mainly used to clean up postman tests
+   * @param uid the user's id.
+   * @return ResponseEntity with HTTP codes.
+   */
+    @Operation(summary = "Delete all transactions for a user",
+        description = "Deletes all transactions associated with a specific user ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Transactions deleted"),
+        @ApiResponse(responseCode = "404", description = "No transactions found for user")
+    })
+  @Transactional
+  @DeleteMapping("/transaction/user/{uid}")
+  public ResponseEntity<Void> deleteTransactionOnUser(@PathVariable long uid){
+    if(!repo.existsByUser_Id(uid)){
+      return ResponseEntity.status(404).build();
+    }
+    repo.deleteAllByUser_Id(uid);
+    return ResponseEntity.status(200).build();
+  }
 
   /**
    * Returns a transaction by its ID.
@@ -209,38 +233,6 @@ public class TransactionController {
 
 
   /**
-   * Adds a new transaction.
-   *
-   * @param transaction the transaction to add.
-   * @return the added transaction.
-   */
-  @Operation(summary = "Create transaction",
-      description = "Records a new course purchase transaction")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "Transaction created",
-          content = @Content(schema = @Schema(implementation = Transaction.class))),
-      @ApiResponse(responseCode = "400", description = "Invalid input")
-  })
-  @io.swagger.v3.oas.annotations.parameters.RequestBody(
-      description = "Transaction object to be created",
-      required = true,
-      content = @Content(schema = @Schema(implementation = Transaction.class)))
-  @PostMapping("/transaction")
-  public ResponseEntity<Transaction> addTransaction(@PathVariable Transaction transaction) {
-    if (transaction == null) {
-      logger.warning("Transaction is null");
-      return ResponseEntity.status(400).body(null);
-    }
-    if (transaction.getUser() == null || transaction.getOfferableCourses() == null) {
-      logger.warning("Transaction is missing user or offerable course");
-      return ResponseEntity.status(400).body(null);
-    }
-    repo.save(transaction);
-    logger.info("Transaction added with id: " + transaction.getId());
-    return ResponseEntity.status(201).body(transaction);
-  }
-
-  /**
    * Adds a new transaction based on offerable course ID and user ID.
    * Adds the transaction to the database and updates or adds the corresponding user course
    * to the database.
@@ -256,7 +248,7 @@ public class TransactionController {
       @ApiResponse(responseCode = "404", description = "User or course not found")
   })
   @PostMapping("/transaction/offerId/{oId}/userid/{uId}")
-  public ResponseEntity<String> addTransaction(@PathVariable long oId, @PathVariable long uId) {
+  public ResponseEntity<Transaction> addTransaction(@PathVariable long oId, @PathVariable long uId) {
     Transaction transaction = new Transaction();
     OfferableCourses offerableCourse = offerableCoursesRepo.getOfferableCoursesById(oId);
     User user = userRepo.getUsersById((uId));
@@ -284,8 +276,7 @@ public class TransactionController {
     }
     this.userCoursesRepo.save(userCourse);
     if (userCoursesRepo.existsById(userCourse.getId())) {
-      return ResponseEntity.status(HttpStatus.CREATED).body(
-          "transaction with course id " + userCourse.getId() + "and  offerable course id " +offerableCourse.getCourse().getId() + " saved");
+      return ResponseEntity.status(HttpStatus.CREATED).body(transaction);
     } else {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
@@ -354,11 +345,11 @@ public class TransactionController {
   }
 
   /**
-   * Find the average revenue per course.
+   * Find the average revenue for all courses.
    *
-   * @Return the average revenue per course
+   * @Return the average revenue for all courses
    */
-  @Operation(summary = "Get average revenue per course",
+  @Operation(summary = "Get average revenue for all courses",
       description = "Calculates the average revenue across all courses")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Average calculated",
@@ -389,11 +380,11 @@ public class TransactionController {
   }
 
   /**
-   * Get the revenue for the last 30 days.
+   * Get the total revenue for the last 30 days.
    *
    * @return the revenue for the last 30 days
    */
-  @Operation(summary = "Get recent revenue",
+  @Operation(summary = "Get total recent revenue",
       description = "Calculates revenue from the last 30 days")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Revenue calculated",

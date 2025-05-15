@@ -3,6 +3,7 @@ package no.ntnu.learniverseconnect.controllers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.Keywords;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -78,12 +80,29 @@ public class KeywordsController {
   }
 
   /**
-   * Replaces the keywords for a specific course by its course ID.
+   * This method takes in a list of keywords and then replaces all keywords in the database with
+   * the new list of keywords.
+   * <p>
+   * THIS IS DESTRUCTIVE! Make sure it is all right to delete all keywords.
    *
    * @param cid course ID
-   * @param keywords keywords to be added (array of strings)
+   * @param keywords keywords to replace with (array of strings)
    * @return ResponseEntity with the updated list of keywords
    */
+  @Operation(
+      summary = "Replaces keywords",
+      description = "Replaces all keywords in the database with new ones. DESTRUCTIVE METHOD!"
+  )
+  @ApiResponses({
+      @ApiResponse(
+          responseCode = "200",
+          description = "List of new keywords replacing the old"
+      ),
+      @ApiResponse(
+          responseCode = "404",
+          description = "No keywords provided"
+      )
+  })
   @PostMapping("/keyword/{cid}")
   public ResponseEntity<List<KeywordsDTO>> addKeyword(@PathVariable Long cid,
                                              @RequestBody String[] keywords) {
@@ -108,6 +127,31 @@ public class KeywordsController {
 
 
     return ResponseEntity.status(200).body(keywordsDTOList);
+  }
+
+
+
+  /**
+   * Deletes all keywords for course.
+   * <br/>
+   * mainly used to clean up postman tests
+   * @param cid the course's id.
+   * @return ResponseEntity with HTTP codes.
+   */
+  @Operation(summary = "Delete all keywords for a course",
+      description = "Deletes all keywords associated with a specific user ID")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "keywords deleted"),
+      @ApiResponse(responseCode = "404", description = "No keywords found for user")
+  })
+  @Transactional
+  @DeleteMapping("/keywords/course/{cid}")
+  public ResponseEntity<Void> deleteTransactionOnUser(@PathVariable long cid){
+    if(!keywordsRepo.existsByCourse_Id(cid)){
+      return ResponseEntity.status(404).build();
+    }
+    keywordsRepo.deleteAllByCourse_Id(cid);
+    return ResponseEntity.status(200).build();
   }
 
   /**
