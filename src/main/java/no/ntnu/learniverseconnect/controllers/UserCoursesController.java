@@ -187,6 +187,31 @@ public class UserCoursesController {
     return ResponseEntity.status(200).body(userCourseList);
   }
 
+    /**
+     * Get all reviews for a given course.
+     *
+     * @param cid the course id to get the reviews for
+     * @return the list of reviews for the course
+     */
+    @Operation(summary = "Get all reviews for a course",
+        description = "Retrieves all reviews associated with a course ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reviews found",
+            content = @Content(schema = @Schema(implementation = UserCourse.class, type = "array"))),
+        @ApiResponse(responseCode = "404", description = "No reviews found")
+    })
+    @GetMapping("/userCourses/reviews/course/{cid}")
+  public ResponseEntity<List<UserCourse>> getAllReviewsForCourse(@PathVariable long cid) {
+    List<UserCourse> userCourseList = userCoursesRepo.getAllByCourse_Id(cid);
+    List<UserCourse> userCourseListWithReviews = new ArrayList<>();
+    for (UserCourse userCourse : userCourseList) {
+      if (userCourse.getReview() != null) {
+        userCourseListWithReviews.add(userCourse);
+      }
+    }
+    return ResponseEntity.status(200).body(userCourseListWithReviews);
+  }
+
 
   /**
    * Get the last ten user courses reviews added to the database.
