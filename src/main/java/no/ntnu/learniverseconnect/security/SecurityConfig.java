@@ -54,8 +54,10 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/offerableCourses/**").permitAll()
             .requestMatchers( HttpMethod.GET, "/keyword/**").permitAll()
 
-            .requestMatchers("/userDto/**").hasAnyAuthority(user, admin)
+            .requestMatchers(HttpMethod.GET, "/userDto/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.POST, "/transaction/**").hasAnyAuthority(user, admin)
+            .requestMatchers(HttpMethod.GET, "/userCourses/**").hasAnyAuthority(user, admin)
+            .requestMatchers(HttpMethod.PUT, "/userCourses/**").hasAnyAuthority(user, admin)
 
             .requestMatchers(HttpMethod.GET, "/**").hasAuthority( admin)
             .requestMatchers(HttpMethod.PUT, "/**").hasAuthority( admin)

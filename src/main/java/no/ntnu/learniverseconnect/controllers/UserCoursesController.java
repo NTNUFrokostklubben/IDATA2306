@@ -250,7 +250,6 @@ public class UserCoursesController {
   /**
    * Adds a new user course to the database.
    *
-   * @param uid the user id
    * @param cid the course id
    * @return a response entity with the status of the operation
    */
@@ -299,7 +298,7 @@ public class UserCoursesController {
         @ApiResponse(responseCode = "404", description = "User-course relationship not found")
     })
   @Transactional
-  @DeleteMapping("/userCourse/user/{uid}")
+  @DeleteMapping("/userCourses/user/{uid}")
   public ResponseEntity<Void> deleteByUser(@PathVariable long uid){
     if(!userCoursesRepo.existsUserCourseByUser_Id(uid)){
       return ResponseEntity.status(404).build();
