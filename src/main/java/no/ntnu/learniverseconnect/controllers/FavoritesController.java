@@ -14,6 +14,7 @@ import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.FavoritesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
+import no.ntnu.learniverseconnect.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,11 +58,10 @@ public class FavoritesController {
   /**
    * Retrieves all favorite items for a specific user by their user ID.
    *
-   * @param id The unique identifier of the user.
    * @return A ResponseEntity containing a list of Favorite objects if found, or a 404 status
    * if no favorites are found.
    */
-
+// long uid = SecurityUtils.getAuthenticatedUserId();
   @Operation(summary = "Get user favorites",
       description = "Retrieves all favorite courses for a user")
   @ApiResponses(value = {
@@ -70,11 +70,12 @@ public class FavoritesController {
               implementation = Favorite.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No favorites found")
   })
-  @GetMapping("/favorite/user/{id}")
-  public ResponseEntity<List<Favorite>> getFavoritesForUser(@PathVariable long id) {
-    logger.info("Fetching favorites for user with id: {}", id);
+  @GetMapping("/favorite/user")
+  public ResponseEntity<List<Favorite>> getFavoritesForUser() {
+    long uid = SecurityUtils.getAuthenticatedUserId();
+    logger.info("Fetching favorites for user with id: {}", uid);
     int status = 0;
-    List<Favorite> list = repo.getAllByUser_Id(id);
+    List<Favorite> list = repo.getAllByUser_Id(uid);
     if (!list.isEmpty()) {
       status = 200;
     } else {
@@ -105,7 +106,6 @@ public class FavoritesController {
   /**
    * Adds a course to a user's list of favorites.
    *
-   * @param uid The unique identifier of the user.
    * @param cid The unique identifier of the course.
    * @return A ResponseEntity with a 200 status if the favorite is successfully added.
    */
@@ -116,10 +116,12 @@ public class FavoritesController {
       @ApiResponse(responseCode = "400", description = "Already favorited"),
       @ApiResponse(responseCode = "404", description = "User/course not found")
   })
-  @PostMapping("/favorite/add/user/{uid}/course/{cid}")
-  public ResponseEntity<Void> addFavorite(@PathVariable long uid, @PathVariable long cid) {
-    logger.info("Adding favorite for user with id: {} and course with id: {}", uid, cid);
+  @PostMapping("/favorite/add/course/{cid}")
+  public ResponseEntity<Void> addFavorite( @PathVariable long cid) {
+    long uid = SecurityUtils.getAuthenticatedUserId();
+    logger.info("Adding favorite for user with id: {} and course with id: {}", uid,  cid);
     int status = 200;
+
     User user = userRepo.getUsersById(uid);
     Course course = courseRepo.getCoursesById(cid);
     Favorite favorite = new Favorite(user, course);
@@ -140,7 +142,6 @@ public class FavoritesController {
     /**
      * Removes a course from a user's list of favorites.
      *
-     * @param uid The unique identifier of the user.
      * @param cid The unique identifier of the course.
      * @return A ResponseEntity with a 200 status if the favorite is successfully removed.
      */
@@ -151,8 +152,9 @@ public class FavoritesController {
         @ApiResponse(responseCode = "400", description = "Not favorited")
     })
     @Transactional
-    @DeleteMapping("/favorite/remove/user/{uid}/course/{cid}")
-    public ResponseEntity<Void> removeFavorite(@PathVariable long uid, @PathVariable long cid){
+    @DeleteMapping("/favorite/remove/course/{cid}")
+    public ResponseEntity<Void> removeFavorite( @PathVariable long cid){
+      long uid = SecurityUtils.getAuthenticatedUserId();
       logger.info("Removing favorite for user with id: {} and course with id: {}", uid, cid);
       int status = 200;
       if (repo.existsByCourse_IdAndUser_Id(cid, uid)) {
@@ -169,7 +171,6 @@ public class FavoritesController {
   /**
    * Check if a course is already favorited by a user.
    *
-   * @param uid The unique identifier of the user.
     * @param cid The unique identifier of the course.
    */
   @Operation(summary = "Check favorite status",
@@ -178,8 +179,9 @@ public class FavoritesController {
       @ApiResponse(responseCode = "200",
           content = @Content(schema = @Schema(implementation = Boolean.class)))
   })
-    @GetMapping("/favorite/isFavorite/user/{uid}/course/{cid}")
-    public ResponseEntity<Boolean> isFavorited(@PathVariable long uid, @PathVariable long cid){
+    @GetMapping("/favorite/isFavorite/course/{cid}")
+    public ResponseEntity<Boolean> isFavorited( @PathVariable long cid){
+    long uid = SecurityUtils.getAuthenticatedUserId();
       logger.info("Checking if course with id: {} is favorited by user with id: {}", cid, uid);
       boolean isFavorited = repo.existsByCourse_IdAndUser_Id(cid, uid);
       return ResponseEntity.status(200).body(isFavorited);

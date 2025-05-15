@@ -25,9 +25,13 @@ import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.TransactionRepo;
 import no.ntnu.learniverseconnect.model.repos.UserCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
+import no.ntnu.learniverseconnect.security.AccessUserDetails;
+import no.ntnu.learniverseconnect.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -238,20 +242,20 @@ public class TransactionController {
    * to the database.
    *
    * @param oId the ID of the offerable course.
-   * @param uId the ID of the user.
    * @return the added transaction.
    */
   @Operation(summary = "Create transaction with IDs",
       description = "Records a new transaction using offerable course and user IDs")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "Transaction created"),
-      @ApiResponse(responseCode = "404", description = "User or course not found")
+      @ApiResponse(responseCode = "404", description = " Course not found")
   })
-  @PostMapping("/transaction/offerId/{oId}/userid/{uId}")
-  public ResponseEntity<Transaction> addTransaction(@PathVariable long oId, @PathVariable long uId) {
+  @PostMapping("/transaction/offerId/{oId}")
+  public ResponseEntity<Transaction> addTransaction(@PathVariable long oId) {
     Transaction transaction = new Transaction();
     OfferableCourses offerableCourse = offerableCoursesRepo.getOfferableCoursesById(oId);
-    User user = userRepo.getUsersById((uId));
+    long uId = SecurityUtils.getAuthenticatedUserId();
+    User user = userRepo.getUsersById(uId);
     if (offerableCourse == null || user == null) {
       return ResponseEntity.status(404).body(null);
     }

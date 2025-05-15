@@ -16,6 +16,7 @@ import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.ReviewRepo;
 import no.ntnu.learniverseconnect.model.repos.UserCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
+import no.ntnu.learniverseconnect.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,9 +63,8 @@ public class UserCoursesController {
 
 
   /**
-   * Get all courses associated with a user.
+   * Get all courses associated with the authenticated user.
    *
-   * @param id the user to get by
    * @return the list of courses a user is associated with.
    */
   @Operation(summary = "Get all user-courses for a user",
@@ -74,15 +74,16 @@ public class UserCoursesController {
       @Content(schema = @Schema(implementation = UserCourse.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No courses found")
   })
-  @GetMapping("/userCourses/{id}")
-  public ResponseEntity<List<UserCourse>> getAll(@PathVariable long id) {
-    List<UserCourse> userCourseList = userCoursesRepo.getAllByUser_Id(id);
+  @GetMapping("/userCourses/user")
+  public ResponseEntity<List<UserCourse>> getAll() {
+    long uid = SecurityUtils.getAuthenticatedUserId();
+    List<UserCourse> userCourseList = userCoursesRepo.getAllByUser_Id(uid);
     int status = 404;
     if (!userCourseList.isEmpty()) {
-      logger.info("Fetching all courses for user with id: {}", id);
+      logger.info("Fetching all courses for user with id: {}", uid);
       status = 200;
     } else {
-      logger.error("No courses found for user with id: {}", id);
+      logger.error("No courses found for user with id: {}", uid);
     }
     return ResponseEntity.status(status).body(userCourseList);
 
@@ -249,7 +250,6 @@ public class UserCoursesController {
   /**
    * Adds a new user course to the database.
    *
-   * @param uid the user id
    * @param cid the course id
    * @return a response entity with the status of the operation
    */
@@ -259,10 +259,11 @@ public class UserCoursesController {
       @ApiResponse(responseCode = "201", description = "Enrollment successful"),
       @ApiResponse(responseCode = "400", description = "Invalid input")
   })
-  @PostMapping("/userCourses/add/{uid}/{cid}")
-  public ResponseEntity<String> addNewUserCourse(@PathVariable long uid,
+  @PostMapping("/userCourses/add/{cid}")
+  public ResponseEntity<String> addNewUserCourse(
                                                  @PathVariable long cid) {
     UserCourse userCourse;
+    long uid = SecurityUtils.getAuthenticatedUserId();
     if (userCoursesRepo.existsByUser_IdAndCourse_Id(uid, cid)) {
       userCourse =  userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(uid, cid);
       userCourse.setTimestamp();
@@ -297,12 +298,12 @@ public class UserCoursesController {
         @ApiResponse(responseCode = "404", description = "User-course relationship not found")
     })
   @Transactional
-  @DeleteMapping("/userCourse/user/{cid}")
-  public ResponseEntity<Void> deleteByUser(@PathVariable long cid){
-    if(!userCoursesRepo.existsUserCourseByUser_Id(cid)){
+  @DeleteMapping("/userCourses/user/{uid}")
+  public ResponseEntity<Void> deleteByUser(@PathVariable long uid){
+    if(!userCoursesRepo.existsUserCourseByUser_Id(uid)){
       return ResponseEntity.status(404).build();
     }
-    userCoursesRepo.deleteAllByUser_Id(cid);
+    userCoursesRepo.deleteAllByUser_Id(uid);
     return ResponseEntity.status(200).build();
   }
 
@@ -311,7 +312,6 @@ public class UserCoursesController {
    * Adds a new rating to a user course.
    *
    * @param review the review to add/replace in the user course
-   * @param uid    the user making the review
    * @param cid    the course id to add the review to
    * @return a response entity with the status of the operation.
    */
@@ -322,13 +322,14 @@ public class UserCoursesController {
       @ApiResponse(responseCode = "400", description = "Invalid input")
   })
   @Transactional
-  @PutMapping("/userCourses/addRating/{uid}/{cid}")
-  public ResponseEntity<Review> addRating(@RequestBody Review review, @PathVariable long uid,
+  @PutMapping("/userCourses/addRating/{cid}")
+  public ResponseEntity<Review> addRating(@RequestBody Review review,
                                         @PathVariable long cid) {
     if(review == null){
       logger.error("Review object is null");
       return ResponseEntity.status(400).build();
     }
+    long uid = SecurityUtils.getAuthenticatedUserId();
     // Makes sure the minimum review is 1 one star.
     if (review.getRating() < 1) {
       review.setRating(1);
@@ -336,6 +337,10 @@ public class UserCoursesController {
     review.setDate();
 
     UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(uid, cid);
+    if(userCourse == null) {
+      logger.error("User course not found");
+      return ResponseEntity.status(404).build();
+    }
     if (userCourse.getReview() != null) {
       reviewRepo.delete(userCourse.getReview());
     }
@@ -363,9 +368,10 @@ public class UserCoursesController {
    * @param cid the course id
    * @return true if the user is enrolled, false otherwise
    */
-  @GetMapping("/userCourses/user/{uid}/course/{cid}")
-  public ResponseEntity<Boolean> isUserEnrolledInCourse(@PathVariable long uid,
+  @GetMapping("/userCourses/enrolled/{cid}")
+  public ResponseEntity<Boolean> isUserEnrolledInCourse(
                                                         @PathVariable long cid) {
+    long uid = SecurityUtils.getAuthenticatedUserId();
     UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(uid, cid);
     if (userCourse != null) {
       logger.info("User with id {} is enrolled in course with id {}", uid, cid);

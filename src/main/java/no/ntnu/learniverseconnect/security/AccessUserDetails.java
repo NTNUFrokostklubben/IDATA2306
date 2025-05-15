@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class AccessUserDetails implements UserDetails {
   private final String username;
+  private final long id;
   private final String password;
   private final boolean isActive;
   private final List<GrantedAuthority> authorityList = new LinkedList<>();
@@ -28,6 +29,7 @@ public class AccessUserDetails implements UserDetails {
     this.username = user.getEmail();
     this.password = user.getPasswordHash();
     this.isActive = user.isActive();
+    this.id = user.getId();
     this.convertRoles(user.getRole());
   }
 
@@ -53,6 +55,9 @@ public class AccessUserDetails implements UserDetails {
     return this.password;
   }
 
+  public Long getUserId() {
+    return this.id;
+  }
   @Override
   public String getUsername() {
     return this.username;
