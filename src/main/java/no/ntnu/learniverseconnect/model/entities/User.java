@@ -13,10 +13,12 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Represents a user in the system with a unique id.
@@ -51,7 +53,9 @@ public class User {
   private Set<Role> roles = new LinkedHashSet<>();
 
   @Schema(description = "URL to the user's profile picture", example = "http://example.com/image.jpg")
+
   private String profilePicture;
+
 
   @Schema(description = "Timestamp of account creation", example = "2023-01-01T12:00:00Z")
   @Temporal(TemporalType.TIMESTAMP)
@@ -68,6 +72,16 @@ public class User {
     this.passwordHash = password;
     this.email = email;
   }
+  /**
+   * Constructor for creating a new user with the specified name, password, email,
+   * and profile picture.
+   */
+  public User(String name, String password, String email, String profilePicture) {
+    this.name = name;
+    this.passwordHash = password;
+    this.email = email;
+    this.profilePicture = profilePicture;
+  }
 
   /**
    * Sets the current timestamp before persisting the entity.
@@ -75,7 +89,7 @@ public class User {
   @PrePersist
   protected void onCreate() {
     this.userCreated = new Timestamp(System.currentTimeMillis());
-    this.profilePicture ="https://localhost:8081/uploads/images/default_img.png";
+
   }
 
   /**
