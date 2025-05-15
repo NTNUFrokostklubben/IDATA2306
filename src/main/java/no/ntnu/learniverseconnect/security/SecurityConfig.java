@@ -39,7 +39,6 @@ public class SecurityConfig {
    * @param http HttpSecurity setting builder
    * @throws Exception When security configuration fails
    */
-  //TODO fix this so that we only authenticate the necessary endpoints
   @Bean
   public SecurityFilterChain configureAuthorizationFilterChain(HttpSecurity http) throws Exception {
     http
