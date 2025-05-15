@@ -89,8 +89,10 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(Arrays.asList(
-        "https://localhost:3000",  // Your frontend URL (HTTPS)
-        "http://localhost:3000"    // Fallback for dev
+        "https://localhost:3000",
+        "http://localhost:3000",
+        "https://learniverse.no",
+        "https://www.learniverse.no"
     ));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(Arrays.asList("*"));
