@@ -55,9 +55,12 @@ public class SecurityConfig {
             .requestMatchers( HttpMethod.GET, "/keyword/**").permitAll()
 
             .requestMatchers(HttpMethod.GET, "/userDto/**").hasAnyAuthority(user, admin)
+            .requestMatchers(HttpMethod.GET, "/favorite/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.POST, "/transaction/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.GET, "/userCourses/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.PUT, "/userCourses/**").hasAnyAuthority(user, admin)
+
+
 
             .requestMatchers(HttpMethod.GET, "/**").hasAuthority( admin)
             .requestMatchers(HttpMethod.PUT, "/**").hasAuthority( admin)
