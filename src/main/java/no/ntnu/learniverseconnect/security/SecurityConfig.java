@@ -53,14 +53,14 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/userCourses/averageRating/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/offerableCourses/**").permitAll()
             .requestMatchers( HttpMethod.GET, "/keyword/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/search/**").permitAll()
 
             .requestMatchers(HttpMethod.GET, "/userDto/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.GET, "/favorite/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.POST, "/transaction/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.GET, "/userCourses/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.PUT, "/userCourses/**").hasAnyAuthority(user, admin)
-            .requestMatchers(HttpMethod.POST, "/search/**").hasAnyAuthority(user, admin)
-            .requestMatchers(HttpMethod.GET, "/search/**").hasAnyAuthority(user, admin)
+            .requestMatchers(HttpMethod.PUT, "/user/image/**").hasAnyAuthority(user, admin)
 
 
             .requestMatchers(HttpMethod.GET, "/**").hasAuthority( admin)
