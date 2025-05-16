@@ -1,6 +1,9 @@
 package no.ntnu.learniverseconnect.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +13,10 @@ import jakarta.persistence.ManyToMany;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "id"
+)
 /**
  * Represents a role in the system with a unique id.
  */
@@ -27,7 +34,7 @@ public class Role {
   @Schema(description = "Users assigned to this role",
       accessMode = Schema.AccessMode.READ_ONLY)
   @ManyToMany(mappedBy = "roles")
-  @JsonBackReference
+  @JsonIgnore
   private Set<User> users = new LinkedHashSet<>();
 
   /**
