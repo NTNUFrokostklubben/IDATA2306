@@ -1,6 +1,9 @@
 package no.ntnu.learniverseconnect.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,6 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
+
 
 /**
  * Represents a user in the system with a unique id.
@@ -43,7 +47,6 @@ public class User {
   @Schema(description = "Account active status", example = "true")
   private boolean active = true;
 
-  @JsonManagedReference
   @Schema(description = "Roles assigned to the user")
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "user_role",
