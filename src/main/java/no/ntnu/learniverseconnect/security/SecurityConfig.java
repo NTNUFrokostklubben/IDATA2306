@@ -47,6 +47,7 @@ public class SecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests((auth) -> auth
             .requestMatchers(HttpMethod.POST,  "/authenticate", "/signup").permitAll()
+            .requestMatchers(HttpMethod.POST, "/authenticate/google").permitAll()
             .requestMatchers(HttpMethod.GET, "/course/**", "/courses/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/providers/**" , "/provider/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/userCourses/reviews/**").permitAll()
