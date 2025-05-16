@@ -243,9 +243,16 @@ public class CourseController {
           content = @Content(schema = @Schema(implementation = Course.class)))
   })
   @SecuredEndpoint
-  @PutMapping("/course")
-  public ResponseEntity<Course> updateCourse(@RequestBody Course course) {
+  @PutMapping("/course/{cid}")
+  public ResponseEntity<Course> updateCourse(@PathVariable long cid ,@RequestBody Course course) {
     logger.info("Updating course with id: {}", course.getId());
+    Course existingCourse = courseRepo.getCoursesById(cid);
+    if (existingCourse == null) {
+      logger.warn("Course with id {} not found", cid);
+      return ResponseEntity.status(404).body(null);
+    }
+    course.setClosestCourse(existingCourse.getClosestCourse());
+    course.setCertLink(existingCourse.getCertLink());
     return ResponseEntity.status(200).body(courseRepo.save(course));
   }
 
