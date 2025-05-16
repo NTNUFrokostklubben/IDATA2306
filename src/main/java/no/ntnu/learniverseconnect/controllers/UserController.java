@@ -342,9 +342,8 @@ public class UserController {
       required = true,
       content = @Content(schema = @Schema(implementation = UserUpdateDto.class))
   )
-  @PutMapping("/user/put")
-  public ResponseEntity<User> updateUser(@RequestBody UserUpdateDto userDto) {
-    long uid = SecurityUtils.getAuthenticatedUserId();
+  @PutMapping("/user/put/{uid}")
+  public ResponseEntity<User> updateUser(@PathVariable long uid ,@RequestBody UserUpdateDto userDto) {
     if (userDto == null) {
       logger.warn("User object is null");
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
