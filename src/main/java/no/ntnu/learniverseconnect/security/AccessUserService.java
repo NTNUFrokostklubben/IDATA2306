@@ -2,6 +2,7 @@ package no.ntnu.learniverseconnect.security;
 
 import java.io.IOException;
 import java.util.Optional;
+import no.ntnu.learniverseconnect.model.dto.UserDto;
 import no.ntnu.learniverseconnect.model.entities.Role;
 import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.RoleRepo;
@@ -65,6 +66,28 @@ public class AccessUserService implements UserDetailsService {
   }
 
   /**
+   * Try to create a new user using OAuth2.
+   *
+   * @param username the username of the new user
+   * @param email    the email of the new user
+   * @throws IOException if the user could not be created
+   */
+  public void tryCreateNewOauthUser(String username, String email) throws IOException {
+    String errormessage = null;
+    String emailCheck = checkEmailRequirements(email);
+    if (emailCheck != null) {
+      errormessage = emailCheck;
+    } else if (username == null || username.isEmpty()) {
+      errormessage = "Username cannot be empty";
+    } else {
+      createOauthUser(username, email);
+    }
+    if (errormessage != null) {
+      throw new IOException(errormessage);
+    }
+  }
+
+  /**
    * Check if the password meets the requirements.
    *
    * @param password the password to check
@@ -110,11 +133,45 @@ public class AccessUserService implements UserDetailsService {
    */
   private void createUser(String username, String password, String email) {
     Role role = roleRepo.findOneByName("ROLE_USER");
-   String profilePicture = baseUrl + "default_img.png";
+    String profilePicture = baseUrl + "default_img.png";
     if (role != null) {
-      User user = new User(username, createHash(password), email , profilePicture);
+      User user = new User(username, createHash(password), email, profilePicture);
       user.addRole(role);
       userRepo.save(user);
+    }
+  }
+
+  /**
+   * Create a new user with the given username and email using OAuth2.
+   *
+   * @param username username of the new user
+   * @param email    email of the new user
+   */
+  private void createOauthUser(String username, String email) {
+    Role role = roleRepo.findOneByName("ROLE_USER");
+    String profilePicture = baseUrl + "default_img.png";
+    if (role != null) {
+      User user = new User(username, null, email, profilePicture);
+      user.addRole(role);
+      userRepo.save(user);
+    }
+  }
+
+  /**
+   * Load or create a new user with the given email and name using OAuth2.
+   *
+   * @param email email of the user, taken from the OAuth2 provider
+   * @param name name of the user, taken from the OAuth2 provider
+   * @return the user details of the user
+   * @throws IOException if the user could not be created
+   */
+  public UserDetails loadOrCreateGoogleUser(String email, String name) throws IOException {
+    // Check if user exists
+    try {
+      return loadUserByUsername(email);
+    } catch (Exception e) {
+      tryCreateNewOauthUser(name, email);
+      return loadUserByUsername(email);
     }
   }
 

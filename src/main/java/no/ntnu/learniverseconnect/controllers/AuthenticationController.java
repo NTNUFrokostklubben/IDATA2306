@@ -40,27 +40,27 @@ public class AuthenticationController {
    * @param authenticationRequest The request JSON object containing username and password
    * @return OK + JWT token; Or UNAUTHORIZED
    */
-@Operation(
-    summary = "Authenticate user",
-    description = "Authenticates a user and returns a JWT token")
-@ApiResponses({
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "200",
-        description = "Authentication successful"
-    ),
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-        responseCode = "401",
-        description = "Invalid username or password"
-    )
-})
-@io.swagger.v3.oas.annotations.parameters.RequestBody(
-    description = "Authentication request containing email and password",
-    required = true,
-    content = @io.swagger.v3.oas.annotations.media.Content(
-        schema = @io.swagger.v3.oas.annotations.media.Schema(
-            implementation = AuthenticationRequest.class
-        )
-    ))
+  @Operation(
+      summary = "Authenticate user",
+      description = "Authenticates a user and returns a JWT token")
+  @ApiResponses({
+      @io.swagger.v3.oas.annotations.responses.ApiResponse(
+          responseCode = "200",
+          description = "Authentication successful"
+      ),
+      @io.swagger.v3.oas.annotations.responses.ApiResponse(
+          responseCode = "401",
+          description = "Invalid username or password"
+      )
+  })
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      description = "Authentication request containing email and password",
+      required = true,
+      content = @io.swagger.v3.oas.annotations.media.Content(
+          schema = @io.swagger.v3.oas.annotations.media.Schema(
+              implementation = AuthenticationRequest.class
+          )
+      ))
   @PostMapping("/authenticate")
   public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
     try {
@@ -84,33 +84,33 @@ public class AuthenticationController {
    * @param userDto the dto with email, username and password
    * @return OK + JWT token; Or UNAUTHORIZED
    */
-    @Operation(
-        summary = "Sign up user",
-        description = "Creates a new user and returns a JWT token")
-    @ApiResponses({
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            responseCode = "200",
-            description = "User created successfully"
-        ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            responseCode = "400",
-            description = "Invalid input"
-        )
-    })
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(
-        description = "Signup request containing email, name and password hash",
-        required = true,
-        content = @io.swagger.v3.oas.annotations.media.Content(
-            schema = @io.swagger.v3.oas.annotations.media.Schema(
-                implementation = UserDto.class
-            )
-    ))
+  @Operation(
+      summary = "Sign up user",
+      description = "Creates a new user and returns a JWT token")
+  @ApiResponses({
+      @io.swagger.v3.oas.annotations.responses.ApiResponse(
+          responseCode = "200",
+          description = "User created successfully"
+      ),
+      @io.swagger.v3.oas.annotations.responses.ApiResponse(
+          responseCode = "400",
+          description = "Invalid input"
+      )
+  })
+  @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      description = "Signup request containing email, name and password hash",
+      required = true,
+      content = @io.swagger.v3.oas.annotations.media.Content(
+          schema = @io.swagger.v3.oas.annotations.media.Schema(
+              implementation = UserDto.class
+          )
+      ))
   @PostMapping("/signup")
   public ResponseEntity<?> signupProcess(@RequestBody UserDto userDto) {
     ResponseEntity<?> response;
     try {
       userService.tryCreateNewUser(userDto.getName(), userDto.getPasswordHash(),
-                                   userDto.getEmail());
+          userDto.getEmail());
       response = authenticate(
           new AuthenticationRequest(userDto.getEmail(), userDto.getPasswordHash()));
     } catch (IOException e) {
@@ -118,5 +118,67 @@ public class AuthenticationController {
     }
     return response;
   }
+
+  /**
+   * Authenticate a user via Google OAuth.
+   *
+   * @param googleAuthRequest Contains Google user's email and name
+   * @return JWT token if successful
+   */
+  @Operation(
+      summary = "Google OAuth login",
+      description = "Authenticates a user via Google OAuth and returns a JWT token"
+  )
+  @ApiResponses({
+      @io.swagger.v3.oas.annotations.responses.ApiResponse(
+          responseCode = "200",
+          description = "Authentication successful"
+      ),
+      @io.swagger.v3.oas.annotations.responses.ApiResponse(
+          responseCode = "401",
+          description = "Invalid Google credentials"
+      )
+  })
+  @PostMapping("/authenticate/google")
+  public ResponseEntity<?> googleAuth(@RequestBody GoogleAuthRequest googleAuthRequest) {
+    try {
+      // Find or create user
+      UserDetails userDetails = userService.loadOrCreateGoogleUser(
+          googleAuthRequest.getEmail(),
+          googleAuthRequest.getName()
+      );
+
+      final String jwt = jwtUtil.generateToken(userDetails);
+      return ResponseEntity.ok(new AuthenticationResponse(jwt));
+    } catch (Exception e) {
+      return new ResponseEntity<>("Google authentication failed", HttpStatus.UNAUTHORIZED);
+    }
+  }
+
+  /**
+   * DTO for Google auth request
+   */
+  public static class GoogleAuthRequest {
+    private String email;
+    private String name;
+
+    // Getters and setters
+    public String getEmail() {
+      return email;
+    }
+
+    public void setEmail(String email) {
+      this.email = email;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+  }
+
 
 }
