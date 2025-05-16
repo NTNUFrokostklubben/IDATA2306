@@ -60,6 +60,30 @@ public class UserController {
           content = @Content(schema = @Schema(implementation = User.class))),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
+  @GetMapping("/user/get/{uid}")
+  public ResponseEntity<User> getUserById(@PathVariable long uid) {
+    User user = repo.getUsersById(uid);
+    if (user == null) {
+      logger.warn("User with id {} not found", uid);
+      return ResponseEntity.status(404).body(null);
+    } else {
+      logger.info("Fetching user with id: {}", uid);
+      return ResponseEntity.status(200).body(user);
+    }
+  }
+
+  /**
+   * Get a user by id. From JWT
+   *
+   * @return the user with the given id
+   */
+  @Operation(summary = "Get user by ID",
+      description = "Retrieves a user's full details by their ID")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "User found",
+          content = @Content(schema = @Schema(implementation = User.class))),
+      @ApiResponse(responseCode = "404", description = "User not found")
+  })
   @GetMapping("/user/get")
   public ResponseEntity<User> getUserById() {
     long uid = SecurityUtils.getAuthenticatedUserId();
