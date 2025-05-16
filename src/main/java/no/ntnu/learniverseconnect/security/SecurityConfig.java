@@ -48,16 +48,27 @@ public class SecurityConfig {
         .authorizeHttpRequests((auth) -> auth
             .requestMatchers(HttpMethod.POST,  "/authenticate", "/signup").permitAll()
             .requestMatchers(HttpMethod.GET, "/course/**", "/courses/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/providers/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/providers/**" , "/provider/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/userCourses/reviews/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/userCourses/averageRating/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/offerableCourses/**").permitAll()
             .requestMatchers( HttpMethod.GET, "/keyword/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/search/**").permitAll()
+            .requestMatchers(HttpMethod.GET,
+                "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-            .requestMatchers("/userDto/**").hasAnyAuthority(user, admin)
+            .requestMatchers(HttpMethod.GET, "/userDto/**").hasAnyAuthority(user, admin)
+            .requestMatchers(HttpMethod.GET, "/favorite/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.POST, "/transaction/**").hasAnyAuthority(user, admin)
+            .requestMatchers(HttpMethod.GET, "/userCourses/**").hasAnyAuthority(user, admin)
+            .requestMatchers(HttpMethod.PUT, "/userCourses/**").hasAnyAuthority(user, admin)
+            .requestMatchers(HttpMethod.PUT, "/user/image/**").hasAnyAuthority(user, admin)
 
-            .requestMatchers("/**").hasAuthority( admin)
+
+            .requestMatchers(HttpMethod.GET, "/**").hasAuthority( admin)
+            .requestMatchers(HttpMethod.PUT, "/**").hasAuthority( admin)
+            .requestMatchers(HttpMethod.DELETE, "/**").hasAuthority( admin)
+            .requestMatchers(HttpMethod.POST, "/**").hasAuthority( admin)
 
 
 
@@ -89,8 +100,10 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(Arrays.asList(
-        "https://localhost:3000",  // Your frontend URL (HTTPS)
-        "http://localhost:3000"    // Fallback for dev
+        "https://localhost:3000",
+        "http://localhost:3000",
+        "https://learniverse.no",
+        "https://www.learniverse.no"
     ));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(Arrays.asList("*"));

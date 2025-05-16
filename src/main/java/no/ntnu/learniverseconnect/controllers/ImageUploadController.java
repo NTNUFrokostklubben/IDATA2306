@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -28,6 +29,8 @@ public class ImageUploadController {
 
   private final String uploadDir = "/usr/share/nginx/html/uploads/images/";
 
+  @Value("${app.uploadBaseUrl}")
+  private String uploadBaseUrl;
 
   /**
    * Uploads an image to the server and returns the URL of the uploaded image.
@@ -65,8 +68,10 @@ public class ImageUploadController {
       // Save the file locally
       Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
+
+
       // Return the URL of the uploaded image (you can return the relative path)
-      String imageUrl = "https://localhost:8081/uploads/images/" + fileName;
+      String imageUrl = uploadBaseUrl + fileName;
       return ResponseEntity.status(HttpStatus.OK).body(imageUrl);
     } catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload image");

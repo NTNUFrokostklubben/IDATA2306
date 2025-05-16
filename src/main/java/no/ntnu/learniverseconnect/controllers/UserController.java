@@ -16,6 +16,7 @@ import no.ntnu.learniverseconnect.model.dto.ReduxUserDto;
 import no.ntnu.learniverseconnect.model.entities.Role;
 import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
+import no.ntnu.learniverseconnect.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +51,6 @@ public class UserController {
   /**
    * Get a user by id.
    *
-   * @param id the id of the user
-   * @param id the id of the user
    * @return the user with the given id
    */
   @Operation(summary = "Get user by ID",
@@ -61,14 +60,15 @@ public class UserController {
           content = @Content(schema = @Schema(implementation = User.class))),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
-  @GetMapping("/user/{id}")
-  public ResponseEntity<User> getUserById(@PathVariable long id) {
-    User user = repo.getUsersById(id);
+  @GetMapping("/user/get")
+  public ResponseEntity<User> getUserById() {
+    long uid = SecurityUtils.getAuthenticatedUserId();
+    User user = repo.getUsersById(uid);
     if (user == null) {
-      logger.warn("User with id {} not found", id);
+      logger.warn("User with id {} not found", uid);
       return ResponseEntity.status(404).body(null);
     } else {
-      logger.info("Fetching user with id: {}", id);
+      logger.info("Fetching user with id: {}", uid);
       return ResponseEntity.status(200).body(user);
     }
   }
@@ -77,7 +77,7 @@ public class UserController {
   /**
    * Get safe user dto by email.
    *
-   * @param email the id of the user
+   * @param email the email of the user
    * @return the user with the given id
    */
   @Operation(summary = "Get safe user DTO by email",
@@ -137,7 +137,7 @@ public class UserController {
 
 
   /**
-   * Get the user id that matches the email.
+   * Get the user that matches the email.
    *
    * @param email the email of the user to fetch
    * @return the user with that email
@@ -265,7 +265,6 @@ public class UserController {
   /**
    * Updates a user's image link in the backend.
    *
-   * @param id the id of the user
    * @param imageLink the new image link to set
    * @return a response entity with the updated ReduxUserDto or a 404 status if no user found.
    */
@@ -281,10 +280,11 @@ public class UserController {
       required = true,
       content = @Content(schema = @Schema(implementation = String.class))
   )
-    @PutMapping("/user/image/{id}")
-    public ResponseEntity<ReduxUserDto> updateUserImage(@PathVariable long id,
+    @PutMapping("/user/image")
+    public ResponseEntity<ReduxUserDto> updateUserImage(
         @RequestBody String imageLink) {
-        Optional<User> userOptional = repo.findById((int) id);
+    long uid = SecurityUtils.getAuthenticatedUserId();
+        Optional<User> userOptional = repo.findById((int) uid);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setProfilePicture(imageLink.replace("\"" , ""));
@@ -293,7 +293,7 @@ public class UserController {
                 user.getProfilePicture(), user.getName());
             return ResponseEntity.status(HttpStatus.OK).body(userDto);
         } else {
-            logger.warn("User with id {} not found", id);
+            logger.warn("User with id {} not found", uid);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
@@ -302,7 +302,6 @@ public class UserController {
   /**
    * Updates a user in the database.
    *
-   * @param id the id of the user to update
    * @param userDto the user object with updated information (profile picture, roles, active)
    * @return a response entity with the status of the operation
    */
@@ -319,14 +318,14 @@ public class UserController {
       required = true,
       content = @Content(schema = @Schema(implementation = UserUpdateDto.class))
   )
-  @PutMapping("/user/{id}")
-  public ResponseEntity<User> updateUser(
-      @PathVariable long id, @RequestBody UserUpdateDto userDto) {
+  @PutMapping("/user/put")
+  public ResponseEntity<User> updateUser(@RequestBody UserUpdateDto userDto) {
+    long uid = SecurityUtils.getAuthenticatedUserId();
     if (userDto == null) {
       logger.warn("User object is null");
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
-    Optional<User> existingUserOptional = repo.findById((int) id);
+    Optional<User> existingUserOptional = repo.findById((int) uid);
     if (existingUserOptional.isPresent()) {
       User existingUser = existingUserOptional.get();
       existingUser.setProfilePicture(userDto.getProfilePicture());
@@ -347,10 +346,10 @@ public class UserController {
       existingUser.setActive(userDto.getActive());
 
       repo.save(existingUser);
-      logger.info("User with id {} updated", id);
+      logger.info("User with id {} updated", uid);
       return ResponseEntity.status(HttpStatus.OK).body(existingUser);
     } else {
-      logger.warn("User with id {} not found", id);
+      logger.warn("User with id {} not found", uid);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
   }

@@ -7,6 +7,7 @@ import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.RoleRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,6 +24,9 @@ public class AccessUserService implements UserDetailsService {
   @Autowired
   RoleRepo roleRepo;
   private int MIN_PASSWORD_LENGTH = 8;
+
+  @Value("${app.uploadBaseUrl}")
+  private String baseUrl;
 
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -106,8 +110,9 @@ public class AccessUserService implements UserDetailsService {
    */
   private void createUser(String username, String password, String email) {
     Role role = roleRepo.findOneByName("ROLE_USER");
+   String profilePicture = baseUrl + "default_img.png";
     if (role != null) {
-      User user = new User(username, createHash(password), email);
+      User user = new User(username, createHash(password), email , profilePicture);
       user.addRole(role);
       userRepo.save(user);
     }
