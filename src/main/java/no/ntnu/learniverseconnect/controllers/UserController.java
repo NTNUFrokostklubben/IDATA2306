@@ -62,6 +62,31 @@ public class UserController {
       @ApiResponse(responseCode = "404", description = "User not found")
   })
   @SecuredEndpoint
+  @GetMapping("/user/get/{uid}")
+  public ResponseEntity<User> getUserById(@PathVariable long uid) {
+    User user = repo.getUsersById(uid);
+    if (user == null) {
+      logger.warn("User with id {} not found", uid);
+      return ResponseEntity.status(404).body(null);
+    } else {
+      logger.info("Fetching user with id: {}", uid);
+      return ResponseEntity.status(200).body(user);
+    }
+  }
+
+  /**
+   * Get a user by id. From JWT
+   *
+   * @return the user with the given id
+   */
+  @Operation(summary = "Get user by ID",
+      description = "Retrieves a user's full details by their ID")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "User found",
+          content = @Content(schema = @Schema(implementation = User.class))),
+      @ApiResponse(responseCode = "404", description = "User not found")
+  })
+  @SecuredEndpoint
   @GetMapping("/user/get")
   public ResponseEntity<User> getUserById() {
     long uid = SecurityUtils.getAuthenticatedUserId();
@@ -328,10 +353,10 @@ public class UserController {
       required = true,
       content = @Content(schema = @Schema(implementation = UserUpdateDto.class))
   )
+
   @SecuredEndpoint
-  @PutMapping("/user/put")
-  public ResponseEntity<User> updateUser(@RequestBody UserUpdateDto userDto) {
-    long uid = SecurityUtils.getAuthenticatedUserId();
+  @PutMapping("/user/put/{uid}")
+  public ResponseEntity<User> updateUser(@PathVariable long uid ,@RequestBody UserUpdateDto userDto) {
     if (userDto == null) {
       logger.warn("User object is null");
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
