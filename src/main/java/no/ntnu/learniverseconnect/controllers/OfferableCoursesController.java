@@ -15,6 +15,7 @@ import no.ntnu.learniverseconnect.model.entities.OfferableCourses;
 import no.ntnu.learniverseconnect.model.repos.CourseProviderRepo;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
+import no.ntnu.learniverseconnect.security.SecuredEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -102,6 +103,7 @@ public class OfferableCoursesController {
       @ApiResponse(responseCode = "200"),
       @ApiResponse(responseCode = "404", description = "Not found")
   })
+  @SecuredEndpoint
   @DeleteMapping("/offerableCourses/{id}")
   public ResponseEntity<Void> deleteOfferableCourse(@PathVariable long id) {
     OfferableCourses offerableCourse = repo.getOfferableCoursesById(id);
@@ -248,6 +250,7 @@ public class OfferableCoursesController {
       @ApiResponse(responseCode = "201",
           content = @Content(schema = @Schema(implementation = OfferableCourses.class)))
   })
+    @SecuredEndpoint
   @PostMapping("/offerableCourse")
   public ResponseEntity<OfferableCourses> addOfferableCourse(
       @RequestBody OfferableCourses offerableCourse) {

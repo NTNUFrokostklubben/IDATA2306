@@ -16,6 +16,7 @@ import no.ntnu.learniverseconnect.model.dto.ReduxUserDto;
 import no.ntnu.learniverseconnect.model.entities.Role;
 import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
+import no.ntnu.learniverseconnect.security.SecuredEndpoint;
 import no.ntnu.learniverseconnect.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,7 @@ public class UserController {
           content = @Content(schema = @Schema(implementation = User.class))),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
+  @SecuredEndpoint
   @GetMapping("/user/get/{uid}")
   public ResponseEntity<User> getUserById(@PathVariable long uid) {
     User user = repo.getUsersById(uid);
@@ -84,6 +86,7 @@ public class UserController {
           content = @Content(schema = @Schema(implementation = User.class))),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
+  @SecuredEndpoint
   @GetMapping("/user/get")
   public ResponseEntity<User> getUserById() {
     long uid = SecurityUtils.getAuthenticatedUserId();
@@ -111,6 +114,7 @@ public class UserController {
           content = @Content(schema = @Schema(implementation = ReduxUserDto.class))),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
+  @SecuredEndpoint
   @GetMapping("/userDto/{email}")
   public ResponseEntity<ReduxUserDto> getReduxUserDtoById(@PathVariable String email) {
     User user = repo.getUsersByEmail(email);
@@ -127,10 +131,10 @@ public class UserController {
 
 
   /**
-   * Get the user that matches the email.
+   * Get the user's profile picture that matches the email.
    *
    * @param email the email of the user to fetch
-   * @return the user with that email
+   * @return the user's profile picture with that email
    */
   @Operation(summary = "Get user's profile picture",
       description = "Retrieves the profile picture URL of a user by email")
@@ -140,6 +144,7 @@ public class UserController {
       @ApiResponse(responseCode = "204", description = "No profile picture set"),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
+  @Deprecated
   @GetMapping("/userProfilePicture/{email}")
   public ResponseEntity<String> getProfilePicByEmail(@PathVariable String email) {
     Optional<User> userOptional = repo.findUserByEmail(email);
@@ -173,6 +178,7 @@ public class UserController {
           content = @Content(schema = @Schema(implementation = User.class))),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
+  @SecuredEndpoint
   @GetMapping("/UserByEmail/{email}")
   public ResponseEntity<User> getIdByEmail(@PathVariable String email) {
     Optional<User> userOptional = repo.findUserByEmail(email);
@@ -199,6 +205,7 @@ public class UserController {
           content = @Content(schema = @Schema(implementation = Integer.class))),
       @ApiResponse(responseCode = "404", description = "No users found")
   })
+  @SecuredEndpoint
   @GetMapping("/users/total")
   public ResponseEntity<Integer> getUserTotal() {
     List<User> totalUsers = repo.findAll();
@@ -222,6 +229,7 @@ public class UserController {
           content = @Content(schema = @Schema(implementation = User.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No users found")
   })
+  @SecuredEndpoint
   @GetMapping("/users")
   public ResponseEntity<Iterable<User>> getAllUsers() {
     logger.info("Fetching all users");
@@ -242,6 +250,7 @@ public class UserController {
           content = @Content(schema = @Schema(implementation = Float.class))),
       @ApiResponse(responseCode = "404", description = "No users found")
   })
+  @SecuredEndpoint
   @GetMapping("/users/newUsers")
   public ResponseEntity<Float> getNewUsers() {
     List<User> users = repo.findAll();
@@ -273,6 +282,7 @@ public class UserController {
       @ApiResponse(responseCode = "200", description = "User deleted"),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
+  @SecuredEndpoint
   @DeleteMapping("/user/{id}")
   public ResponseEntity<String> deleteUser(@PathVariable int id) {
     if (repo.existsById(id)) {
@@ -304,6 +314,7 @@ public class UserController {
       required = true,
       content = @Content(schema = @Schema(implementation = String.class))
   )
+  @SecuredEndpoint
     @PutMapping("/user/image")
     public ResponseEntity<ReduxUserDto> updateUserImage(
         @RequestBody String imageLink) {
@@ -342,6 +353,8 @@ public class UserController {
       required = true,
       content = @Content(schema = @Schema(implementation = UserUpdateDto.class))
   )
+
+  @SecuredEndpoint
   @PutMapping("/user/put/{uid}")
   public ResponseEntity<User> updateUser(@PathVariable long uid ,@RequestBody UserUpdateDto userDto) {
     if (userDto == null) {

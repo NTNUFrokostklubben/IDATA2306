@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.CourseProvider;
 import no.ntnu.learniverseconnect.model.repos.CourseProviderRepo;
+import no.ntnu.learniverseconnect.security.SecuredEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,6 +117,7 @@ public class CourseProviderController {
       description = "Course provider to be added",
       content = @Content(schema = @Schema(implementation = CourseProvider.class))
   )
+  @SecuredEndpoint
   @PostMapping("/provider")
   public ResponseEntity<CourseProvider> addProvider(@RequestBody CourseProvider provider) {
     if (provider == null) {
@@ -140,6 +142,7 @@ public class CourseProviderController {
       @ApiResponse(responseCode = "204"),
       @ApiResponse(responseCode = "404", description = "Provider not found")
   })
+  @SecuredEndpoint
   @DeleteMapping("/provider/{id}")
   public ResponseEntity<Void> deleteProvider(@PathVariable long id) {
     logger.info("Deleting course provider with id: {}", id);

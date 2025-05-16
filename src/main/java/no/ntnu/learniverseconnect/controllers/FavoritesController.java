@@ -14,6 +14,7 @@ import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.FavoritesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
+import no.ntnu.learniverseconnect.security.SecuredEndpoint;
 import no.ntnu.learniverseconnect.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +71,7 @@ public class FavoritesController {
               implementation = Favorite.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No favorites found")
   })
+  @SecuredEndpoint
   @GetMapping("/favorite/user")
   public ResponseEntity<List<Favorite>> getFavoritesForUser() {
     long uid = SecurityUtils.getAuthenticatedUserId();
@@ -97,6 +99,7 @@ public class FavoritesController {
       @ApiResponse(responseCode = "200",
           content = @Content(schema = @Schema(implementation = Integer.class)))
   })
+
   @GetMapping("/favorite/count/{id}")
   public ResponseEntity<Integer> getCountOfFavorites(@PathVariable long id) {
     logger.info("Fetching favorite count for course with id: {}", id);
@@ -116,6 +119,7 @@ public class FavoritesController {
       @ApiResponse(responseCode = "400", description = "Already favorited"),
       @ApiResponse(responseCode = "404", description = "User/course not found")
   })
+  @SecuredEndpoint
   @PostMapping("/favorite/add/course/{cid}")
   public ResponseEntity<Void> addFavorite( @PathVariable long cid) {
     long uid = SecurityUtils.getAuthenticatedUserId();
@@ -151,6 +155,7 @@ public class FavoritesController {
         @ApiResponse(responseCode = "200"),
         @ApiResponse(responseCode = "400", description = "Not favorited")
     })
+    @SecuredEndpoint
     @Transactional
     @DeleteMapping("/favorite/remove/course/{cid}")
     public ResponseEntity<Void> removeFavorite( @PathVariable long cid){
@@ -179,6 +184,7 @@ public class FavoritesController {
       @ApiResponse(responseCode = "200",
           content = @Content(schema = @Schema(implementation = Boolean.class)))
   })
+  @SecuredEndpoint
     @GetMapping("/favorite/isFavorite/course/{cid}")
     public ResponseEntity<Boolean> isFavorited( @PathVariable long cid){
     long uid = SecurityUtils.getAuthenticatedUserId();

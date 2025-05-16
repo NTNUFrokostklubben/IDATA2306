@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import java.sql.Time;
@@ -19,6 +20,7 @@ import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.ReviewRepo;
 import no.ntnu.learniverseconnect.model.repos.UserCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
+import no.ntnu.learniverseconnect.security.SecuredEndpoint;
 import no.ntnu.learniverseconnect.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,18 +68,20 @@ public class UserCoursesController {
   }
 
 
+
   /**
    * Get all courses associated with the authenticated user.
    *
    * @return the list of courses a user is associated with.
    */
   @Operation(summary = "Get all user-courses for a user",
-      description = "Retrieves all user-courses associated with a user ID")
+      description = "Retrieves all user-courses associated with a user ID", security = {})
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Courses found", content =
       @Content(schema = @Schema(implementation = UserCourse.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No courses found")
   })
+  @SecuredEndpoint
   @GetMapping("/userCourses/user")
   public ResponseEntity<List<UserCourse>> getAll() {
     long uid = SecurityUtils.getAuthenticatedUserId();
@@ -101,12 +105,13 @@ public class UserCoursesController {
    * @return the list of courses a course is associated with.
    */
   @Operation(summary = "Get all user-courses associated with a course",
-      description = "Retrieves all users-courses associated  with a course ID")
+      description = "Retrieves all users-courses associated  with a course ID" ,security = @SecurityRequirement(name = ""))
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Users found",
           content = @Content(schema = @Schema(implementation = UserCourse.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No users found")
   })
+  @SecuredEndpoint
   @GetMapping("/userCourses/course/{cid}")
   public ResponseEntity<List<UserCourse>> getAllByCourse(@PathVariable long cid) {
     List<UserCourse> userCourseList = userCoursesRepo.getAllByCourse_Id(cid);
@@ -178,6 +183,7 @@ public class UserCoursesController {
           content = @Content(schema = @Schema(implementation = UserCourse.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No records found")
   })
+  @SecuredEndpoint
   @GetMapping("/userCourses")
   public ResponseEntity<Iterable<UserCourse>> getAllUserCourses() {
     logger.info("Fetching all user Courses");
@@ -234,6 +240,7 @@ public class UserCoursesController {
    *
    * @return the last ten user courses reviews
    */
+  @SecuredEndpoint
   @Operation(summary = "Get latest 10 reviews",
       description = "Retrieves the 10 most recent user-course reviews")
   @ApiResponses(value = {
@@ -273,6 +280,7 @@ public class UserCoursesController {
       @ApiResponse(responseCode = "201", description = "Enrollment successful"),
       @ApiResponse(responseCode = "400", description = "Invalid input")
   })
+  @SecuredEndpoint
   @PostMapping("/userCourses/add/{cid}")
   public ResponseEntity<String> addNewUserCourse(
       @PathVariable long cid) {
@@ -311,6 +319,7 @@ public class UserCoursesController {
       @ApiResponse(responseCode = "200", description = "User-course relationship deleted"),
       @ApiResponse(responseCode = "404", description = "User-course relationship not found")
   })
+  @SecuredEndpoint
   @Transactional
   @DeleteMapping("/userCourses/user/{uid}")
   public ResponseEntity<Void> deleteByUser(@PathVariable long uid) {
@@ -335,6 +344,7 @@ public class UserCoursesController {
       @ApiResponse(responseCode = "200", description = "Review updated"),
       @ApiResponse(responseCode = "400", description = "Invalid input")
   })
+  @SecuredEndpoint
   @Transactional
   @PutMapping("/userCourses/addRating/{cid}")
   public ResponseEntity<Review> addRating(@RequestBody Review review,
@@ -379,6 +389,7 @@ public class UserCoursesController {
         @ApiResponse(responseCode = "200", description = "Review removed"),
         @ApiResponse(responseCode = "404", description = "User-course relationship not found")
     })
+    @SecuredEndpoint
     @Transactional
     @DeleteMapping("/userCourses/removeRating/{cid}")
   public ResponseEntity<Review> removeRating(@PathVariable long cid) {
@@ -414,6 +425,7 @@ public class UserCoursesController {
    * @param cid the course id
    * @return true if the user is enrolled, false otherwise
    */
+  @SecuredEndpoint
   @GetMapping("/userCourses/enrolled/{cid}")
   public ResponseEntity<Boolean> isUserEnrolledInCourse(
       @PathVariable long cid) {

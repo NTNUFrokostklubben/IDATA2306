@@ -19,6 +19,7 @@ import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.KeywordsRepo;
 import no.ntnu.learniverseconnect.model.repos.OfferableCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserCoursesRepo;
+import no.ntnu.learniverseconnect.security.SecuredEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,6 +140,7 @@ public class CourseController {
       description = "Course object to be added",
       content = @Content(schema = @Schema(implementation = Course.class))
   )
+  @SecuredEndpoint
   @PostMapping("/course")
   public ResponseEntity<Course> addCourse(@RequestBody Course course) {
     if(course == null){
@@ -241,6 +243,7 @@ public class CourseController {
       @ApiResponse(responseCode = "200",
           content = @Content(schema = @Schema(implementation = Course.class)))
   })
+  @SecuredEndpoint
   @PutMapping("/course")
   public ResponseEntity<Course> updateCourse(@RequestBody Course course) {
     logger.info("Updating course with id: {}", course.getId());
@@ -258,6 +261,7 @@ public class CourseController {
       @ApiResponse(responseCode = "204"),
       @ApiResponse(responseCode = "404", description = "Course not found")
   })
+  @SecuredEndpoint
   @Transactional
   @DeleteMapping("/course/{id}")
   public ResponseEntity<String> deleteCourse(@PathVariable int id) {
