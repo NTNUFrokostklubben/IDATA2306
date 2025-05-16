@@ -10,7 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import no.ntnu.learniverseconnect.model.entities.CourseProvider;
 import no.ntnu.learniverseconnect.model.repos.CourseProviderRepo;
-import no.ntnu.learniverseconnect.security.SecuredEndpoint;
+import no.ntnu.learniverseconnect.security.swagger.SecuredEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

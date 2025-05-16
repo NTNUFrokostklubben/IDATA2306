@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import no.ntnu.learniverseconnect.security.SecuredEndpoint;
+import no.ntnu.learniverseconnect.security.swagger.SecuredEndpoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

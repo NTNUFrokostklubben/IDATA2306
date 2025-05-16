@@ -14,7 +14,7 @@ import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.FavoritesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
-import no.ntnu.learniverseconnect.security.SecuredEndpoint;
+import no.ntnu.learniverseconnect.security.swagger.SecuredEndpoint;
 import no.ntnu.learniverseconnect.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
