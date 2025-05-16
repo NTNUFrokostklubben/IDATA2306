@@ -26,6 +26,7 @@ import no.ntnu.learniverseconnect.model.repos.TransactionRepo;
 import no.ntnu.learniverseconnect.model.repos.UserCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import no.ntnu.learniverseconnect.security.AccessUserDetails;
+import no.ntnu.learniverseconnect.security.SecuredEndpoint;
 import no.ntnu.learniverseconnect.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -89,6 +90,7 @@ public class TransactionController {
           content = @Content(schema = @Schema(implementation = Transaction.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No transactions found")
   })
+  @SecuredEndpoint
   @GetMapping("/transactions")
   public ResponseEntity<List<Transaction>> getTransactions() {
     List<Transaction> transactions = repo.findAll();
@@ -114,6 +116,7 @@ public class TransactionController {
         @ApiResponse(responseCode = "200", description = "Transactions deleted"),
         @ApiResponse(responseCode = "404", description = "No transactions found for user")
     })
+    @SecuredEndpoint
   @Transactional
   @DeleteMapping("/transaction/user/{uid}")
   public ResponseEntity<Void> deleteTransactionOnUser(@PathVariable long uid){
@@ -137,6 +140,7 @@ public class TransactionController {
           content = @Content(schema = @Schema(implementation = Transaction.class))),
       @ApiResponse(responseCode = "404", description = "Transaction not found")
   })
+  @SecuredEndpoint
   @GetMapping("/transaction/{id}")
   public ResponseEntity<Transaction> getTransactionById(@PathVariable long id) {
     Transaction transaction = repo.findById(id);
@@ -163,6 +167,7 @@ public class TransactionController {
           content = @Content(schema = @Schema(implementation = Transaction.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No transactions found")
   })
+  @SecuredEndpoint
   @GetMapping("/transaction/user/{userId}")
   public ResponseEntity<List<Transaction>> getTransactionsByUserId(@PathVariable long userId) {
     List<Transaction> transactions = repo.findAllByUser_Id(userId);
@@ -189,6 +194,7 @@ public class TransactionController {
           content = @Content(schema = @Schema(implementation = Transaction.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No transactions found")
   })
+  @SecuredEndpoint
   @GetMapping("/transaction/course/{courseId}")
   public ResponseEntity<List<Transaction>> getTransactionsByCourseId(@PathVariable long courseId) {
     Course course = courseRepo.getCoursesById(courseId);
@@ -217,6 +223,7 @@ public class TransactionController {
           content = @Content(schema = @Schema(implementation = Transaction.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No transactions found")
   })
+  @SecuredEndpoint
   @GetMapping("/transaction/user/{userId}/course/{courseId}")
   public ResponseEntity<List<Transaction>> getTransactionsByUserIdAndCourseId(
       @PathVariable long userId, @PathVariable long courseId) {
@@ -250,6 +257,7 @@ public class TransactionController {
       @ApiResponse(responseCode = "201", description = "Transaction created"),
       @ApiResponse(responseCode = "404", description = " Course not found")
   })
+  @SecuredEndpoint
   @PostMapping("/transaction/offerId/{oId}")
   public ResponseEntity<Transaction> addTransaction(@PathVariable long oId) {
     Transaction transaction = new Transaction();
@@ -298,6 +306,7 @@ public class TransactionController {
           content = @Content(schema = @Schema(implementation = CourseProviderStatsDto.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No providers found")
   })
+  @SecuredEndpoint
   @GetMapping("/transaction/providersStats")
   public ResponseEntity<List<CourseProviderStatsDto>> getProviderStats() {
     List<CourseProviderStatsDto> statsList = new ArrayList<>();
@@ -333,6 +342,7 @@ public class TransactionController {
           content = @Content(schema = @Schema(implementation = Float.class))),
       @ApiResponse(responseCode = "204", description = "No transactions found")
   })
+  @SecuredEndpoint
   @GetMapping("/transaction/totalRevenue")
   public ResponseEntity<Float> getTotalRevenue() {
     List<Transaction> transactions = repo.findAll();
@@ -360,6 +370,7 @@ public class TransactionController {
           content = @Content(schema = @Schema(implementation = Float.class))),
       @ApiResponse(responseCode = "404", description = "No transactions or courses found")
   })
+  @SecuredEndpoint
   @GetMapping("/transaction/averageRevenuePerCourse")
   public ResponseEntity<Float> getAvgRevenuePerCourse() {
     List<Course> courses = courseRepo.findAll();
@@ -395,6 +406,7 @@ public class TransactionController {
           content = @Content(schema = @Schema(implementation = Float.class))),
       @ApiResponse(responseCode = "404", description = "No transactions found")
   })
+  @SecuredEndpoint
   @GetMapping("/transaction/revenueLast30Days")
   public ResponseEntity<Float> getRevenueLast30Days() {
     List<Transaction> transactions = repo.findAll();

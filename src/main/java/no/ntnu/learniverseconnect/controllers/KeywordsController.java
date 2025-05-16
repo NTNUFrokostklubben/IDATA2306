@@ -9,6 +9,7 @@ import no.ntnu.learniverseconnect.model.entities.Keywords;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.KeywordsRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
+import no.ntnu.learniverseconnect.security.SecuredEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +104,7 @@ public class KeywordsController {
           description = "No keywords provided"
       )
   })
+  @SecuredEndpoint
   @PostMapping("/keyword/{cid}")
   public ResponseEntity<List<KeywordsDTO>> addKeyword(@PathVariable Long cid,
                                              @RequestBody String[] keywords) {
@@ -144,6 +146,7 @@ public class KeywordsController {
       @ApiResponse(responseCode = "200", description = "keywords deleted"),
       @ApiResponse(responseCode = "404", description = "No keywords found for user")
   })
+  @SecuredEndpoint
   @Transactional
   @DeleteMapping("/keywords/course/{cid}")
   public ResponseEntity<Void> deleteTransactionOnUser(@PathVariable long cid){

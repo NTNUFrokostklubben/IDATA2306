@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 import no.ntnu.learniverseconnect.model.entities.Role;
 import no.ntnu.learniverseconnect.model.repos.RoleRepo;
+import no.ntnu.learniverseconnect.security.SecuredEndpoint;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,6 +50,7 @@ public class RoleController {
           description = "No roles found"
       )
   })
+  @SecuredEndpoint
   @GetMapping("/roles")
   public ResponseEntity<List<Role>> getRoles() {
     List<Role> roles = roleRepo.findAll();
