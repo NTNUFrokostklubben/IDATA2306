@@ -1,4 +1,4 @@
-package no.ntnu.learniverseconnect.security;
+package no.ntnu.learniverseconnect.security.swagger;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.lang.annotation.ElementType;

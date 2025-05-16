@@ -9,7 +9,7 @@ import no.ntnu.learniverseconnect.model.entities.Keywords;
 import no.ntnu.learniverseconnect.model.repos.CourseRepo;
 import no.ntnu.learniverseconnect.model.repos.KeywordsRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
-import no.ntnu.learniverseconnect.security.SecuredEndpoint;
+import no.ntnu.learniverseconnect.security.swagger.SecuredEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
