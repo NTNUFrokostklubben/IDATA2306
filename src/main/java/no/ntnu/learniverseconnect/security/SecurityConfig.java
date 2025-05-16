@@ -63,6 +63,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/userCourses/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.PUT, "/userCourses/**").hasAnyAuthority(user, admin)
             .requestMatchers(HttpMethod.PUT, "/user/image/**").hasAnyAuthority(user, admin)
+            .requestMatchers(HttpMethod.DELETE, "/userCourses/removeRating/**").hasAnyAuthority(user, admin)
 
 
             .requestMatchers(HttpMethod.GET, "/**").hasAuthority( admin)

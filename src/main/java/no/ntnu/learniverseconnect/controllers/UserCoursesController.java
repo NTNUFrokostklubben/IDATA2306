@@ -367,6 +367,38 @@ public class UserCoursesController {
 
   }
 
+    /**
+     * Removes a rating from a user course.
+     *
+     * @param cid the course id to remove the review from
+     * @return a response entity with the status of the operation
+     */
+    @Operation(summary = "Remove a review",
+        description = "Removes a review from a user-course relationship")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Review removed"),
+        @ApiResponse(responseCode = "404", description = "User-course relationship not found")
+    })
+    @Transactional
+    @DeleteMapping("/userCourses/removeRating/{cid}")
+  public ResponseEntity<Review> removeRating(@PathVariable long cid) {
+    long uid = SecurityUtils.getAuthenticatedUserId();
+    UserCourse userCourse = userCoursesRepo.getUserCoursesByUser_IdAndCourse_Id(uid, cid);
+    if (userCourse == null) {
+      logger.error("User course not found");
+      return ResponseEntity.status(404).build();
+    }
+    if (userCourse.getReview() != null) {
+      reviewRepo.delete(userCourse.getReview());
+      userCourse.setReview(null);
+      userCoursesRepo.save(userCourse);
+      logger.info("Removed review from user course with id {}", userCourse.getId());
+      return ResponseEntity.status(200).build();
+    } else {
+      logger.error("No review found for user course with id {}", userCourse.getId());
+      return ResponseEntity.status(404).build();
+    }
+  }
 
   @Operation(summary = "Check user enrollment",
       description = "Checks if a user is enrolled in a course")
