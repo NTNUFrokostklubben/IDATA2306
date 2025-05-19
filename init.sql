@@ -261,15 +261,13 @@ insert into user_course (user_id, course_id, timestamp,  review_id) values
 (1, 2,'2025-05-01' , 4),
 (1, 3,'2025-05-01' , 5),
 (2, 3,'2025-05-01' , 7),
-(2, 1,'2025-05-01' , 6),
-(3, 3,'2025-05-01' , 3);
+(2, 1,'2025-05-01' , 6);
 
 -- 5. Insert into favorite
 -- Assuming users (1,2,3) and courses (1,2,3)
 INSERT INTO favorite (course_id, user_id) VALUES
 (1, 1),
-(2, 2),
-(3, 3);
+(2, 2);
 
 -- 6. Insert into keywords
 INSERT INTO keywords (keyword, course_id) VALUES
