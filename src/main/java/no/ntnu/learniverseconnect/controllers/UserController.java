@@ -227,7 +227,7 @@ public class UserController {
   @Operation(summary = "Get all users", description = "Retrieves a list of all registered users")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Users found",
-          content = @Content(schema = @Schema(implementation = User.class, type = "array"))),
+          content = @Content(schema = @Schema(implementation = RichUserDto.class, type = "array"))),
       @ApiResponse(responseCode = "404", description = "No users found")
   })
   @SecuredEndpoint
