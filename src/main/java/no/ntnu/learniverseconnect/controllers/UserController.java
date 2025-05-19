@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import no.ntnu.learniverseconnect.model.dto.ReduxUserDto;
+import no.ntnu.learniverseconnect.model.dto.LeanUserDto;
 import no.ntnu.learniverseconnect.model.dto.RoleDto;
 import no.ntnu.learniverseconnect.model.dto.RichUserDto;
 import no.ntnu.learniverseconnect.model.entities.Role;
@@ -112,18 +112,18 @@ public class UserController {
       description = "Retrieves a limited user DTO (for Redux state) by email")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User found",
-          content = @Content(schema = @Schema(implementation = ReduxUserDto.class))),
+          content = @Content(schema = @Schema(implementation = LeanUserDto.class))),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
   @SecuredEndpoint
   @GetMapping("/userDto/{email}")
-  public ResponseEntity<ReduxUserDto> getReduxUserDtoById(@PathVariable String email) {
+  public ResponseEntity<LeanUserDto> getReduxUserDtoById(@PathVariable String email) {
     User user = repo.getUsersByEmail(email);
     if (user == null) {
       logger.warn("User with email {} not found", email);
       return ResponseEntity.status(404).body(null);
     } else {
-      ReduxUserDto userDto = new ReduxUserDto(user.getEmail(),
+      LeanUserDto userDto = new LeanUserDto(user.getEmail(),
           user.getId(), user.getProfilePicture(), user.getName());
       logger.info("Fetching user with email: {}", email);
       return ResponseEntity.status(200).body(userDto);
@@ -308,7 +308,7 @@ public class UserController {
       description = "Updates the profile picture URL of a user")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Profile picture updated",
-          content = @Content(schema = @Schema(implementation = ReduxUserDto.class))),
+          content = @Content(schema = @Schema(implementation = LeanUserDto.class))),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
   @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -318,7 +318,7 @@ public class UserController {
   )
   @SecuredEndpoint
   @PutMapping("/user/image")
-  public ResponseEntity<ReduxUserDto> updateUserImage(
+  public ResponseEntity<LeanUserDto> updateUserImage(
       @RequestBody String imageLink) {
     long uid = SecurityUtils.getAuthenticatedUserId();
     Optional<User> userOptional = repo.findById((int) uid);
@@ -326,7 +326,7 @@ public class UserController {
       User user = userOptional.get();
       user.setProfilePicture(imageLink.replace("\"", ""));
       repo.save(user);
-      ReduxUserDto userDto = new ReduxUserDto(user.getEmail(), user.getId(),
+      LeanUserDto userDto = new LeanUserDto(user.getEmail(), user.getId(),
           user.getProfilePicture(), user.getName());
       return ResponseEntity.status(HttpStatus.OK).body(userDto);
     } else {
