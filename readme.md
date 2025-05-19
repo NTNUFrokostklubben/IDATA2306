@@ -45,13 +45,14 @@ Open the root folder in a terminal and run the application using docker-compose:
 ```bash
   docker-compose up --build
 ```
-It may be necessary to run this twice to ensure that the database is created.  
+ NB! It may be necessary to run this twice to ensure that the database is created.  
+
 once the docker container is running properly, start a new terminal and
 copy the `init.sql` file to the relevant container:
 ```bash
  docker cp init.sql learniverse-mysql:/init.sql
 ```
-once the file has been copied, enter the container: NB container must already be running.
+once the file has been copied, enter the container: NB! container must already be running.
 ```bash
   docker exec -it  learniverse-mysql bash
 ```

@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import no.ntnu.learniverseconnect.model.dto.ReduxUserDto;
+import no.ntnu.learniverseconnect.model.dto.RoleDto;
+import no.ntnu.learniverseconnect.model.dto.RichUserDto;
 import no.ntnu.learniverseconnect.model.entities.Role;
 import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
@@ -57,19 +59,19 @@ public class UserController {
       description = "Retrieves a user's full details by their ID")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User found",
-          content = @Content(schema = @Schema(implementation = User.class))),
+          content = @Content(schema = @Schema(implementation = RichUserDto.class))),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
   @SecuredEndpoint
   @GetMapping("/user/get/{uid}")
-  public ResponseEntity<User> getUserById(@PathVariable long uid) {
+  public ResponseEntity<RichUserDto> getUserById(@PathVariable long uid) {
     User user = repo.getUsersById(uid);
     if (user == null) {
       logger.warn("User with id {} not found", uid);
       return ResponseEntity.status(404).body(null);
     } else {
       logger.info("Fetching user with id: {}", uid);
-      return ResponseEntity.status(200).body(user);
+      return ResponseEntity.status(200).body(toUserDto(user));
     }
   }
 
@@ -82,12 +84,12 @@ public class UserController {
       description = "Retrieves a user's full details by their ID")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User found",
-          content = @Content(schema = @Schema(implementation = User.class))),
+          content = @Content(schema = @Schema(implementation = RichUserDto.class))),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
   @SecuredEndpoint
   @GetMapping("/user/get")
-  public ResponseEntity<User> getUserById() {
+  public ResponseEntity<RichUserDto> getUserById() {
     long uid = SecurityUtils.getAuthenticatedUserId();
     User user = repo.getUsersById(uid);
     if (user == null) {
@@ -95,7 +97,7 @@ public class UserController {
       return ResponseEntity.status(404).body(null);
     } else {
       logger.info("Fetching user with id: {}", uid);
-      return ResponseEntity.status(200).body(user);
+      return ResponseEntity.status(200).body(toUserDto(user));
     }
   }
 
@@ -174,12 +176,12 @@ public class UserController {
       description = "Retrieves a user's full details by their email")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User found",
-          content = @Content(schema = @Schema(implementation = User.class))),
+          content = @Content(schema = @Schema(implementation = RichUserDto.class))),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
   @SecuredEndpoint
   @GetMapping("/UserByEmail/{email}")
-  public ResponseEntity<User> getIdByEmail(@PathVariable String email) {
+  public ResponseEntity<RichUserDto> getIdByEmail(@PathVariable String email) {
     Optional<User> userOptional = repo.findUserByEmail(email);
     if (userOptional.isEmpty()) {
       logger.warn("User with email {} not found", email);
@@ -187,7 +189,7 @@ public class UserController {
     } else {
       User user = userOptional.get();
       logger.info("Fetching user with email: {}", email);
-      return ResponseEntity.status(200).body(user);
+      return ResponseEntity.status(200).body(toUserDto(user));
     }
   }
 
@@ -217,11 +219,11 @@ public class UserController {
   }
 
 
-    /**
-     * Get all users.
-     *
-     * @return a list of all users
-     */
+  /**
+   * Get all users.
+   *
+   * @return a list of all users
+   */
   @Operation(summary = "Get all users", description = "Retrieves a list of all registered users")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Users found",
@@ -230,11 +232,13 @@ public class UserController {
   })
   @SecuredEndpoint
   @GetMapping("/users")
-  public ResponseEntity<Iterable<User>> getAllUsers() {
+  public ResponseEntity<List<RichUserDto>> getAllUsers() {
     logger.info("Fetching all users");
-    return ResponseEntity.status(200).body(repo.findAll());
+    List<RichUserDto> userDtos = repo.findAll().stream()
+        .map(this::toUserDto)
+        .collect(Collectors.toList());
+    return ResponseEntity.status(200).body(userDtos);
   }
-
 
 
   /**
@@ -267,7 +271,6 @@ public class UserController {
     logger.info("Fetching total number of new users in the last 30 days");
     return ResponseEntity.status(200).body(userSum);
   }
-
 
 
   /**
@@ -314,23 +317,23 @@ public class UserController {
       content = @Content(schema = @Schema(implementation = String.class))
   )
   @SecuredEndpoint
-    @PutMapping("/user/image")
-    public ResponseEntity<ReduxUserDto> updateUserImage(
-        @RequestBody String imageLink) {
+  @PutMapping("/user/image")
+  public ResponseEntity<ReduxUserDto> updateUserImage(
+      @RequestBody String imageLink) {
     long uid = SecurityUtils.getAuthenticatedUserId();
-        Optional<User> userOptional = repo.findById((int) uid);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.setProfilePicture(imageLink.replace("\"" , ""));
-            repo.save(user);
-            ReduxUserDto userDto = new ReduxUserDto(user.getEmail(), user.getId(),
-                user.getProfilePicture(), user.getName());
-            return ResponseEntity.status(HttpStatus.OK).body(userDto);
-        } else {
-            logger.warn("User with id {} not found", uid);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+    Optional<User> userOptional = repo.findById((int) uid);
+    if (userOptional.isPresent()) {
+      User user = userOptional.get();
+      user.setProfilePicture(imageLink.replace("\"", ""));
+      repo.save(user);
+      ReduxUserDto userDto = new ReduxUserDto(user.getEmail(), user.getId(),
+          user.getProfilePicture(), user.getName());
+      return ResponseEntity.status(HttpStatus.OK).body(userDto);
+    } else {
+      logger.warn("User with id {} not found", uid);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
+  }
 
 
   /**
@@ -343,7 +346,7 @@ public class UserController {
       description = "Updates a user's profile picture, roles, and active status")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User updated",
-          content = @Content(schema = @Schema(implementation = User.class))),
+          content = @Content(schema = @Schema(implementation = RichUserDto.class))),
       @ApiResponse(responseCode = "400", description = "Invalid input"),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
@@ -355,7 +358,8 @@ public class UserController {
 
   @SecuredEndpoint
   @PutMapping("/user/put/{uid}")
-  public ResponseEntity<User> updateUser(@PathVariable long uid ,@RequestBody UserUpdateDto userDto) {
+  public ResponseEntity<RichUserDto> updateUser(@PathVariable long uid,
+                                         @RequestBody UserUpdateDto userDto) {
     if (userDto == null) {
       logger.warn("User object is null");
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -382,7 +386,7 @@ public class UserController {
 
       repo.save(existingUser);
       logger.info("User with id {} updated", uid);
-      return ResponseEntity.status(HttpStatus.OK).body(existingUser);
+      return ResponseEntity.status(HttpStatus.OK).body(toUserDto(existingUser));
     } else {
       logger.warn("User with id {} not found", uid);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -409,6 +413,7 @@ public class UserController {
     public String getProfilePicture() {
       return profilePicture;
     }
+
     public void setProfilePicture(String profilePicture) {
       this.profilePicture = profilePicture;
     }
@@ -416,33 +421,32 @@ public class UserController {
     public boolean getActive() {
       return active;
     }
+
     public void setActive(boolean active) {
       this.active = active;
     }
   }
 
   /**
-   * Nested DTO class for automatic Role mapping.
+   * Converts a User entity to a richUserDto.
+   *
    */
-  private static class RoleDto {
-    private Long id;
-    private String name;
 
-    // Getters and setters
-    public Long getId() {
-      return id;
-    }
+  public RichUserDto toUserDto(User user) {
+    Set<RoleDto> roleDtos = new java.util.HashSet<>();
+    Set<Role> roles = user.getRole();
 
-    public void setId(Long id) {
-      this.id = id;
+    for(Role role : roles) {
+      roleDtos.add(new RoleDto(role.getId(), role.getName()));
     }
-
-    public String getName() {
-      return name;
-    }
-
-    public void setName(String name) {
-      this.name = name;
-    }
+    return new RichUserDto(
+        user.getId(),
+        user.getName(),
+        user.getEmail(),
+        user.isActive(),
+        user.getProfilePicture(),
+        user.getUserCreated(),
+        roleDtos
+    );
   }
 }
