@@ -49,11 +49,11 @@ It may be necessary to run this twice to ensure that the database is created.
 once the docker container is running properly, start a new terminal and
 copy the `init.sql` file to the relevant container:
 ```bash
- docker cp init.sql $(docker ps -q --filter "name=learniverse-mysql"):/init.sql
+ docker cp init.sql learniverse-mysql:/init.sql
 ```
 once the file has been copied, enter the container: NB container must already be running.
 ```bash
-  docker exec -it $(docker ps -q --filter "name=learniverse-mysql") bash
+  docker exec -it  learniverse-mysql bash
 ```
 Once inside the container, log in to MySQL by running:
 ```bash
