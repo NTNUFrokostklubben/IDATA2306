@@ -1,11 +1,9 @@
+Start TRANSACTION ;
 
-drop table if exists course, transaction , user,course_provider, favorite, keywords, offerable_courses, review ,user_course, roles, user_role;
 -- 0 insert into roles
 INSERT INTO roles ( name) VALUES ( 'ROLE_USER');
 INSERT into roles ( name) VALUES ( 'ROLE_ADMIN');
 -- CREATE NEW USER HERE. SCRIPT EXPECTS YOU TO BE USER #1
-Start TRANSACTION ;
-
 
 -- 1. Insert into user
 INSERT INTO user (active, email, name, password_hash, profile_picture, user_created) VALUES
@@ -329,8 +327,4 @@ INSERT INTO keywords (keyword, course_id) VALUES
  ('neural networks', 12),
  ('Databricks', 12);
 
-commit;
-
-start transaction ;
 update offerable_courses set discount = rand() where 1=1;
-commit ;
