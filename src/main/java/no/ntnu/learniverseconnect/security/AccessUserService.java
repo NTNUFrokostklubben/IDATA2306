@@ -2,7 +2,6 @@ package no.ntnu.learniverseconnect.security;
 
 import java.io.IOException;
 import java.util.Optional;
-import no.ntnu.learniverseconnect.model.dto.UserDto;
 import no.ntnu.learniverseconnect.model.entities.Role;
 import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.RoleRepo;

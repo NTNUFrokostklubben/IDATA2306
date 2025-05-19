@@ -4,7 +4,7 @@ package no.ntnu.learniverseconnect.model.dto;
  * ReduxUserDto is a Data Transfer Object (DTO) that represents a user.
  * Contains fields for the user's id and email.
  */
-public class ReduxUserDto {
+public class LeanUserDto {
 
   private final String email;
   private final long id;
@@ -17,7 +17,7 @@ public class ReduxUserDto {
    * @param email name of the user
    * @param id    id of the user
    */
-  public ReduxUserDto(String email, long id, String profilePicture, String name) {
+  public LeanUserDto(String email, long id, String profilePicture, String name) {
     this.email = email;
     this.id = id;
     this.profilePicture = profilePicture;

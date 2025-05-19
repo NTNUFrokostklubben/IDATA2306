@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.io.IOException;
 import no.ntnu.learniverseconnect.model.dto.AuthenticationRequest;
 import no.ntnu.learniverseconnect.model.dto.AuthenticationResponse;
-import no.ntnu.learniverseconnect.model.dto.UserDto;
+import no.ntnu.learniverseconnect.model.dto.AuthenticationUserDto;
 import no.ntnu.learniverseconnect.security.AccessUserService;
 import no.ntnu.learniverseconnect.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,11 +102,11 @@ public class AuthenticationController {
       required = true,
       content = @io.swagger.v3.oas.annotations.media.Content(
           schema = @io.swagger.v3.oas.annotations.media.Schema(
-              implementation = UserDto.class
+              implementation = AuthenticationUserDto.class
           )
       ))
   @PostMapping("/signup")
-  public ResponseEntity<?> signupProcess(@RequestBody UserDto userDto) {
+  public ResponseEntity<?> signupProcess(@RequestBody AuthenticationUserDto userDto) {
     ResponseEntity<?> response;
     try {
       userService.tryCreateNewUser(userDto.getName(), userDto.getPasswordHash(),
