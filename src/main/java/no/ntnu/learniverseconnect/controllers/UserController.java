@@ -431,7 +431,6 @@ public class UserController {
    * Converts a User entity to a richUserDto.
    *
    */
-
   public RichUserDto toUserDto(User user) {
     Set<RoleDto> roleDtos = new java.util.HashSet<>();
     Set<Role> roles = user.getRole();
