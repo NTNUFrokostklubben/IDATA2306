@@ -33,8 +33,7 @@ A certificate is required for the application to run with HTTPS. The certificate
 and is only intended for development purposes. It is not secure and should not be used in production.
 
 Along with this, a SQL file is included in the repository. This file is used to create the database and tables
-necessary
-for normal operation of the application. The SQL file is located in root and is named `init.sql`. 
+necessary for normal operation of the application. The SQL file is located in root and is named `init.sql`. 
 
 ## Running the Application
 
@@ -52,9 +51,12 @@ copy the `init.sql` file to the relevant container:
 ```bash
  docker cp init.sql $(docker ps -q --filter "name=learniverse-mysql"):/init.sql
 ```
-once the file has been copied, enter the container and login to mysql:
+once the file has been copied, enter the container: NB container must already be running.
 ```bash
   docker exec -it $(docker ps -q --filter "name=learniverse-mysql") bash
+```
+Once inside the container, log in to MySQL by running:
+```bash
   mysql -u root -p
 ```
 the password here is the MYSQL_ROOT_PASSWORD from the .env file.  
