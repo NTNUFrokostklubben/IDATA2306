@@ -314,9 +314,11 @@ public class TransactionController {
       for (Transaction transaction : transactions) {
         revenueSum += transaction.getPricePaid();
       }
-      CourseProviderStatsDto providerStats =
-          new CourseProviderStatsDto(provider.getId(), provider.getName(), revenueSum);
-      statsList.add(providerStats);
+      if (revenueSum > 0) {
+        CourseProviderStatsDto providerStats =
+            new CourseProviderStatsDto(provider.getId(), provider.getName(), revenueSum);
+        statsList.add(providerStats);
+      }
     }
     if (statsList.isEmpty()) {
       logger.warning("No providers found");
