@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,6 +19,7 @@ import no.ntnu.learniverseconnect.model.dto.RichUserDto;
 import no.ntnu.learniverseconnect.model.entities.Role;
 import no.ntnu.learniverseconnect.model.entities.User;
 import no.ntnu.learniverseconnect.model.repos.FavoritesRepo;
+import no.ntnu.learniverseconnect.model.repos.TransactionRepo;
 import no.ntnu.learniverseconnect.model.repos.UserCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import no.ntnu.learniverseconnect.security.swagger.SecuredEndpoint;
@@ -47,14 +49,16 @@ public class UserController {
   UserRepo repo;
   FavoritesRepo favoritesRepo;
   UserCoursesRepo userCoursesRepo;
+  TransactionRepo transactionRepo;
 
   @Autowired
   public UserController(UserRepo repo,
                         FavoritesRepo favoritesRepo,
-                        UserCoursesRepo userCoursesRepo) {
+                        UserCoursesRepo userCoursesRepo, TransactionRepo transactionRepo) {
     this.repo = repo;
     this.favoritesRepo = favoritesRepo;
     this.userCoursesRepo = userCoursesRepo;
+    this.transactionRepo = transactionRepo;
   }
 
 
@@ -292,14 +296,22 @@ public class UserController {
       @ApiResponse(responseCode = "200", description = "User deleted"),
       @ApiResponse(responseCode = "404", description = "User not found")
   })
+  @Transactional
   @SecuredEndpoint
   @DeleteMapping("/user/{id}")
-  public ResponseEntity<String> deleteUser(@PathVariable int id) {
-    if (repo.existsById(id)) {
+  public ResponseEntity<String> deleteUser(@PathVariable long id) {
+    if (repo.existsUserById(id)) {
       logger.info("Deleting user with id: {}", id);
-      favoritesRepo.deleteById(id);
-      userCoursesRepo.deleteById(id);
-      repo.deleteById(id);
+      if (transactionRepo.existsTransactionById(id)) {
+        transactionRepo.getAllByUser_Id(id).forEach(transaction -> {
+          transaction.setUser(null);
+          transactionRepo.save(transaction);
+        });
+      favoritesRepo.deleteAllByUser_Id(id);
+      userCoursesRepo.deleteAllByUser_Id(id);
+      repo.deleteUserById(id);
+
+      }
       return ResponseEntity.status(200).body("User with id " + id + " deleted");
     } else {
       logger.warn("User with id {} not found", id);

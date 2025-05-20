@@ -21,4 +21,6 @@ public interface FavoritesRepo extends JpaRepository<Favorite, Integer> {
   boolean existsByCourse_IdAndUser_Id(long courseId, Long userId);
 
   void deleteFavoriteByCourse_IdAndUser_Id(long courseId, Long userId);
+
+  void deleteAllByUser_Id(Long userId);
 }
