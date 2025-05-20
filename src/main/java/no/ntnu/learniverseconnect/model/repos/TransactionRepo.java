@@ -29,4 +29,8 @@ public interface TransactionRepo extends JpaRepository<Transaction, Integer> {
   boolean existsByUser_Id(Long userId);
 
   void deleteAllByUser_Id(Long userId);
+
+  List<Transaction> getAllByUser_Id(Long userId);
+
+  boolean existsTransactionById(long id);
 }

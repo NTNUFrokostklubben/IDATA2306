@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Temporal;
@@ -36,6 +37,7 @@ public class Transaction {
 
   @Schema(description = "Purchased course offering details")
   @ManyToOne
+  @JoinColumn(nullable = false)
   private OfferableCourses offerableCourses;
 
   @Schema(description = "Timestamp of transaction", example = "2023-01-01T12:00:00Z")
