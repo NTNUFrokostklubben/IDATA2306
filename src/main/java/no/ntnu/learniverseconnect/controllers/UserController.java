@@ -297,9 +297,9 @@ public class UserController {
   public ResponseEntity<String> deleteUser(@PathVariable int id) {
     if (repo.existsById(id)) {
       logger.info("Deleting user with id: {}", id);
-      repo.deleteById(id);
       favoritesRepo.deleteById(id);
       userCoursesRepo.deleteById(id);
+      repo.deleteById(id);
       return ResponseEntity.status(200).body("User with id " + id + " deleted");
     } else {
       logger.warn("User with id {} not found", id);
