@@ -314,6 +314,9 @@ public class TransactionController {
       for (Transaction transaction : transactions) {
         revenueSum += transaction.getPricePaid();
       }
+      if (revenueSum == 0) {
+        continue;
+      }
       CourseProviderStatsDto providerStats =
           new CourseProviderStatsDto(provider.getId(), provider.getName(), revenueSum);
       statsList.add(providerStats);
