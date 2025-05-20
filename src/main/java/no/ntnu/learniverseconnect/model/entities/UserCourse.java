@@ -37,7 +37,7 @@ public class UserCourse {
   @JoinColumn(nullable = false)
   private Course course;
   @Schema(description = "User associated with the enrollment")
-  @ManyToOne(cascade = jakarta.persistence.CascadeType.REMOVE)
+  @ManyToOne()
   @JoinColumn(nullable = false)
   private User user;
 

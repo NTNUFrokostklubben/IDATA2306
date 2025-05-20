@@ -20,7 +20,7 @@ public class Keywords {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
     @Schema(description = "Course associated with the keyword")
-  @ManyToOne(cascade= CascadeType.REMOVE)
+  @ManyToOne()
   private Course course;
     @Schema(description = "Keyword associated with the course", example = "Java")
   private String keyword;
