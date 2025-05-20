@@ -1,6 +1,7 @@
 package no.ntnu.learniverseconnect.model.entities;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,11 +20,11 @@ public class Favorite {
   private Long id;
 
   @Schema(description = "Favorited course")
-  @ManyToOne
+  @ManyToOne(cascade=CascadeType.REMOVE)
   private Course course;
 
   @Schema(description = "User who favorited the course")
-  @ManyToOne
+  @ManyToOne(cascade= CascadeType.REMOVE)
   private User user;
   public Favorite(User user, Course course) {
     this.user = user;
