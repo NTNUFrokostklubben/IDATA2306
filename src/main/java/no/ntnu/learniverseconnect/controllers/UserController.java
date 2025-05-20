@@ -302,16 +302,16 @@ public class UserController {
   public ResponseEntity<String> deleteUser(@PathVariable long id) {
     if (repo.existsUserById(id)) {
       logger.info("Deleting user with id: {}", id);
-      if (transactionRepo.existsTransactionById(id)) {
+      if (transactionRepo.existsTransactionByUser_Id(id)) {
         transactionRepo.getAllByUser_Id(id).forEach(transaction -> {
           transaction.setUser(null);
           transactionRepo.save(transaction);
         });
+      }
       favoritesRepo.deleteAllByUser_Id(id);
       userCoursesRepo.deleteAllByUser_Id(id);
       repo.deleteUserById(id);
 
-      }
       return ResponseEntity.status(200).body("User with id " + id + " deleted");
     } else {
       logger.warn("User with id {} not found", id);

@@ -33,4 +33,6 @@ public interface TransactionRepo extends JpaRepository<Transaction, Integer> {
   List<Transaction> getAllByUser_Id(Long userId);
 
   boolean existsTransactionById(long id);
+
+  boolean existsTransactionByUser_Id(long id);
 }
