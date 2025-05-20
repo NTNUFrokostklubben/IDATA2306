@@ -33,11 +33,11 @@ public class UserCourse {
   @Temporal(TemporalType.TIMESTAMP)
   private Timestamp timestamp;
   @Schema(description = "Course associated with the enrollment")
-  @ManyToOne
+  @ManyToOne()
   @JoinColumn(nullable = false)
   private Course course;
   @Schema(description = "User associated with the enrollment")
-  @ManyToOne
+  @ManyToOne(cascade = jakarta.persistence.CascadeType.REMOVE)
   @JoinColumn(nullable = false)
   private User user;
 

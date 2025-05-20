@@ -277,9 +277,7 @@ public class CourseController {
       logger.warn("Course with id {} not found", id);
       return ResponseEntity.status(404).body("Course with id " + id + " not found");
     }
-    offerableCoursesRepo.deleteAllByCourse_Id(course.getId());
     keywordsRepo.deleteAllByCourse_Id(id);
-    userCoursesRepo.deleteAllByCourse_Id(id);
     courseRepo.delete(course);
     return ResponseEntity.status(204).body("Course deleted successfully");
   }

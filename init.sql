@@ -1,13 +1,11 @@
 Start TRANSACTION ;
-
 -- 0 insert into roles
 INSERT INTO roles ( name) VALUES ( 'ROLE_USER');
 INSERT into roles ( name) VALUES ( 'ROLE_ADMIN');
--- CREATE NEW USER HERE. SCRIPT EXPECTS YOU TO BE USER #1
 
 -- 1. Insert into user
 INSERT INTO user (active, email, name, password_hash, profile_picture, user_created) VALUES
-  (1, 'dave@gmail.com', 'Dave', '$2a$10$LR5aS5YJrUMu8WV6r8eCEOkjwNGaX0C8GVdReSdRYihwMTMi.CQLW', 'https://picsum.photos/200', NOW()),
+  (1, 'dave@gmail.com', 'Dave', '$2a$10$LR5aS5YJrUMu8WV6r8eCEOkjwNGaX0C8GVdReSdRYihwMTMi.CQLW', 'https://picsum.photos/201', NOW()),
   (1, 'Chuck@gmail.com', 'Chuck', '$2a$10$bk.YyJIlzffXtir.zjuDkuduc1YDxcbRa1po4vb/V9rb8Q7Kqjwye', 'https://picsum.photos/200', NOW());
 
 -- 2. Insert into roles
@@ -325,4 +323,16 @@ INSERT INTO keywords (keyword, course_id) VALUES
  ('neural networks', 12),
  ('Databricks', 12);
 
-update offerable_courses set discount = rand() where 1=1;
+insert into transaction(user_id, offerable_courses_id, time_of_transaction, price_paid) values
+    (1, 1,'2025-05-01' , 29999.00),
+    (1, 2,'2025-05-01' , 8348.88),
+    (1, 3,'2025-05-01' , 32000.00),
+    (2, 4,'2025-05-01' , 2087.00),
+    (2, 5,'2025-05-01' , 4174.00),
+    (2, 6,'2025-05-01' , 1043.00);
+
+update offerable_courses set discount = round(rand(), 2) where 1=1;
+
+
+
+select  * from offerable_courses;

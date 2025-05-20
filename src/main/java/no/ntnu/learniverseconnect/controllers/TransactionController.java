@@ -270,7 +270,7 @@ public class TransactionController {
     transaction.setTimeOfTransaction(new Timestamp(System.currentTimeMillis()));
     transaction.setPricePaid(offerableCourse.getPrice() * (1 - offerableCourse.getDiscount()));
      repo.save(transaction);
-    // TODO add guard?
+
 
     // Add the user course to the database after transaction is created;
     UserCourse userCourse;
