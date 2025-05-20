@@ -17,6 +17,8 @@ import no.ntnu.learniverseconnect.model.dto.RoleDto;
 import no.ntnu.learniverseconnect.model.dto.RichUserDto;
 import no.ntnu.learniverseconnect.model.entities.Role;
 import no.ntnu.learniverseconnect.model.entities.User;
+import no.ntnu.learniverseconnect.model.repos.FavoritesRepo;
+import no.ntnu.learniverseconnect.model.repos.UserCoursesRepo;
 import no.ntnu.learniverseconnect.model.repos.UserRepo;
 import no.ntnu.learniverseconnect.security.swagger.SecuredEndpoint;
 import no.ntnu.learniverseconnect.security.SecurityUtils;
@@ -43,10 +45,16 @@ public class UserController {
 
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
   UserRepo repo;
+  FavoritesRepo favoritesRepo;
+  UserCoursesRepo userCoursesRepo;
 
   @Autowired
-  public UserController(UserRepo repo) {
+  public UserController(UserRepo repo,
+                        FavoritesRepo favoritesRepo,
+                        UserCoursesRepo userCoursesRepo) {
     this.repo = repo;
+    this.favoritesRepo = favoritesRepo;
+    this.userCoursesRepo = userCoursesRepo;
   }
 
 
@@ -290,6 +298,8 @@ public class UserController {
     if (repo.existsById(id)) {
       logger.info("Deleting user with id: {}", id);
       repo.deleteById(id);
+      favoritesRepo.deleteById(id);
+      userCoursesRepo.deleteById(id);
       return ResponseEntity.status(200).body("User with id " + id + " deleted");
     } else {
       logger.warn("User with id {} not found", id);

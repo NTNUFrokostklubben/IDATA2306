@@ -20,11 +20,11 @@ public class Favorite {
   private Long id;
 
   @Schema(description = "Favorited course")
-  @ManyToOne(cascade=CascadeType.REMOVE)
+  @ManyToOne()
   private Course course;
 
   @Schema(description = "User who favorited the course")
-  @ManyToOne(cascade= CascadeType.REMOVE)
+  @ManyToOne()
   private User user;
   public Favorite(User user, Course course) {
     this.user = user;
