@@ -51,7 +51,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n        \"name\": \"postman\",\r\n        \"passwordHash\":\"postman123\",\r\n        \"email\": \"postman@test.com\"\r\n}",
+							"raw": "{\r\n        \"name\": \"postmanVictim\",\r\n        \"passwordHash\":\"postman1234\",\r\n        \"email\": \"postmanVic@test.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -150,7 +150,8 @@
 									"    response[(response.length-1)].name ===\"postman\";\r",
 									"    pm.environment.set(\"user_id\", response.find(item => item.name ===\"postman\").id);\r",
 									"});\r",
-									""
+									"\r",
+									"pm.environment.set(\"victim_user\",response.find(item => item.name ===\"postmanVictim\").id);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -573,6 +574,57 @@
 								"user",
 								"put",
 								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete temp user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user/{{victim_user}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user",
+								"{{victim_user}}"
 							]
 						}
 					},
@@ -3551,57 +3603,6 @@
 								"remove",
 								"course",
 								"{{course_id}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "delete user",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{user_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BASE_URL}}/user/{{user_id}}",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"user",
-								"{{user_id}}"
 							]
 						}
 					},
