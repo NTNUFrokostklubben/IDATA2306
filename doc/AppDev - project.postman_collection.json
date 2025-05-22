@@ -1,0 +1,3701 @@
+{
+	"info": {
+		"_postman_id": "5c2aad85-d0b8-414a-9174-4dcd6f9fa804",
+		"name": "AppDev - project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3035043"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Sign up new user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"name\": \"postman\",\r\n        \"passwordHash\":\"postman123\",\r\n        \"email\": \"postman@test.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/signup",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authenticate postman user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"let response = pm.response.json();\r",
+									"pm.environment.set(\"user_token\", response.jwt);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "  {\r\n    \"email\": \"postman@test.com\",\r\n    \"password\": \"postman123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/authenticate",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let response = pm.response.json();\r",
+									"pm.environment.set(\"number_users\", response.length);\r",
+									"\r",
+									"pm.test(\"postman user was added previous request\", function () {\r",
+									"    response[(response.length-1)].name ===\"postman\";\r",
+									"    pm.environment.set(\"user_id\", response.find(item => item.name ===\"postman\").id);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/users",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get roles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let response = pm.response.json();\r",
+									"pm.environment.set(\"number_users\", response.length);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/roles",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"roles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get new users last 30 days",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let response = pm.response.json();\r",
+									"pm.environment.set(\"number_users\", response.length);\r",
+									"\r",
+									"pm.test(\"postman user was added in the last 30 days\", function () {\r",
+									"    response.length >= 1;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/users/newUsers",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"newUsers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get number of users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let response = pm.response.json();\r",
+									"pm.environment.set(\"number_users\", response.length);\r",
+									"\r",
+									"pm.test(\"number of users is consistent\", function () {\r",
+									"\r",
+									"    response = pm.environment.get(\"number_users\")\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/users/total",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"users",
+								"total"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Redux user dto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"user id matches environment variable\", function () {\r",
+									"\r",
+									" pm.response.json.id = pm.environment.get(\"user_id\")\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/userDto/{{user_email}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"userDto",
+								"{{user_email}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user profile picture",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"std image used for profile picture\", function () {\r",
+									" pm.response.json.profilePicture === \"http://localhost:8081/uploads/images/default_img.png\"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/userProfilePicture/{{user_email}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"userProfilePicture",
+								"{{user_email}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user id by email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"user id matches environment variable\", function () {\r",
+									"\r",
+									" pm.response.json.id = pm.environment.get(\"user_id\")\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/UserByEmail/{{user_email}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"UserByEmail",
+								"{{user_email}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "replace users image",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"picture was updated \", function () {\r",
+									"    pm.expect(pm.response.json().profilePicture).to.equal(pm.environment.get(\"picsum\"));\r",
+									"}); \r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"https://picsum.photos/200/300\"",
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user/image",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user",
+								"image"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update users details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"profilePicture\" : \"http://localhost:8081/uploads/images/default_img.png\",\r\n   \"role\": [\r\n            {\r\n                \"id\": 2,\r\n                \"name\": \"ROLE_ADMIN\"\r\n            },\r\n            {\r\n                \"id\": 1,\r\n                \"name\": \"ROLE_USER\"\r\n            }],\r\n   \"active\" : true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user/put/{{user_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user",
+								"put",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user/0",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user",
+								"0"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "courses",
+			"item": [
+				{
+					"name": "post course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"course_id\", pm.response.json().id);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n  {\r\n    \"title\": \"postman\",\r\n    \"diffLevel\": 1,\r\n    \"closestCourse\": \"2025-04-02\",\r\n    \"credits\": 2,\r\n    \"hoursWeek\": 5,\r\n    \"relatedCert\": \"postman for postmen\",\r\n    \"description\": \"How to go postal for beginners, time to go postal!\",\r\n    \"catergory\": \"Postality\",\r\n    \"imgLink\": \"https://picsum.photos/750/375\"\r\n  }\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/course",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"course"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"course_id\", pm.response.json().id);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\r\n    \"id\": {{course_id}},\r\n    \"title\": \"postman2\",\r\n    \"diffLevel\": 1,\r\n    \"closestCourse\": 1743552000000,\r\n    \"credits\": 2.0,\r\n    \"hoursWeek\": 5,\r\n    \"relatedCert\": \"postman for postmen\",\r\n    \"description\": \"How to go postal for beginners, time to go postal!\",\r\n    \"category\": null,\r\n    \"imgLink\": \"https://picsum.photos/750/375\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put course negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/course",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"course"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all courses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let response = pm.response.json();\r",
+									"pm.environment.set(\"number_courses\", response.length);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/courses",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"courses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get number of courses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"get all courses agrees with number of courses\", function () {\r",
+									"    pm.response === pm.environment.get(\"number_courses\")\r",
+									"}); \r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/courses/total",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"courses",
+								"total"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\" Gotten course is postman course\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.title).to.eql(\"postman2\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get course cards",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/courses/courseCard",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"courses",
+								"courseCard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get course negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}course/0",
+							"host": [
+								"{{BASE_URL}}course"
+							],
+							"path": [
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete course negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/course/0",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"course",
+								"0"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "provider",
+			"item": [
+				{
+					"name": "post provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"let response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response body contains correct data\", function () {\r",
+									"    response.name ===\"postman\"\r",
+									"    pm.environment.set(\"provider_id\", response.id)\r",
+									"}); \r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"postman\",\r\n    \"passwordHash\": \"$2a$10$gfPCEcyb4xf2euNae0sOaulY8ziLMc1arRVFUm/H38n/7.UdY7Lkq\",\r\n    \"logoLink\" : \"https://picsum.photos/750/375\",\r\n    \"altLogoLink\" : \"https://picsum.photos/750/375\"\r\n  }\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/provider",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"provider"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post provider negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/provider",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"provider"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get providers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/providers",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"providers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\" Gotten course is postman course\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\"postman\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/provider/{{provider_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"provider",
+								"{{provider_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get provider negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/provider/0",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"provider",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete provider negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/provider/0",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"provider",
+								"0"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user courses",
+			"item": [
+				{
+					"name": "add user course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/userCourses/add/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"userCourses",
+								"add",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all courses for user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									" var jsonData = pm.response.json();\r",
+									"pm.test(\" Gotten course is postman course\", function () {\r",
+									"    pm.expect(jsonData[0].user?.name).to.eql(\"postman\");\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"user_course_id\", jsonData[0].id)\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/userCourses/user",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"userCourses",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all user courses for course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\" Gotten course is postman course\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData[0].course?.title).to.eql(\"postman2\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/userCourses/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"userCourses",
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all user courses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\" Gotten course is postman course\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.some(item => item.course?.title === \"postman\"));\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/userCourses",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"userCourses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get last 10 user courses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\" Gotten course is postman course\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    jsonData.length === 10;\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/userCourses/lastUserCourses",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"userCourses",
+								"lastUserCourses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add rating to user course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"rating_id\", jsonData.id);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rating\":5,\r\n    \"reviewDate\": \"2023-01-01\",\r\n    \"comment\": \"Great course with comprehensive materials\",\r\n    \"title\": \"Highly Recommended\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/userCourses/addRating/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"userCourses",
+								"addRating",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get reviews",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"New rating added to user course\", function () {\r",
+									"    var jsonData = pm.response.json()\r",
+									"    pm.expect(jsonData.some(item => item.id  === parseInt(pm.environment.get(\"rating_id\"))));\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/reviews",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get average",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									" var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Check if the response contains the expected data\", function () {\r",
+									"    jsonData === 5;\r",
+									"}); \r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/userCourses/averageRating/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"userCourses",
+								"averageRating",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get average negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/userCourses/averageRating/0",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"userCourses",
+								"averageRating",
+								"0"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "favorites",
+			"item": [
+				{
+					"name": "add favorite for user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/favorite/add/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"favorite",
+								"add",
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user's favorites",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									" var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Check if the response contains the expected data\", function () {\r",
+									"   jsonData[0].user?.id === pm.environment.get(\"user_id\")\r",
+									"}); "
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/favorite/user",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"favorite",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check if is favorited",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									" var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Check if the response is true\", function () {\r",
+									"   jsonData === true;\r",
+									"}); \r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/favorite/isFavorite/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"favorite",
+								"isFavorite",
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get number of favorites for course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									" var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Check if the response contains the expected data\", function () {\r",
+									"   jsonData === 1;\r",
+									"}); "
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/favorite/count/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"favorite",
+								"count",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get number of favorites for negative course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/favorites/count/0",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"favorites",
+								"count",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add favorite duplicate entry",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/favorite/add/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"favorite",
+								"add",
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "keywords",
+			"item": [
+				{
+					"name": "get keywords negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/keyword/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"keyword",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "replace keywords negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/keyword/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"keyword",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add / replace keywords",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\"postal\", \"going postal\", \"post this, punk\"]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/keyword/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"keyword",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get keyword for course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/keyword/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"keyword",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "offerables",
+			"item": [
+				{
+					"name": "add offerable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									" var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"offerable_id\", jsonData.id);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\r\n        \"course\": {\r\n            \"id\": {{course_id}}\r\n        },\r\n        \"provider\": {\r\n            \"id\": {{provider_id}}\r\n        },\r\n        \"date\": 1750377600000,\r\n        \"price\": 29999.0,\r\n        \"discount\": 0.895862,\r\n        \"visible\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/offerableCourse",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"offerableCourse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get offerable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\" Gotten offerable matches the offerable_id in environment variables\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    jsonData.id === pm.environment.get(\"offerable_id\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/offerableCourses/{{offerable_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"offerableCourses",
+								"{{offerable_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get offerables",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\" Gotten offerable matches the offerable_id in environment variables\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    jsonData.some(item => item.id === pm.environment.get(\"offerable_id\"));\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/offerableCourses",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"offerableCourses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get offerables for course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"list contains expected offerable\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData[0].id).to.have.eql(pm.environment.get(\"offerable_id\"));\r",
+									"}); "
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/offerableCourses/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"offerableCourses",
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get offerables for course negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/offerableCourses/course/0",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"offerableCourses",
+								"course",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get offerables for provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"list contains expected offerable\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData[0].id).to.have.eql(pm.environment.get(\"offerable_id\"));\r",
+									"}); "
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/offerableCourses/provider/{{provider_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"offerableCourses",
+								"provider",
+								"{{provider_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get offerables for provider negative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/offerableCourses/provider/0",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"offerableCourses",
+								"provider",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add second offerable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									" var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"offerable_id2\", jsonData.id);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\r\n        \"course\": {\r\n            \"id\": {{course_id}}\r\n        },\r\n        \"provider\": {\r\n            \"id\": {{provider_id}}\r\n        },\r\n        \"date\": 1750387600000,\r\n        \"price\": 10.0,\r\n        \"discount\": 0.90,\r\n        \"visible\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/offerableCourse",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"offerableCourse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get lowest price offerable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\" Gotten offerable matches the offerable_id in environment variables\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"   jsonData === 1.0;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/offerableCourses/lowestPrice/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"offerableCourses",
+								"lowestPrice",
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get soonest offerable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\" Gotten offerable matches the offerable_id in environment variables\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.eql(1750377600000)\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/offerableCourses/closestDate/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"offerableCourses",
+								"closestDate",
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "transactions",
+			"item": [
+				{
+					"name": "add transaction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/transaction/offerId/{{offerable_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"transaction",
+								"offerId",
+								"{{offerable_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get transaction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"transaction was added successfully\", function () {\r",
+									"    var jsonData = pm.response.json()\r",
+									"    pm.expect(jsonData.some(item => item.id === parseInt(pm.environment.get(\"transaction_id\"))));\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/transaction/user/{{user_id}}/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"transaction",
+								"user",
+								"{{user_id}}",
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get transactions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"New added transaction is in the list\", function () {\r",
+									"    var jsonData = pm.response.json()\r",
+									"    pm.expect(jsonData.some(item => item.id  === parseInt(pm.environment.get(\"transaction_id\"))));\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/transactions",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get transactions for user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"New added transaction is in the list\", function () {\r",
+									"    var jsonData = pm.response.json()\r",
+									"    pm.expect(jsonData.some(item => item.user?.id  === parseInt(pm.environment.get(\"user_id\"))));\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/transaction/user/{{user_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"transaction",
+								"user",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get transactions by course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"New added transaction is in the list\", function () {\r",
+									"    var jsonData = pm.response.json()\r",
+									"    pm.expect(jsonData.some(item => item.offerableCourses?.course?.id  === parseInt(pm.environment.get(\"course_id\"))));\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/transaction/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"transaction",
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get transactions by course and user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"New added transaction is in the list\", function () {\r",
+									"    var jsonData = pm.response.json()\r",
+									"    pm.expect(jsonData.some(item => item.offerableCourses?.course?.id  === parseInt(pm.environment.get(\"course_id\"))));\r",
+									"\r",
+									"});\r",
+									"pm.test(\"New added transaction is in the list\", function () {\r",
+									"    var jsonData = pm.response.json()\r",
+									"    pm.expect(jsonData.some(item => item.user?.id  === parseInt(pm.environment.get(\"user_id\"))));\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/transaction/user/{{user_id}}/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"transaction",
+								"user",
+								"{{user_id}}",
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get providers  with revenues",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\" postman in provider list\", function () {\r",
+									"    var jsonData = pm.response.json()\r",
+									"    pm.expect(jsonData.some(item => item.id === pm.environment.get(\"provider_id\")));\r",
+									"\r",
+									"});\r",
+									"pm.test(\"postman has earned money\", function () {\r",
+									"    var jsonData = pm.response.json()\r",
+									"    pm.expect(jsonData.some(item => item.REVENUE === 1.0 ));\r",
+									"\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/transaction/providersStats",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"transaction",
+								"providersStats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "average revenue per course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response is some number \", function () {\r",
+									" pm.expect( pm.response.json() === Number);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/transaction/averageRevenuePerCourse",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"transaction",
+								"averageRevenuePerCourse"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get average revenue last 30 days",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response is some number \", function () {\r",
+									"   pm.expect( pm.response.json() === Number);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/transaction/revenueLast30Days",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"transaction",
+								"revenueLast30Days"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get total revenue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response is some number \", function () {\r",
+									"    pm.response.json() === Number;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/transaction/totalRevenue",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"transaction",
+								"totalRevenue"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete",
+			"item": [
+				{
+					"name": "delete transaction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/transaction/user/{{user_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"transaction",
+								"user",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete offerable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\r\n        \"course\": {\r\n            \"id\": {{course_id}}\r\n        },\r\n        \"provider\": {\r\n            \"id\": {{provider_id}}\r\n        },\r\n        \"date\": 1750377600000,\r\n        \"price\": 29999.0,\r\n        \"discount\": 0.895862,\r\n        \"visible\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/offerableCourses/{{offerable_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"offerableCourses",
+								"{{offerable_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete offerable2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\r\n        \"course\": {\r\n            \"id\": {{course_id}}\r\n        },\r\n        \"provider\": {\r\n            \"id\": {{provider_id}}\r\n        },\r\n        \"date\": 1750377600000,\r\n        \"price\": 29999.0,\r\n        \"discount\": 0.895862,\r\n        \"visible\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/offerableCourses/{{offerable_id2}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"offerableCourses",
+								"{{offerable_id2}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete keywords",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\r\n        \"course\": {\r\n            \"id\": {{course_id}}\r\n        },\r\n        \"provider\": {\r\n            \"id\": {{provider_id}}\r\n        },\r\n        \"date\": 1750377600000,\r\n        \"price\": 29999.0,\r\n        \"discount\": 0.895862,\r\n        \"visible\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/keywords/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"keywords",
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/userCourses/user/{{user_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"userCourses",
+								"user",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete favorite for user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/favorite/remove/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"favorite",
+								"remove",
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user/{{user_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n  {\r\n    \"title\": \"postman2\",\r\n    \"diffLevel\": 1,\r\n    \"closestCourse\": \"2025-04-02\",\r\n    \"credits\": 2,\r\n    \"hoursWeek\": 5,\r\n    \"relatedCert\": \"postman for postmen\",\r\n    \"description\": \"How to go postal for beginners, time to go postal!\",\r\n    \"catergory\": \"Postality\",\r\n    \"imgLink\": \"https://picsum.photos/750/375\"\r\n  }\r\n"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/course/{{course_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"course",
+								"{{course_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete provider",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/provider/{{provider_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"provider",
+								"{{provider_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
