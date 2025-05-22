@@ -336,6 +336,3 @@ insert into transaction(user_id, offerable_courses_id, time_of_transaction, pric
 
 update offerable_courses set discount = round(rand(), 2) where 1=1;
 
-
-
-select  * from offerable_courses;
