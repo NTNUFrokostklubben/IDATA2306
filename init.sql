@@ -6,13 +6,16 @@ INSERT into roles ( name) VALUES ( 'ROLE_ADMIN');
 -- 1. Insert into user
 INSERT INTO user (active, email, name, password_hash, profile_picture, user_created) VALUES
   (1, 'dave@gmail.com', 'Dave', '$2a$10$LR5aS5YJrUMu8WV6r8eCEOkjwNGaX0C8GVdReSdRYihwMTMi.CQLW', 'https://picsum.photos/201', NOW()),
-  (1, 'Chuck@gmail.com', 'Chuck', '$2a$10$bk.YyJIlzffXtir.zjuDkuduc1YDxcbRa1po4vb/V9rb8Q7Kqjwye', 'https://picsum.photos/200', NOW());
+  (1, 'Chuck@gmail.com', 'Chuck', '$2a$10$bk.YyJIlzffXtir.zjuDkuduc1YDxcbRa1po4vb/V9rb8Q7Kqjwye', 'https://picsum.photos/202', NOW());
+  (1, 'postman@test.com', 'postman', '$2a$10$dOIBSGSZ0C71hCbtxmYk1uX/rxUQ9AiCbwtQDwQXq8oudM4Qp08lC', 'https://picsum.photos/203', NOW());
 
 -- 2. Insert into roles
 insert into user_role (user_id, role_id) values
 (1, 1),
 (2, 1),
-(2, 2);
+(2, 2),
+(3, 1),
+(3, 2);
 
 -- 2. Insert into course
 INSERT INTO course (category, closest_course, credits, description, diff_level, hours_week, img_link, related_cert, title, cert_link  ) VALUES
@@ -332,3 +335,4 @@ insert into transaction(user_id, offerable_courses_id, time_of_transaction, pric
     (2, 6,'2025-05-01' , 1043.00);
 
 update offerable_courses set discount = round(rand(), 2) where 1=1;
+
