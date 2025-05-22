@@ -25,6 +25,5 @@ public interface OfferableCoursesRepo extends JpaRepository<OfferableCourses, In
   OfferableCourses getOfferableCoursesById(long id);
 
 
-
-
+  List<OfferableCourses> findAllByVisibility(boolean visibility);
 }
