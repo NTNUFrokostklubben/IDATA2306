@@ -191,7 +191,7 @@ public class CourseController {
   })
   @GetMapping("/courses/courseCard")
   public ResponseEntity<List<CourseWithMinPriceAndRatingDto>> getOfferableCoursesByCourseCard() {
-    List<OfferableCourses> courses = offerableCoursesRepo.findAll();
+    List<OfferableCourses> courses = offerableCoursesRepo.findAllByVisibility(true);
     List<CourseWithMinPriceAndRatingDto> filteredResult = new ArrayList<>(courses.stream()
      .collect(Collectors.groupingBy(
          OfferableCourses::getCourse,
