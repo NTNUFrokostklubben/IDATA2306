@@ -109,7 +109,9 @@ public class SecurityConfig {
         "https://localhost:3000",
         "http://localhost:3000",
         "https://learniverse.no",
-        "https://www.learniverse.no"
+        "https://www.learniverse.no",
+        "https://10.212.25.197/",
+        "https://group05.web-tek.ninja/"
     ));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(Arrays.asList("*"));
